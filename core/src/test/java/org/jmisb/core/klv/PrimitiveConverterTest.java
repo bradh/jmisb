@@ -63,13 +63,22 @@ public class PrimitiveConverterTest
         intVal = PrimitiveConverter.toInt32(new byte[]{0x00, 0x00, 0x00, 0x00});
         Assert.assertEquals(intVal, 0);
 
+        intVal = PrimitiveConverter.toInt32(new byte[]{0x00, 0x00, 0x00});
+        Assert.assertEquals(intVal, 0);
+
         intVal = PrimitiveConverter.toInt32(new byte[]{0x00, 0x03});
+        Assert.assertEquals(intVal, 3);
+        
+        intVal = PrimitiveConverter.toInt32(new byte[]{0x00, 0x00, 0x03});
         Assert.assertEquals(intVal, 3);
 
         intVal = PrimitiveConverter.toInt32(new byte[]{0x11});
         Assert.assertEquals(intVal, 17);
 
         intVal = PrimitiveConverter.toInt32(new byte[]{(byte)0xff, (byte)0xff, (byte)0xff, (byte)0xff});
+        Assert.assertEquals(intVal, -1);
+        
+        intVal = PrimitiveConverter.toInt32(new byte[]{(byte)0xff, (byte)0xff, (byte)0xff});
         Assert.assertEquals(intVal, -1);
     }
 
@@ -101,6 +110,62 @@ public class PrimitiveConverterTest
         Assert.assertEquals(bytes, new byte[]{0x00, 0x00, 0x00, 0x0a});
     }
 
+    @Test
+    public void testSignedInt32ToVariableBytes()
+    {
+        int intVal = -1;
+        byte[] bytes = PrimitiveConverter.int32ToVariableBytes(intVal);
+        Assert.assertEquals(bytes, new byte[]{(byte)0xff});
+
+        intVal = 0;
+        bytes = PrimitiveConverter.int32ToVariableBytes(intVal);
+        Assert.assertEquals(bytes, new byte[]{0x00});
+
+        intVal = 10;
+        bytes = PrimitiveConverter.int32ToVariableBytes(intVal);
+        Assert.assertEquals(bytes, new byte[]{0x0a});
+        
+        intVal = 127;
+        bytes = PrimitiveConverter.int32ToVariableBytes(intVal);
+        Assert.assertEquals(bytes, new byte[]{0x7f});
+        
+        intVal = -127;
+        bytes = PrimitiveConverter.int32ToVariableBytes(intVal);
+        Assert.assertEquals(bytes, new byte[]{(byte)0x81});
+
+        intVal = -128;
+        bytes = PrimitiveConverter.int32ToVariableBytes(intVal);
+        Assert.assertEquals(bytes, new byte[]{(byte)0x80});
+
+        intVal = 128;
+        bytes = PrimitiveConverter.int32ToVariableBytes(intVal);
+        Assert.assertEquals(bytes, new byte[]{(byte)0x00, (byte)0x80});
+        
+        intVal = -129;
+        bytes = PrimitiveConverter.int32ToVariableBytes(intVal);
+        Assert.assertEquals(bytes, new byte[]{(byte)0xFF, (byte)0x7F});
+        
+        intVal = 32767;
+        bytes = PrimitiveConverter.int32ToVariableBytes(intVal);
+        Assert.assertEquals(bytes, new byte[]{(byte)0x7F, (byte)0xFF});
+
+        intVal = -32767;
+        bytes = PrimitiveConverter.int32ToVariableBytes(intVal);
+        Assert.assertEquals(bytes, new byte[]{(byte)0x80, (byte)0x01});
+        
+        intVal = -32768;
+        bytes = PrimitiveConverter.int32ToVariableBytes(intVal);
+        Assert.assertEquals(bytes, new byte[]{(byte)0x80, (byte)0x00});
+        
+        intVal = 32768;
+        bytes = PrimitiveConverter.int32ToVariableBytes(intVal);
+        Assert.assertEquals(bytes, new byte[]{(byte)0x00, (byte)0x00, (byte)0x80, (byte)0x00});
+        
+        intVal = -32769;
+        bytes = PrimitiveConverter.int32ToVariableBytes(intVal);
+        Assert.assertEquals(bytes, new byte[]{(byte)0xFF, (byte)0xFF, (byte)0x7F, (byte)0xFF});
+    }
+
     @Test(expectedExceptions = IllegalArgumentException.class)
     public void testToUint8BadLength_2()
     {
@@ -125,7 +190,7 @@ public class PrimitiveConverterTest
         long longVal = PrimitiveConverter.toUint32(new byte[]{(byte)0xff, (byte)0xff, (byte)0xff, (byte)0xff});
         Assert.assertEquals(longVal, (long) Math.pow(2, 32) - 1);
     }
-
+    
     @Test(expectedExceptions = IllegalArgumentException.class)
     public void testToUint32BadLength()
     {
@@ -255,11 +320,11 @@ public class PrimitiveConverterTest
         long longVal = 1L;
         byte[] bytes = PrimitiveConverter.uint32ToVariableBytes(longVal);
         Assert.assertEquals(bytes, new byte[]{0x01});
-
+        
         longVal = 255L;
         bytes = PrimitiveConverter.uint32ToVariableBytes(longVal);
         Assert.assertEquals(bytes, new byte[]{(byte)0xff});
-
+        
         longVal = 256L;
         bytes = PrimitiveConverter.uint32ToVariableBytes(longVal);
         Assert.assertEquals(bytes, new byte[]{(byte)0x01, (byte)0x00});
@@ -326,5 +391,4 @@ public class PrimitiveConverterTest
     {
         PrimitiveConverter.toInt32(new byte[]{0x00, 0x00, 0x00, 0x0f, 0x00});
     }
-
 }
