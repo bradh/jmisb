@@ -16,6 +16,11 @@ package org.jmisb.api.klv.st1206;
  * <p>For the ground plane squint angle, forward of broadside is positive and aft of broadside is
  * negative.
  *
+ * <p>*
+ *
+ * <p>The Look Direction metadata element and the Ground Plane Squint Angle metadata element shall
+ * be present at all times.
+ *
  * <p>See ST1206 Section 6.2.2 for more information.
  */
 public class GroundPlaneSquintAngle extends Angle_90 {

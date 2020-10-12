@@ -39,9 +39,9 @@ public class SARMILocalSet implements IMisbMessage {
             case GroundPlaneSquintAngle:
                 return new GroundPlaneSquintAngle(bytes);
             case LookDirection:
-                break;
+                return new LookDirection(bytes);
             case ImagePlane:
-                break;
+                return new ImagePlane(bytes);
             case RangeResolution:
                 break;
             case CrossRangeResolution:
@@ -89,7 +89,7 @@ public class SARMILocalSet implements IMisbMessage {
             case ReferenceFrameRangeLayoverAngleRelativeToTrueNorth:
                 return new ReferenceFrameRangeLayoverAngleRelativeToTrueNorth(bytes);
             case DocumentVersion:
-                break;
+                return new DocumentVersion(bytes);
             default:
                 LOGGER.info("Unknown SAR Motion Imagery Metadata tag: {}", tag);
         }
