@@ -43,13 +43,13 @@ public class SARMILocalSet implements IMisbMessage {
             case ImagePlane:
                 return new ImagePlane(bytes);
             case RangeResolution:
-                break;
+                return new RangeResolution(bytes);
             case CrossRangeResolution:
-                break;
+                return new CrossRangeResolution(bytes);
             case RangeImagePlanePixelSize:
-                break;
+                return new RangeImagePlanePixelSize(bytes);
             case CrossRangeImagePlanePixelSize:
-                break;
+                return new CrossRangeImagePlanePixelSize(bytes);
             case ImageRows:
                 return new ImageRows(bytes);
             case ImageColumns:
@@ -73,7 +73,7 @@ public class SARMILocalSet implements IMisbMessage {
             case PulseRepetitionFrequencyScaleFactor:
                 break;
             case TransmitRFCenterFrequency:
-                break;
+                return new TransmitRFCenterFrequency(bytes);
             case TransmitRFBandwidth:
                 break;
             case RadarCrossSectionScaleFactorPolynomial:
