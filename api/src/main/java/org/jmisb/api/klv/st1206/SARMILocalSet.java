@@ -51,9 +51,9 @@ public class SARMILocalSet implements IMisbMessage {
             case CrossRangeImagePlanePixelSize:
                 break;
             case ImageRows:
-                break;
+                return new ImageRows(bytes);
             case ImageColumns:
-                break;
+                return new ImageColumns(bytes);
             case RangeDirectionAngleRelativeToTrueNorth:
                 return new RangeDirectionAngleRelativeToTrueNorth(bytes);
             case TrueNorthDirectionRelativeToTopImageEdge:
