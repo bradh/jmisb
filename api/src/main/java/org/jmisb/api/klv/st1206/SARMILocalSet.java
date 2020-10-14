@@ -69,7 +69,7 @@ public class SARMILocalSet implements IMisbMessage {
             case MinimumDetectableVelocity:
                 return new MinimumDetectableVelocity(bytes);
             case TruePulseRepetitionFrequency:
-                break;
+                return new TruePulseRepetitionFrequency(bytes);
             case PulseRepetitionFrequencyScaleFactor:
                 break;
             case TransmitRFCenterFrequency:
