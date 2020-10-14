@@ -6,8 +6,6 @@ public abstract class AbstractAngle implements ISARMIMetadataValue {
     protected static final int NUM_BYTES = 2;
     protected double value;
 
-    public AbstractAngle() {}
-
     @Override
     public final String getDisplayableValue() {
         return String.format("%.1f\u00B0", value);

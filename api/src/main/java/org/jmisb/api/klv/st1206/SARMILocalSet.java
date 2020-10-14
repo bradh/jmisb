@@ -79,7 +79,7 @@ public class SARMILocalSet implements IMisbMessage {
             case RadarCrossSectionScaleFactorPolynomial:
                 break;
             case ReferenceFramePrecisionTimeStamp:
-                break;
+                return new ReferenceFramePrecisionTimeStamp(bytes);
             case ReferenceFrameGrazingAngle:
                 return new ReferenceFrameGrazingAngle(bytes);
             case ReferenceFrameGroundPlaneSquintAngle:
