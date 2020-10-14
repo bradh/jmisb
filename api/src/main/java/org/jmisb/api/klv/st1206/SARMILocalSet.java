@@ -71,7 +71,7 @@ public class SARMILocalSet implements IMisbMessage {
             case TruePulseRepetitionFrequency:
                 return new TruePulseRepetitionFrequency(bytes);
             case PulseRepetitionFrequencyScaleFactor:
-                break;
+                return new PulseRepetitionFrequencyScaleFactor(bytes);
             case TransmitRFCenterFrequency:
                 return new TransmitRFCenterFrequency(bytes);
             case TransmitRFBandwidth:
