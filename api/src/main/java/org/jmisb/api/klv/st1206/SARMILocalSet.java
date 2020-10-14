@@ -67,7 +67,7 @@ public class SARMILocalSet implements IMisbMessage {
             case GroundTrackAngle:
                 return new GroundTrackAngle(bytes);
             case MinimumDetectableVelocity:
-                break;
+                return new MinimumDetectableVelocity(bytes);
             case TruePulseRepetitionFrequency:
                 break;
             case PulseRepetitionFrequencyScaleFactor:
@@ -75,7 +75,7 @@ public class SARMILocalSet implements IMisbMessage {
             case TransmitRFCenterFrequency:
                 return new TransmitRFCenterFrequency(bytes);
             case TransmitRFBandwidth:
-                break;
+                return new TransmitRFBandwidth(bytes);
             case RadarCrossSectionScaleFactorPolynomial:
                 break;
             case ReferenceFramePrecisionTimeStamp:

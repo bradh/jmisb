@@ -3,35 +3,34 @@ package org.jmisb.api.klv.st1206;
 import org.jmisb.api.klv.st1201.FpEncoder;
 
 /**
- * Transmit RF Center Frequency (ST 1206 Item 20).
+ * Transmit RF Bandwidth(ST 1206 Item 21).
  *
- * <p>The transmit RF center frequency is the center frequency of the RF band when linear FM
- * waveforms are employed. For most chirped waveform SARMI systems, the set of transmitted
- * frequencies is fixed for every pulse. For systems that adjust the transmitted frequency band
- * during the synthetic aperture, the RF center frequency is the frequency at the center of the band
- * defined by the minimum overall RF starting frequency and the maximum overall RF ending frequency
- * during the synthetic aperture.
+ * <p>The RF bandwidth dictates the range resolution in the slant plane independent of aperture
+ * size. The transmit RF bandwidth may be defined by a single, fixed waveform or a sequence of
+ * waveforms, such as a step chirp waveform. The transmit RF bandwidth is defined as the difference
+ * between the maximum and minimum transmit frequencies for a single or sequence of waveforms, if
+ * applicable.
  */
-public class TransmitRFCenterFrequency implements ISARMIMetadataValue {
+public class TransmitRFBandwidth implements ISARMIMetadataValue {
 
     protected static final double MIN_VAL = 0.0;
-    protected static final double MAX_VAL = 1.0e12;
+    protected static final double MAX_VAL = 1.0e11;
     protected static final int NUM_BYTES = 4;
     protected double value;
 
     /**
      * Create from value.
      *
-     * @param frequency frequency in Hertz.
+     * @param bandwidth bandwidth in Hertz.
      */
-    public TransmitRFCenterFrequency(double frequency) {
-        if (frequency < MIN_VAL || frequency > MAX_VAL) {
+    public TransmitRFBandwidth(double bandwidth) {
+        if (bandwidth < MIN_VAL || bandwidth > MAX_VAL) {
             throw new IllegalArgumentException(
                     String.format(
                             "%s must be in range [%f, %f]",
                             this.getDisplayName(), MIN_VAL, MAX_VAL));
         }
-        this.value = frequency;
+        this.value = bandwidth;
     }
 
     /**
@@ -39,7 +38,7 @@ public class TransmitRFCenterFrequency implements ISARMIMetadataValue {
      *
      * @param bytes the byte array to decode the value from.
      */
-    public TransmitRFCenterFrequency(byte[] bytes) {
+    public TransmitRFBandwidth(byte[] bytes) {
         if (bytes.length != NUM_BYTES) {
             throw new IllegalArgumentException(
                     String.format(
@@ -62,15 +61,15 @@ public class TransmitRFCenterFrequency implements ISARMIMetadataValue {
 
     @Override
     public final String getDisplayName() {
-        return "Transmit RF Center Frequency";
+        return "Transmit RF Bandwidth";
     }
 
     /**
-     * Get the Transmit RF Center Frequency.
+     * Get the Transmit RF Bandwidth.
      *
-     * @return frequency in Hertz
+     * @return bandwidth in Hertz
      */
-    public double getFrequency() {
+    public double getBandwidth() {
         return value;
     }
 }
