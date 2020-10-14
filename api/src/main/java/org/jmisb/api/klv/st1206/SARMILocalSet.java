@@ -9,8 +9,6 @@ import java.util.SortedMap;
 import java.util.TreeMap;
 import org.jmisb.api.common.KlvParseException;
 import org.jmisb.api.klv.ArrayBuilder;
-import org.jmisb.api.klv.BerDecoder;
-import org.jmisb.api.klv.BerField;
 import org.jmisb.api.klv.IKlvKey;
 import org.jmisb.api.klv.IMisbMessage;
 import org.jmisb.api.klv.LdsField;
@@ -63,7 +61,7 @@ public class SARMILocalSet implements IMisbMessage {
             case GroundApertureAngularExtent:
                 return new GroundApertureAngularExtent(bytes);
             case ApertureDuration:
-                break;
+                return new ApertureDuration(bytes);
             case GroundTrackAngle:
                 return new GroundTrackAngle(bytes);
             case MinimumDetectableVelocity:
@@ -115,10 +113,7 @@ public class SARMILocalSet implements IMisbMessage {
      * @throws KlvParseException if parsing fails
      */
     public SARMILocalSet(final byte[] bytes) throws KlvParseException {
-        int offset = UniversalLabel.LENGTH;
-        BerField len = BerDecoder.decode(bytes, offset, false);
-        offset += len.getLength();
-        List<LdsField> fields = LdsParser.parseFields(bytes, offset, len.getValue());
+        List<LdsField> fields = LdsParser.parseFields(bytes, 0, bytes.length);
         for (LdsField field : fields) {
             SARMIMetadataKey key = SARMIMetadataKey.getKey(field.getTag());
             switch (key) {
