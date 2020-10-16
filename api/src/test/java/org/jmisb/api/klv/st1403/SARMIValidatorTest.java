@@ -3,6 +3,7 @@ package org.jmisb.api.klv.st1403;
 import static org.testng.Assert.*;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.SortedMap;
 import java.util.TreeMap;
@@ -53,6 +54,11 @@ import org.jmisb.api.klv.st1206.RangeDirectionAngleRelativeToTrueNorth;
 import org.jmisb.api.klv.st1206.RangeImagePlanePixelSize;
 import org.jmisb.api.klv.st1206.RangeLayoverAngleRelativeToTrueNorth;
 import org.jmisb.api.klv.st1206.RangeResolution;
+import org.jmisb.api.klv.st1206.ReferenceFrameGrazingAngle;
+import org.jmisb.api.klv.st1206.ReferenceFrameGroundPlaneSquintAngle;
+import org.jmisb.api.klv.st1206.ReferenceFramePrecisionTimeStamp;
+import org.jmisb.api.klv.st1206.ReferenceFrameRangeDirectionAngleRelativeToTrueNorth;
+import org.jmisb.api.klv.st1206.ReferenceFrameRangeLayoverAngleRelativeToTrueNorth;
 import org.jmisb.api.klv.st1206.SARMILocalSet;
 import org.jmisb.api.klv.st1206.SARMIMetadataKey;
 import org.jmisb.api.klv.st1206.TrueNorthDirectionRelativeToTopImageEdge;
@@ -76,6 +82,9 @@ public class SARMIValidatorTest {
         assertTrue(results.isConformant());
         List<ValidationResult> failures = results.getNonConformances();
         assertEquals(failures.size(), 0);
+        ValidationResults ccdResults =
+                SARMIValidator.validateSARCoherentChangeProductMetadata(message);
+        assertFalse(ccdResults.isConformant());
     }
 
     @Test
@@ -110,6 +119,9 @@ public class SARMIValidatorTest {
         assertTrue(results.isConformant());
         List<ValidationResult> failures = results.getNonConformances();
         assertEquals(failures.size(), 0);
+        ValidationResults ccdResults =
+                SARMIValidator.validateSARCoherentChangeProductMetadata(message);
+        assertFalse(ccdResults.isConformant());
     }
 
     @Test
@@ -150,6 +162,9 @@ public class SARMIValidatorTest {
         UasDatalinkMessage message = new UasDatalinkMessage(values);
         ValidationResults results = SARMIValidator.validateSARImageryMetadata(message);
         assertFalse(results.isConformant());
+        ValidationResults ccdResults =
+                SARMIValidator.validateSARCoherentChangeProductMetadata(message);
+        assertFalse(ccdResults.isConformant());
     }
 
     @Test
@@ -167,6 +182,9 @@ public class SARMIValidatorTest {
         UasDatalinkMessage message = new UasDatalinkMessage(values);
         ValidationResults results = SARMIValidator.validateSARImageryMetadata(message);
         assertFalse(results.isConformant());
+        ValidationResults ccdResults =
+                SARMIValidator.validateSARCoherentChangeProductMetadata(message);
+        assertFalse(ccdResults.isConformant());
     }
 
     @Test
@@ -180,6 +198,9 @@ public class SARMIValidatorTest {
         UasDatalinkMessage message = new UasDatalinkMessage(values);
         ValidationResults results = SARMIValidator.validateSARImageryMetadata(message);
         assertFalse(results.isConformant());
+        ValidationResults ccdResults =
+                SARMIValidator.validateSARCoherentChangeProductMetadata(message);
+        assertFalse(ccdResults.isConformant());
     }
 
     @Test
@@ -193,6 +214,9 @@ public class SARMIValidatorTest {
         UasDatalinkMessage message = new UasDatalinkMessage(values);
         ValidationResults results = SARMIValidator.validateSARImageryMetadata(message);
         assertFalse(results.isConformant());
+        ValidationResults ccdResults =
+                SARMIValidator.validateSARCoherentChangeProductMetadata(message);
+        assertFalse(ccdResults.isConformant());
     }
 
     @Test
@@ -208,6 +232,9 @@ public class SARMIValidatorTest {
         UasDatalinkMessage message = new UasDatalinkMessage(values);
         ValidationResults results = SARMIValidator.validateSARImageryMetadata(message);
         assertFalse(results.isConformant());
+        ValidationResults ccdResults =
+                SARMIValidator.validateSARCoherentChangeProductMetadata(message);
+        assertFalse(ccdResults.isConformant());
     }
 
     @Test
@@ -223,6 +250,9 @@ public class SARMIValidatorTest {
         UasDatalinkMessage message = new UasDatalinkMessage(values);
         ValidationResults results = SARMIValidator.validateSARImageryMetadata(message);
         assertFalse(results.isConformant());
+        ValidationResults ccdResults =
+                SARMIValidator.validateSARCoherentChangeProductMetadata(message);
+        assertFalse(ccdResults.isConformant());
     }
 
     @Test
@@ -238,6 +268,9 @@ public class SARMIValidatorTest {
         UasDatalinkMessage message = new UasDatalinkMessage(values);
         ValidationResults results = SARMIValidator.validateSARImageryMetadata(message);
         assertFalse(results.isConformant());
+        ValidationResults ccdResults =
+                SARMIValidator.validateSARCoherentChangeProductMetadata(message);
+        assertFalse(ccdResults.isConformant());
     }
 
     @Test
@@ -253,6 +286,9 @@ public class SARMIValidatorTest {
         UasDatalinkMessage message = new UasDatalinkMessage(values);
         ValidationResults results = SARMIValidator.validateSARImageryMetadata(message);
         assertFalse(results.isConformant());
+        ValidationResults ccdResults =
+                SARMIValidator.validateSARCoherentChangeProductMetadata(message);
+        assertFalse(ccdResults.isConformant());
     }
 
     @Test
@@ -268,6 +304,9 @@ public class SARMIValidatorTest {
         UasDatalinkMessage message = new UasDatalinkMessage(values);
         ValidationResults results = SARMIValidator.validateSARImageryMetadata(message);
         assertFalse(results.isConformant());
+        ValidationResults ccdResults =
+                SARMIValidator.validateSARCoherentChangeProductMetadata(message);
+        assertFalse(ccdResults.isConformant());
     }
 
     @Test
@@ -285,6 +324,9 @@ public class SARMIValidatorTest {
         UasDatalinkMessage message = new UasDatalinkMessage(values);
         ValidationResults results = SARMIValidator.validateSARImageryMetadata(message);
         assertTrue(results.isConformant());
+        ValidationResults ccdResults =
+                SARMIValidator.validateSARCoherentChangeProductMetadata(message);
+        assertFalse(ccdResults.isConformant());
     }
 
     @Test
@@ -355,6 +397,26 @@ public class SARMIValidatorTest {
         UasDatalinkMessage message = new UasDatalinkMessage(values);
         ValidationResults results = SARMIValidator.validateSARImageryMetadata(message);
         assertFalse(results.isConformant());
+    }
+
+    @Test
+    public void checkValidLocalSetCCD() {
+        SortedMap<UasDatalinkTag, IUasDatalinkValue> values = makeBaseST0601Values();
+        values.put(UasDatalinkTag.SensorEllipsoidHeight, new SensorEllipsoidHeight(10000.0));
+        values.put(
+                UasDatalinkTag.SecurityLocalMetadataSet,
+                new NestedSecurityMetadata(makeSecurityLocalSetValid()));
+        values.put(
+                UasDatalinkTag.SarMotionImageryMetadata,
+                new NestedSARMILocalSet(makeSARMICCDLocalSetValid()));
+        UasDatalinkMessage message = new UasDatalinkMessage(values);
+        ValidationResults results = SARMIValidator.validateSARImageryMetadata(message);
+        assertTrue(results.isConformant());
+        List<ValidationResult> failures = results.getNonConformances();
+        assertEquals(failures.size(), 0);
+        ValidationResults ccdResults =
+                SARMIValidator.validateSARCoherentChangeProductMetadata(message);
+        assertTrue(ccdResults.isConformant());
     }
 
     private SortedMap<UasDatalinkTag, IUasDatalinkValue> makeBaseST0601Values() {
@@ -465,6 +527,25 @@ public class SARMIValidatorTest {
 
     private SARMILocalSet makeSARMILocalSetValid() {
         SortedMap<SARMIMetadataKey, ISARMIMetadataValue> values = makeSARMILocalSetValues();
+        return new SARMILocalSet(values);
+    }
+
+    private SARMILocalSet makeSARMICCDLocalSetValid() {
+        SortedMap<SARMIMetadataKey, ISARMIMetadataValue> values = makeSARMILocalSetValues();
+        values.put(
+                SARMIMetadataKey.ReferenceFramePrecisionTimeStamp,
+                new ReferenceFramePrecisionTimeStamp(LocalDateTime.now()));
+        values.put(
+                SARMIMetadataKey.ReferenceFrameGrazingAngle, new ReferenceFrameGrazingAngle(3.2));
+        values.put(
+                SARMIMetadataKey.ReferenceFrameGroundPlaneSquintAngle,
+                new ReferenceFrameGroundPlaneSquintAngle(4.5));
+        values.put(
+                SARMIMetadataKey.ReferenceFrameRangeDirectionAngleRelativeToTrueNorth,
+                new ReferenceFrameRangeDirectionAngleRelativeToTrueNorth(15.0));
+        values.put(
+                SARMIMetadataKey.ReferenceFrameRangeLayoverAngleRelativeToTrueNorth,
+                new ReferenceFrameRangeLayoverAngleRelativeToTrueNorth(35.3));
         return new SARMILocalSet(values);
     }
 

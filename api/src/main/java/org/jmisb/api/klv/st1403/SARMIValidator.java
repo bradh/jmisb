@@ -45,6 +45,9 @@ import org.jmisb.api.klv.st1206.RangeDirectionAngleRelativeToTrueNorth;
 import org.jmisb.api.klv.st1206.RangeImagePlanePixelSize;
 import org.jmisb.api.klv.st1206.RangeLayoverAngleRelativeToTrueNorth;
 import org.jmisb.api.klv.st1206.RangeResolution;
+import org.jmisb.api.klv.st1206.ReferenceFrameGrazingAngle;
+import org.jmisb.api.klv.st1206.ReferenceFrameGroundPlaneSquintAngle;
+import org.jmisb.api.klv.st1206.ReferenceFramePrecisionTimeStamp;
 import org.jmisb.api.klv.st1206.SARMILocalSet;
 import org.jmisb.api.klv.st1206.SARMIMetadataKey;
 import org.jmisb.api.klv.st1206.TrueNorthDirectionRelativeToTopImageEdge;
@@ -139,6 +142,22 @@ public class SARMIValidator {
                 }
             };
 
+    /** Additional Metadata Items from ST1206, from ST 1403.2 Table 2. */
+    private static final Map<SARMIMetadataKey, Class> ADDITIONAL_ST1206_ITEMS =
+            new TreeMap<SARMIMetadataKey, Class>() {
+                {
+                    put(
+                            SARMIMetadataKey.ReferenceFramePrecisionTimeStamp,
+                            ReferenceFramePrecisionTimeStamp.class);
+                    put(
+                            SARMIMetadataKey.ReferenceFrameGrazingAngle,
+                            ReferenceFrameGrazingAngle.class);
+                    put(
+                            SARMIMetadataKey.ReferenceFrameGroundPlaneSquintAngle,
+                            ReferenceFrameGroundPlaneSquintAngle.class);
+                }
+            };
+
     /**
      * Validate that the given local set meets the requirements of ST 1403.2 for SAR Motion Imagery.
      *
@@ -163,6 +182,29 @@ public class SARMIValidator {
         if (nestedSARMILocalSet != null) {
             SARMILocalSet sarmiLocalSet = nestedSARMILocalSet.getSARMI();
             result.addResults(validateSARMIItems(sarmiLocalSet));
+        }
+        return result;
+    }
+
+    /**
+     * Validate that the given local set meets the requirements of ST 1403.2 for SAR Coherent Change
+     * Products.
+     *
+     * <p>This checks the requirements for the sequential display of SAR Coherent Change Products as
+     * SARMI data. This is a strict superset of the requirements for sequential display of SAR
+     * Imagery.
+     *
+     * @param localSet the local set to check
+     * @return ValidationResult structure containing the validation results.
+     */
+    public static ValidationResults validateSARCoherentChangeProductMetadata(
+            UasDatalinkMessage localSet) {
+        ValidationResults result = validateSARImageryMetadata(localSet);
+        NestedSARMILocalSet nestedSARMILocalSet =
+                (NestedSARMILocalSet) localSet.getField(UasDatalinkTag.SarMotionImageryMetadata);
+        if (nestedSARMILocalSet != null) {
+            SARMILocalSet sarmiLocalSet = nestedSARMILocalSet.getSARMI();
+            result.addResults(validateAdditionalSARMIItems(sarmiLocalSet));
         }
         return result;
     }
@@ -310,6 +352,16 @@ public class SARMIValidator {
     private static List<ValidationResult> validateSARMIItems(SARMILocalSet localSet) {
         List<ValidationResult> results = new ArrayList<>();
         for (SARMIMetadataKey tag : REQUIRED_ST1206_ITEMS.keySet()) {
+            ValidationResult result = validateHasSARMIItem(localSet, tag);
+            result.setTraceability("ST 1403-03");
+            results.add(result);
+        }
+        return results;
+    }
+
+    private static List<ValidationResult> validateAdditionalSARMIItems(SARMILocalSet localSet) {
+        List<ValidationResult> results = new ArrayList<>();
+        for (SARMIMetadataKey tag : ADDITIONAL_ST1206_ITEMS.keySet()) {
             ValidationResult result = validateHasSARMIItem(localSet, tag);
             result.setTraceability("ST 1403-03");
             results.add(result);
