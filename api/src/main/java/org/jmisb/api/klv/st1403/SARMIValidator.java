@@ -2,17 +2,52 @@ package org.jmisb.api.klv.st1403;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.TreeMap;
+import org.jmisb.api.klv.IKlvValue;
+import org.jmisb.api.klv.st0102.ISecurityMetadataValue;
+import org.jmisb.api.klv.st0102.ObjectCountryCodeString;
+import org.jmisb.api.klv.st0102.ST0102Version;
 import org.jmisb.api.klv.st0102.SecurityMetadataKey;
+import org.jmisb.api.klv.st0102.SecurityMetadataString;
+import org.jmisb.api.klv.st0102.localset.CcMethod;
+import org.jmisb.api.klv.st0102.localset.ClassificationLocal;
+import org.jmisb.api.klv.st0102.localset.OcMethod;
 import org.jmisb.api.klv.st0102.localset.SecurityMetadataLocalSet;
+import org.jmisb.api.klv.st0601.FrameCenterHae;
+import org.jmisb.api.klv.st0601.FrameCenterLatitude;
+import org.jmisb.api.klv.st0601.FrameCenterLongitude;
+import org.jmisb.api.klv.st0601.FullCornerLatitude;
+import org.jmisb.api.klv.st0601.FullCornerLongitude;
 import org.jmisb.api.klv.st0601.IUasDatalinkValue;
+import org.jmisb.api.klv.st0601.MiisCoreIdentifier;
 import org.jmisb.api.klv.st0601.NestedSARMILocalSet;
 import org.jmisb.api.klv.st0601.NestedSecurityMetadata;
+import org.jmisb.api.klv.st0601.PrecisionTimeStamp;
+import org.jmisb.api.klv.st0601.ST0601Version;
 import org.jmisb.api.klv.st0601.SensorEllipsoidHeight;
 import org.jmisb.api.klv.st0601.SensorEllipsoidHeightExtended;
+import org.jmisb.api.klv.st0601.SensorLatitude;
+import org.jmisb.api.klv.st0601.SensorLongitude;
+import org.jmisb.api.klv.st0601.SlantRange;
 import org.jmisb.api.klv.st0601.UasDatalinkMessage;
+import org.jmisb.api.klv.st0601.UasDatalinkString;
 import org.jmisb.api.klv.st0601.UasDatalinkTag;
+import org.jmisb.api.klv.st1206.CrossRangeImagePlanePixelSize;
+import org.jmisb.api.klv.st1206.DocumentVersion;
+import org.jmisb.api.klv.st1206.GrazingAngle;
+import org.jmisb.api.klv.st1206.GroundPlaneSquintAngle;
+import org.jmisb.api.klv.st1206.ImageColumns;
+import org.jmisb.api.klv.st1206.ImagePlane;
+import org.jmisb.api.klv.st1206.ImageRows;
+import org.jmisb.api.klv.st1206.LookDirection;
+import org.jmisb.api.klv.st1206.RangeDirectionAngleRelativeToTrueNorth;
+import org.jmisb.api.klv.st1206.RangeImagePlanePixelSize;
+import org.jmisb.api.klv.st1206.RangeLayoverAngleRelativeToTrueNorth;
+import org.jmisb.api.klv.st1206.RangeResolution;
 import org.jmisb.api.klv.st1206.SARMILocalSet;
 import org.jmisb.api.klv.st1206.SARMIMetadataKey;
+import org.jmisb.api.klv.st1206.TrueNorthDirectionRelativeToTopImageEdge;
 
 /**
  * SAR Motion Imagery Validator.
@@ -29,63 +64,79 @@ public class SARMIValidator {
     private SARMIValidator() {}
 
     /** Required Metadata Items from ST0601, from ST 1403.2 Table 1. */
-    private static final UasDatalinkTag[] REQUIRED_ST0601_ITEMS =
-            new UasDatalinkTag[] {
-                /* No Checksum - that will get added / removed on serialisation */
-                UasDatalinkTag.PrecisionTimeStamp,
-                UasDatalinkTag.MissionId,
-                UasDatalinkTag.PlatformDesignation,
-                UasDatalinkTag.ImageSourceSensor,
-                UasDatalinkTag.SensorLatitude,
-                UasDatalinkTag.SensorLongitude,
-                UasDatalinkTag.SlantRange,
-                UasDatalinkTag.FrameCenterLatitude,
-                UasDatalinkTag.FrameCenterLongitude,
-                UasDatalinkTag.CornerLatPt1,
-                UasDatalinkTag.CornerLonPt1,
-                UasDatalinkTag.CornerLatPt2,
-                UasDatalinkTag.CornerLonPt2,
-                UasDatalinkTag.CornerLatPt3,
-                UasDatalinkTag.CornerLonPt3,
-                UasDatalinkTag.CornerLatPt4,
-                UasDatalinkTag.CornerLonPt4,
-                UasDatalinkTag.SecurityLocalMetadataSet,
-                UasDatalinkTag.UasLdsVersionNumber,
-                /* Ellipsoid Height | Ellipsoid Height Extended is special case */
-                UasDatalinkTag.FrameCenterHae,
-                UasDatalinkTag.MiisCoreIdentifier,
-                UasDatalinkTag.SarMotionImageryMetadata
+    private static final Map<UasDatalinkTag, Class> REQUIRED_ST0601_ITEMS =
+            new TreeMap<UasDatalinkTag, Class>() {
+                {
+                    /* No Checksum - that will get added / removed on serialisation */
+                    put(UasDatalinkTag.PrecisionTimeStamp, PrecisionTimeStamp.class);
+                    put(UasDatalinkTag.MissionId, UasDatalinkString.class);
+                    put(UasDatalinkTag.PlatformDesignation, UasDatalinkString.class);
+                    put(UasDatalinkTag.ImageSourceSensor, UasDatalinkString.class);
+                    put(UasDatalinkTag.SensorLatitude, SensorLatitude.class);
+                    put(UasDatalinkTag.SensorLongitude, SensorLongitude.class);
+                    put(UasDatalinkTag.SlantRange, SlantRange.class);
+                    put(UasDatalinkTag.FrameCenterLatitude, FrameCenterLatitude.class);
+                    put(UasDatalinkTag.FrameCenterLongitude, FrameCenterLongitude.class);
+                    put(UasDatalinkTag.CornerLatPt1, FullCornerLatitude.class);
+                    put(UasDatalinkTag.CornerLonPt1, FullCornerLongitude.class);
+                    put(UasDatalinkTag.CornerLatPt2, FullCornerLatitude.class);
+                    put(UasDatalinkTag.CornerLonPt2, FullCornerLongitude.class);
+                    put(UasDatalinkTag.CornerLatPt3, FullCornerLatitude.class);
+                    put(UasDatalinkTag.CornerLonPt3, FullCornerLongitude.class);
+                    put(UasDatalinkTag.CornerLatPt4, FullCornerLatitude.class);
+                    put(UasDatalinkTag.CornerLonPt4, FullCornerLongitude.class);
+                    put(UasDatalinkTag.SecurityLocalMetadataSet, NestedSecurityMetadata.class);
+                    put(UasDatalinkTag.UasLdsVersionNumber, ST0601Version.class);
+                    /* Ellipsoid Height | Ellipsoid Height Extended is special case */
+                    put(UasDatalinkTag.FrameCenterHae, FrameCenterHae.class);
+                    put(UasDatalinkTag.MiisCoreIdentifier, MiisCoreIdentifier.class);
+                    put(UasDatalinkTag.SarMotionImageryMetadata, NestedSARMILocalSet.class);
+                }
             };
 
-    private static final SecurityMetadataKey[] REQUIRED_ST0102_ITEMS =
-            new SecurityMetadataKey[] {
-                SecurityMetadataKey.SecurityClassification,
-                SecurityMetadataKey.CcCodingMethod,
-                SecurityMetadataKey.ClassifyingCountry,
-                // TODO: what to put in for this?
-                // SecurityMetadataKey.SciShiInfo,
-                // SecurityMetadataKey.Caveats,
-                // SecurityMetadataKey.ReleasingInstructions,
-                SecurityMetadataKey.OcCodingMethod,
-                SecurityMetadataKey.ObjectCountryCodes,
-                SecurityMetadataKey.Version
+    /** Required Metadata Items from ST0102, from ST 1403.2 Table 1. */
+    private static final Map<SecurityMetadataKey, Class> REQUIRED_ST0102_ITEMS =
+            new TreeMap<SecurityMetadataKey, Class>() {
+                {
+                    put(SecurityMetadataKey.SecurityClassification, ClassificationLocal.class);
+                    put(SecurityMetadataKey.CcCodingMethod, CcMethod.class);
+                    put(SecurityMetadataKey.ClassifyingCountry, SecurityMetadataString.class);
+                    // TODO: what to put in for this?
+                    // put(SecurityMetadataKey.SciShiInfo, SecurityMetadataString.class);
+                    // put(SecurityMetadataKey.Caveats, SecurityMetadataString.class);
+                    // put(SecurityMetadataKey.ReleasingInstructions, SecurityMetadataString.class);
+                    put(SecurityMetadataKey.OcCodingMethod, OcMethod.class);
+                    put(SecurityMetadataKey.ObjectCountryCodes, ObjectCountryCodeString.class);
+                    put(SecurityMetadataKey.Version, ST0102Version.class);
+                }
             };
 
-    private static final SARMIMetadataKey[] REQUIRED_ST1206_ITEMS =
-            new SARMIMetadataKey[] {
-                SARMIMetadataKey.GrazingAngle,
-                SARMIMetadataKey.GroundPlaneSquintAngle,
-                SARMIMetadataKey.LookDirection,
-                SARMIMetadataKey.ImagePlane,
-                SARMIMetadataKey.RangeResolution,
-                SARMIMetadataKey.RangeImagePlanePixelSize,
-                SARMIMetadataKey.CrossRangeImagePlanePixelSize,
-                SARMIMetadataKey.ImageRows,
-                SARMIMetadataKey.ImageColumns,
-                SARMIMetadataKey.RangeDirectionAngleRelativeToTrueNorth,
-                SARMIMetadataKey.TrueNorthDirectionRelativeToTopImageEdge,
-                SARMIMetadataKey.RangeLayoverAngleRelativeToTrueNorth,
-                SARMIMetadataKey.DocumentVersion
+    /** Required Metadata Items from ST1206, from ST 1403.2 Table 1. */
+    private static final Map<SARMIMetadataKey, Class> REQUIRED_ST1206_ITEMS =
+            new TreeMap<SARMIMetadataKey, Class>() {
+                {
+                    put(SARMIMetadataKey.GrazingAngle, GrazingAngle.class);
+                    put(SARMIMetadataKey.GroundPlaneSquintAngle, GroundPlaneSquintAngle.class);
+                    put(SARMIMetadataKey.LookDirection, LookDirection.class);
+                    put(SARMIMetadataKey.ImagePlane, ImagePlane.class);
+                    put(SARMIMetadataKey.RangeResolution, RangeResolution.class);
+                    put(SARMIMetadataKey.RangeImagePlanePixelSize, RangeImagePlanePixelSize.class);
+                    put(
+                            SARMIMetadataKey.CrossRangeImagePlanePixelSize,
+                            CrossRangeImagePlanePixelSize.class);
+                    put(SARMIMetadataKey.ImageRows, ImageRows.class);
+                    put(SARMIMetadataKey.ImageColumns, ImageColumns.class);
+                    put(
+                            SARMIMetadataKey.RangeDirectionAngleRelativeToTrueNorth,
+                            RangeDirectionAngleRelativeToTrueNorth.class);
+                    put(
+                            SARMIMetadataKey.TrueNorthDirectionRelativeToTopImageEdge,
+                            TrueNorthDirectionRelativeToTopImageEdge.class);
+                    put(
+                            SARMIMetadataKey.RangeLayoverAngleRelativeToTrueNorth,
+                            RangeLayoverAngleRelativeToTrueNorth.class);
+                    put(SARMIMetadataKey.DocumentVersion, DocumentVersion.class);
+                }
             };
 
     /**
@@ -100,29 +151,61 @@ public class SARMIValidator {
         ValidationResults result = new ValidationResults();
         result.addResults(validateCoreST0601Items(localSet));
 
-        // TODO: null checks
         NestedSecurityMetadata nestedSecurityMetadata =
                 (NestedSecurityMetadata) localSet.getField(UasDatalinkTag.SecurityLocalMetadataSet);
-        SecurityMetadataLocalSet securityLocalSet = nestedSecurityMetadata.getLocalSet();
-        result.addResults(validateSecurityItems(securityLocalSet));
+        if (nestedSecurityMetadata != null) {
+            SecurityMetadataLocalSet securityLocalSet = nestedSecurityMetadata.getLocalSet();
+            result.addResults(validateSecurityItems(securityLocalSet));
+        }
 
-        // TODO: null checks
         NestedSARMILocalSet nestedSARMILocalSet =
                 (NestedSARMILocalSet) localSet.getField(UasDatalinkTag.SarMotionImageryMetadata);
-        SARMILocalSet sarmiLocalSet = nestedSARMILocalSet.getSARMI();
-        result.addResults(validateSARMIItems(sarmiLocalSet));
+        if (nestedSARMILocalSet != null) {
+            SARMILocalSet sarmiLocalSet = nestedSARMILocalSet.getSARMI();
+            result.addResults(validateSARMIItems(sarmiLocalSet));
+        }
         return result;
     }
 
     private static List<ValidationResult> validateCoreST0601Items(UasDatalinkMessage localSet) {
         List<ValidationResult> results = new ArrayList<>();
-        for (UasDatalinkTag tag : REQUIRED_ST0601_ITEMS) {
+        for (UasDatalinkTag tag : REQUIRED_ST0601_ITEMS.keySet()) {
             ValidationResult result = validateHasValidItem(localSet, tag);
             result.setTraceability("ST 1403-03");
             results.add(result);
         }
+        for (UasDatalinkTag tag : localSet.getIdentifiers()) {
+            IUasDatalinkValue value = localSet.getField(tag);
+            if (value == null) {
+                results.add(getInvalidResultNullValue(tag.toString()));
+            } else if (REQUIRED_ST0601_ITEMS.containsKey(tag)) {
+                Class expectedClass = REQUIRED_ST0601_ITEMS.get(tag);
+                results.add(checkValueIsOfCorrectType(value, expectedClass, tag.toString()));
+            }
+        }
         results.addAll(validateSensorEllipsoidHeightCombination(localSet));
         return results;
+    }
+
+    private static ValidationResult checkValueIsOfCorrectType(
+            IKlvValue value, Class expectedClass, String tagLabel) {
+        if (value.getClass() == expectedClass) {
+            ValidationResult typeResult = new ValidationResult(Validity.Conforms);
+            typeResult.setTraceability("ST 1403-03");
+            typeResult.setDescription(
+                    String.format(
+                            "%s was expected type. Found %s",
+                            tagLabel, value.getClass().toString()));
+            return typeResult;
+        } else {
+            ValidationResult typeResult = new ValidationResult(Validity.DoesNotConform);
+            typeResult.setTraceability("ST 1403-03");
+            typeResult.setDescription(
+                    String.format(
+                            "%s was not of the correct type. Found %s",
+                            tagLabel, value.getClass().toString()));
+            return typeResult;
+        }
     }
 
     private static List<ValidationResult> validateSensorEllipsoidHeightCombination(
@@ -209,17 +292,24 @@ public class SARMIValidator {
 
     private static List<ValidationResult> validateSecurityItems(SecurityMetadataLocalSet localSet) {
         List<ValidationResult> results = new ArrayList<>();
-        for (SecurityMetadataKey tag : REQUIRED_ST0102_ITEMS) {
+        for (SecurityMetadataKey tag : REQUIRED_ST0102_ITEMS.keySet()) {
             ValidationResult result = validateHasSecurityItem(localSet, tag);
             result.setTraceability("ST 1403-03");
             results.add(result);
+        }
+        for (SecurityMetadataKey tag : localSet.getIdentifiers()) {
+            ISecurityMetadataValue value = localSet.getField(tag);
+            if (REQUIRED_ST0102_ITEMS.containsKey(tag)) {
+                Class expectedClass = REQUIRED_ST0102_ITEMS.get(tag);
+                results.add(checkValueIsOfCorrectType(value, expectedClass, tag.toString()));
+            }
         }
         return results;
     }
 
     private static List<ValidationResult> validateSARMIItems(SARMILocalSet localSet) {
         List<ValidationResult> results = new ArrayList<>();
-        for (SARMIMetadataKey tag : REQUIRED_ST1206_ITEMS) {
+        for (SARMIMetadataKey tag : REQUIRED_ST1206_ITEMS.keySet()) {
             ValidationResult result = validateHasSARMIItem(localSet, tag);
             result.setTraceability("ST 1403-03");
             results.add(result);

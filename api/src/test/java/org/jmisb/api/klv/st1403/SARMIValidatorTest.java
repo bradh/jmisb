@@ -2,10 +2,12 @@ package org.jmisb.api.klv.st1403;
 
 import static org.testng.Assert.*;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.SortedMap;
 import java.util.TreeMap;
 import java.util.UUID;
+import org.jmisb.api.klv.st0102.CcmDate;
 import org.jmisb.api.klv.st0102.Classification;
 import org.jmisb.api.klv.st0102.CountryCodingMethod;
 import org.jmisb.api.klv.st0102.ISecurityMetadataValue;
@@ -37,6 +39,7 @@ import org.jmisb.api.klv.st0601.UasDatalinkMessage;
 import org.jmisb.api.klv.st0601.UasDatalinkString;
 import org.jmisb.api.klv.st0601.UasDatalinkTag;
 import org.jmisb.api.klv.st1204.CoreIdentifier;
+import org.jmisb.api.klv.st1206.ApertureDuration;
 import org.jmisb.api.klv.st1206.CrossRangeImagePlanePixelSize;
 import org.jmisb.api.klv.st1206.DocumentVersion;
 import org.jmisb.api.klv.st1206.GrazingAngle;
@@ -71,6 +74,42 @@ public class SARMIValidatorTest {
         UasDatalinkMessage message = new UasDatalinkMessage(values);
         ValidationResults results = SARMIValidator.validateSARImageryMetadata(message);
         assertTrue(results.isConformant());
+        List<ValidationResult> failures = results.getNonConformances();
+        assertEquals(failures.size(), 0);
+    }
+
+    @Test
+    public void checkValidLocalSetSensorEllpsoidHeight75WithExtraSecurityItem() {
+        SortedMap<UasDatalinkTag, IUasDatalinkValue> values = makeBaseST0601Values();
+        values.put(UasDatalinkTag.SensorEllipsoidHeight, new SensorEllipsoidHeight(10000.0));
+        values.put(
+                UasDatalinkTag.SecurityLocalMetadataSet,
+                new NestedSecurityMetadata(makeSecurityLocalSetValidExtra()));
+        values.put(
+                UasDatalinkTag.SarMotionImageryMetadata,
+                new NestedSARMILocalSet(makeSARMILocalSetValid()));
+        UasDatalinkMessage message = new UasDatalinkMessage(values);
+        ValidationResults results = SARMIValidator.validateSARImageryMetadata(message);
+        assertTrue(results.isConformant());
+        List<ValidationResult> failures = results.getNonConformances();
+        assertEquals(failures.size(), 0);
+    }
+
+    @Test
+    public void checkValidLocalSetSensorEllpsoidHeight75WithExtraSARMIItem() {
+        SortedMap<UasDatalinkTag, IUasDatalinkValue> values = makeBaseST0601Values();
+        values.put(UasDatalinkTag.SensorEllipsoidHeight, new SensorEllipsoidHeight(10000.0));
+        values.put(
+                UasDatalinkTag.SecurityLocalMetadataSet,
+                new NestedSecurityMetadata(makeSecurityLocalSetValid()));
+        values.put(
+                UasDatalinkTag.SarMotionImageryMetadata,
+                new NestedSARMILocalSet(makeSARMILocalSetValidExtra()));
+        UasDatalinkMessage message = new UasDatalinkMessage(values);
+        ValidationResults results = SARMIValidator.validateSARImageryMetadata(message);
+        assertTrue(results.isConformant());
+        List<ValidationResult> failures = results.getNonConformances();
+        assertEquals(failures.size(), 0);
     }
 
     @Test
@@ -98,7 +137,7 @@ public class SARMIValidatorTest {
     }
 
     @Test
-    public void checkInvalidLocalSetSensorMissing0601() {
+    public void checkInvalidLocalSetMissing0601() {
         SortedMap<UasDatalinkTag, IUasDatalinkValue> values = makeBaseST0601Values();
         values.remove(UasDatalinkTag.CornerLatPt1);
         values.put(UasDatalinkTag.SensorEllipsoidHeight, new SensorEllipsoidHeight(10000.0));
@@ -114,7 +153,50 @@ public class SARMIValidatorTest {
     }
 
     @Test
-    public void checkInvalidLocalSetSensorMissing0102() {
+    public void checkInvalidLocalSetWrongType0601() {
+        SortedMap<UasDatalinkTag, IUasDatalinkValue> values = makeBaseST0601Values();
+        values.remove(UasDatalinkTag.CornerLatPt1);
+        values.put(UasDatalinkTag.CornerLatPt1, new SlantRange(30.3));
+        values.put(UasDatalinkTag.SensorEllipsoidHeight, new SensorEllipsoidHeight(10000.0));
+        values.put(
+                UasDatalinkTag.SecurityLocalMetadataSet,
+                new NestedSecurityMetadata(makeSecurityLocalSetValid()));
+        values.put(
+                UasDatalinkTag.SarMotionImageryMetadata,
+                new NestedSARMILocalSet(makeSARMILocalSetValid()));
+        UasDatalinkMessage message = new UasDatalinkMessage(values);
+        ValidationResults results = SARMIValidator.validateSARImageryMetadata(message);
+        assertFalse(results.isConformant());
+    }
+
+    @Test
+    public void checkInvalidLocalSetNullSecurity() {
+        SortedMap<UasDatalinkTag, IUasDatalinkValue> values = makeBaseST0601Values();
+        values.put(UasDatalinkTag.SensorEllipsoidHeight, new SensorEllipsoidHeight(10000.0));
+        values.put(UasDatalinkTag.SecurityLocalMetadataSet, null);
+        values.put(
+                UasDatalinkTag.SarMotionImageryMetadata,
+                new NestedSARMILocalSet(makeSARMILocalSetValid()));
+        UasDatalinkMessage message = new UasDatalinkMessage(values);
+        ValidationResults results = SARMIValidator.validateSARImageryMetadata(message);
+        assertFalse(results.isConformant());
+    }
+
+    @Test
+    public void checkInvalidLocalSetNullSARMI() {
+        SortedMap<UasDatalinkTag, IUasDatalinkValue> values = makeBaseST0601Values();
+        values.put(UasDatalinkTag.SensorEllipsoidHeight, new SensorEllipsoidHeight(10000.0));
+        values.put(
+                UasDatalinkTag.SecurityLocalMetadataSet,
+                new NestedSecurityMetadata(makeSecurityLocalSetValid()));
+        values.put(UasDatalinkTag.SarMotionImageryMetadata, null);
+        UasDatalinkMessage message = new UasDatalinkMessage(values);
+        ValidationResults results = SARMIValidator.validateSARImageryMetadata(message);
+        assertFalse(results.isConformant());
+    }
+
+    @Test
+    public void checkInvalidLocalSetMissing0102() {
         SortedMap<UasDatalinkTag, IUasDatalinkValue> values = makeBaseST0601Values();
         values.put(UasDatalinkTag.SensorEllipsoidHeight, new SensorEllipsoidHeight(10000.0));
         final NestedSecurityMetadata nestedSecurityMetadata =
@@ -129,7 +211,22 @@ public class SARMIValidatorTest {
     }
 
     @Test
-    public void checkInvalidLocalSetSensorMissing1206() {
+    public void checkInvalidLocalSetWrongType0102() {
+        SortedMap<UasDatalinkTag, IUasDatalinkValue> values = makeBaseST0601Values();
+        values.put(UasDatalinkTag.SensorEllipsoidHeight, new SensorEllipsoidHeight(10000.0));
+        final NestedSecurityMetadata nestedSecurityMetadata =
+                new NestedSecurityMetadata(makeSecurityLocalSetWrongType());
+        values.put(UasDatalinkTag.SecurityLocalMetadataSet, nestedSecurityMetadata);
+        values.put(
+                UasDatalinkTag.SarMotionImageryMetadata,
+                new NestedSARMILocalSet(makeSARMILocalSetValid()));
+        UasDatalinkMessage message = new UasDatalinkMessage(values);
+        ValidationResults results = SARMIValidator.validateSARImageryMetadata(message);
+        assertFalse(results.isConformant());
+    }
+
+    @Test
+    public void checkInvalidLocalSetMissing1206() {
         SortedMap<UasDatalinkTag, IUasDatalinkValue> values = makeBaseST0601Values();
         values.put(UasDatalinkTag.SensorEllipsoidHeight, new SensorEllipsoidHeight(10000.0));
         final NestedSecurityMetadata nestedSecurityMetadata =
@@ -137,6 +234,21 @@ public class SARMIValidatorTest {
         values.put(UasDatalinkTag.SecurityLocalMetadataSet, nestedSecurityMetadata);
         final NestedSARMILocalSet nestedSARMILocalSet =
                 new NestedSARMILocalSet(makeSARMILocalSetInvalid());
+        values.put(UasDatalinkTag.SarMotionImageryMetadata, nestedSARMILocalSet);
+        UasDatalinkMessage message = new UasDatalinkMessage(values);
+        ValidationResults results = SARMIValidator.validateSARImageryMetadata(message);
+        assertFalse(results.isConformant());
+    }
+
+    @Test
+    public void checkInvalidLocalSetWrongType1206() {
+        SortedMap<UasDatalinkTag, IUasDatalinkValue> values = makeBaseST0601Values();
+        values.put(UasDatalinkTag.SensorEllipsoidHeight, new SensorEllipsoidHeight(10000.0));
+        final NestedSecurityMetadata nestedSecurityMetadata =
+                new NestedSecurityMetadata(makeSecurityLocalSetValid());
+        values.put(UasDatalinkTag.SecurityLocalMetadataSet, nestedSecurityMetadata);
+        final NestedSARMILocalSet nestedSARMILocalSet =
+                new NestedSARMILocalSet(makeSARMILocalSetWrongType());
         values.put(UasDatalinkTag.SarMotionImageryMetadata, nestedSARMILocalSet);
         UasDatalinkMessage message = new UasDatalinkMessage(values);
         ValidationResults results = SARMIValidator.validateSARImageryMetadata(message);
@@ -307,10 +419,28 @@ public class SARMIValidatorTest {
         return new SecurityMetadataLocalSet(values);
     }
 
+    private SecurityMetadataLocalSet makeSecurityLocalSetValidExtra() {
+        SortedMap<SecurityMetadataKey, ISecurityMetadataValue> values =
+                makeSecurityLocalSetValues();
+        values.put(
+                SecurityMetadataKey.CcCodingMethodVersionDate,
+                new CcmDate(LocalDate.of(2020, 10, 16)));
+        return new SecurityMetadataLocalSet(values);
+    }
+
     private SecurityMetadataLocalSet makeSecurityLocalSetInvalid() {
         SortedMap<SecurityMetadataKey, ISecurityMetadataValue> values =
                 makeSecurityLocalSetValues();
         values.remove(SecurityMetadataKey.Version);
+        return new SecurityMetadataLocalSet(values);
+    }
+
+    private SecurityMetadataLocalSet makeSecurityLocalSetWrongType() {
+        SortedMap<SecurityMetadataKey, ISecurityMetadataValue> values =
+                makeSecurityLocalSetValues();
+        values.remove(SecurityMetadataKey.Version);
+        values.put(
+                SecurityMetadataKey.Version, new CcMethod(CountryCodingMethod.GENC_THREE_LETTER));
         return new SecurityMetadataLocalSet(values);
     }
 
@@ -338,9 +468,22 @@ public class SARMIValidatorTest {
         return new SARMILocalSet(values);
     }
 
+    private SARMILocalSet makeSARMILocalSetValidExtra() {
+        SortedMap<SARMIMetadataKey, ISARMIMetadataValue> values = makeSARMILocalSetValues();
+        values.put(SARMIMetadataKey.ApertureDuration, new ApertureDuration(1000L));
+        return new SARMILocalSet(values);
+    }
+
     private SARMILocalSet makeSARMILocalSetInvalid() {
         SortedMap<SARMIMetadataKey, ISARMIMetadataValue> values = makeSARMILocalSetValues();
         values.remove(SARMIMetadataKey.DocumentVersion);
+        return new SARMILocalSet(values);
+    }
+
+    private SARMILocalSet makeSARMILocalSetWrongType() {
+        SortedMap<SARMIMetadataKey, ISARMIMetadataValue> values = makeSARMILocalSetValues();
+        values.remove(SARMIMetadataKey.DocumentVersion);
+        values.remove(SARMIMetadataKey.DocumentVersion, new LookDirection((byte) 1));
         return new SARMILocalSet(values);
     }
 
