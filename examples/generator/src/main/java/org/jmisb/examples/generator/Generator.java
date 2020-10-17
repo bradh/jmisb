@@ -245,7 +245,7 @@ public class Generator {
                         values.put(
                                 UasDatalinkTag.CountryCodes,
                                 new CountryCodes(
-                                        CountryCodingMethod.ISO3166_THREE_LETTER,
+                                        CountryCodingMethod.GENC_THREE_LETTER,
                                         "AUS",
                                         "CAN",
                                         "NZL"));
@@ -281,7 +281,7 @@ public class Generator {
 
         values.put(
                 SecurityMetadataKey.CcCodingMethod,
-                new CcMethod(CountryCodingMethod.ISO3166_TWO_LETTER));
+                new CcMethod(CountryCodingMethod.GENC_TWO_LETTER));
         values.put(
                 SecurityMetadataKey.ClassifyingCountry,
                 new SecurityMetadataString(SecurityMetadataString.CLASSIFYING_COUNTRY, "//AU"));
@@ -294,7 +294,7 @@ public class Generator {
         } else {
             values.put(
                     SecurityMetadataKey.OcCodingMethod,
-                    new OcMethod(CountryCodingMethod.ISO3166_TWO_LETTER));
+                    new OcMethod(CountryCodingMethod.GENC_TWO_LETTER));
             values.put(
                     SecurityMetadataKey.ObjectCountryCodes, new ObjectCountryCodeString("AU;NZ"));
         }
@@ -426,10 +426,10 @@ public class Generator {
 
     private PayloadList getPayloadList() {
         List<Payload> payloads = new ArrayList<>();
-        Payload payload6 = new Payload(6, 0, "Box Brownie");
-        payloads.add(payload6);
-        Payload payload8 = new Payload(8, 4, "HF SAR");
-        payloads.add(payload8);
+        Payload payload0 = new Payload(0, 0, "Box Brownie");
+        payloads.add(payload0);
+        Payload payload1 = new Payload(1, 4, "HF SAR");
+        payloads.add(payload1);
         PayloadList payloadList = new PayloadList(payloads);
         return payloadList;
     }
