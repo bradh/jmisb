@@ -75,7 +75,7 @@ public class SARMILocalSet implements IMisbMessage {
             case TransmitRFBandwidth:
                 return new TransmitRFBandwidth(bytes);
             case RadarCrossSectionScaleFactorPolynomial:
-                break;
+                return new RadarCrossSectionScaleFactorPolynomial(bytes);
             case ReferenceFramePrecisionTimeStamp:
                 return new ReferenceFramePrecisionTimeStamp(bytes);
             case ReferenceFrameGrazingAngle:
