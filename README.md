@@ -191,4 +191,4 @@ production environment.
 
 ## Examples
 
-We provide samples (of variable level of complexity and completeness). See [examples/README.md](examples/README.md) for more information.
+We provide samples of variable level of complexity and completeness. See [examples/README.md](examples/README.md) for more information.
