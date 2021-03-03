@@ -1,0 +1,302 @@
+package org.jmisb.examples.mimdgenerator;
+
+import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.SortedMap;
+import java.util.TreeMap;
+import java.util.UUID;
+import javax.imageio.ImageIO;
+import org.jmisb.api.klv.st1204.CoreIdentifier;
+import org.jmisb.api.klv.st1903.List_Security;
+import org.jmisb.api.klv.st1903.List_SecurityIdentifier;
+import org.jmisb.api.klv.st1903.List_Timer;
+import org.jmisb.api.klv.st1903.List_TimerIdentifier;
+import org.jmisb.api.klv.st1903.MIMD;
+import org.jmisb.api.klv.st1903.MIMDMetadataKey;
+import org.jmisb.api.klv.st1903.MIMD_Version;
+import org.jmisb.api.klv.st1903.Security;
+import org.jmisb.api.klv.st1903.SecurityMetadataKey;
+import org.jmisb.api.klv.st1903.Security_Classification;
+import org.jmisb.api.klv.st1903.Security_ClassifyingMethod;
+import org.jmisb.api.klv.st1903.TimeTransferMethod;
+import org.jmisb.api.klv.st1903.Timer;
+import org.jmisb.api.klv.st1903.TimerMetadataKey;
+import org.jmisb.api.klv.st1903.Timer_NanoPrecisionTimestamp;
+import org.jmisb.api.klv.st1903.Timer_UtcLeapSeconds;
+import org.jmisb.api.klv.st1905.List_Platform;
+import org.jmisb.api.klv.st1905.List_PlatformIdentifier;
+import org.jmisb.api.klv.st1905.Platform;
+import org.jmisb.api.klv.st1905.PlatformMetadataKey;
+import org.jmisb.api.klv.st1905.PlatformType;
+import org.jmisb.api.klv.st1905.Platform_Identity;
+import org.jmisb.api.klv.st1905.Platform_Name;
+import org.jmisb.api.klv.st1906.AbsEnu;
+import org.jmisb.api.klv.st1906.AbsEnuMetadataKey;
+import org.jmisb.api.klv.st1906.AbsEnu_RotAboutEast;
+import org.jmisb.api.klv.st1906.AbsEnu_RotAboutNorth;
+import org.jmisb.api.klv.st1906.AbsEnu_RotAboutUp;
+import org.jmisb.api.klv.st1906.AbsGeodetic;
+import org.jmisb.api.klv.st1906.AbsGeodeticMetadataKey;
+import org.jmisb.api.klv.st1906.AbsGeodetic_Hae;
+import org.jmisb.api.klv.st1906.AbsGeodetic_Lat;
+import org.jmisb.api.klv.st1906.AbsGeodetic_Lon;
+import org.jmisb.api.klv.st1906.List_Stage;
+import org.jmisb.api.klv.st1906.List_StageIdentifier;
+import org.jmisb.api.klv.st1906.Orientation;
+import org.jmisb.api.klv.st1906.OrientationMetadataKey;
+import org.jmisb.api.klv.st1906.Position;
+import org.jmisb.api.klv.st1906.PositionMetadataKey;
+import org.jmisb.api.klv.st1906.Position_Country;
+import org.jmisb.api.klv.st1906.Stage;
+import org.jmisb.api.klv.st1906.StageMetadataKey;
+import org.jmisb.api.klv.st1907.GeoIntelligenceSensor;
+import org.jmisb.api.klv.st1907.GeoIntelligenceSensorMetadataKey;
+import org.jmisb.api.klv.st1907.List_GeoIntelligenceSensor;
+import org.jmisb.api.klv.st1907.List_GeoIntelligenceSensorIdentifier;
+import org.jmisb.api.klv.st1907.List_Payload;
+import org.jmisb.api.klv.st1907.List_PayloadIdentifier;
+import org.jmisb.api.klv.st1907.Payload;
+import org.jmisb.api.klv.st1907.PayloadMetadataKey;
+import org.jmisb.api.klv.st1908.FieldOfView;
+import org.jmisb.api.klv.st1908.FieldOfViewMetadataKey;
+import org.jmisb.api.klv.st1908.FieldOfView_Horizontal;
+import org.jmisb.api.klv.st1908.FieldOfView_Vertical;
+import org.jmisb.api.klv.st1908.ImagerSystem;
+import org.jmisb.api.klv.st1908.ImagerSystemMetadataKey;
+import org.jmisb.api.klv.st1908.ImagerSystem_Name;
+import org.jmisb.api.klv.st190x.IMimdMetadataValue;
+import org.jmisb.api.klv.st190x.MimdId;
+import org.jmisb.api.video.IVideoFileOutput;
+import org.jmisb.api.video.MetadataFrame;
+import org.jmisb.api.video.VideoFileOutput;
+import org.jmisb.api.video.VideoFrame;
+import org.jmisb.api.video.VideoOutputOptions;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+public class Generator {
+
+    private final int width = 1280;
+    private final int height = 960;
+    private final int bitRate = 500_000;
+    private final int gopSize = 30;
+    private final double frameRate = 15.0;
+    private final double frameDuration = 1.0 / frameRate;
+    private final int duration = 90;
+    private final String filename = "mimd.mpeg";
+
+    private static final Logger LOG = LoggerFactory.getLogger(Generator.class);
+
+    public Generator() {}
+
+    public void generate() {
+
+        CoreIdentifier coreIdentifier = new CoreIdentifier();
+        coreIdentifier.setMinorUUID(UUID.randomUUID());
+        coreIdentifier.setVersion(1);
+
+        VideoOutputOptions options =
+                new VideoOutputOptions(width, height, bitRate, frameRate, gopSize, true);
+        try (IVideoFileOutput output = new VideoFileOutput(options)) {
+            output.open(filename);
+
+            // Write some frames
+            BufferedImage image = new BufferedImage(width, height, BufferedImage.TYPE_3BYTE_BGR);
+            try {
+                image = ImageIO.read(new File("test1280.jpg"));
+            } catch (IOException e) {
+                // TODO: log
+            }
+
+            final long numFrames = duration * Math.round(frameRate);
+            double pts = 1000.0 * System.currentTimeMillis(); // Close enough for this.
+            for (long i = 0; i < numFrames; ++i) {
+                SortedMap<MIMDMetadataKey, IMimdMetadataValue> values = new TreeMap<>();
+                values.put(MIMDMetadataKey.version, new MIMD_Version(1));
+                values.put(MIMDMetadataKey.timers, this.getTimers((long) pts * 1000));
+                values.put(MIMDMetadataKey.securityOptions, this.getSecurityOptions());
+                values.put(MIMDMetadataKey.security, new MimdId(0, 1));
+                values.put(MIMDMetadataKey.compositeProductSecurity, new MimdId(0, 1));
+                values.put(MIMDMetadataKey.compositeMotionImagerySecurity, new MimdId(0, 1));
+                values.put(MIMDMetadataKey.compositeMetadataSecurity, new MimdId(0, 1));
+                values.put(MIMDMetadataKey.platforms, this.getPlatforms());
+                MIMD message = new MIMD(values);
+                output.addVideoFrame(new VideoFrame(image, pts * 1.0e-6));
+                output.addMetadataFrame(new MetadataFrame(message, pts));
+                pts += frameDuration * 1.0e6;
+            }
+
+        } catch (IOException e) {
+            LOG.error("Failed to write file", e);
+        }
+    }
+
+    private List_Timer getTimers(long nanos) {
+        Map<List_TimerIdentifier, Timer> timerList = new HashMap<>();
+        timerList.put(new List_TimerIdentifier(0), this.getTimer(nanos));
+        List_Timer timers = new List_Timer(timerList);
+        return timers;
+    }
+
+    private Timer getTimer(long nanos) {
+        SortedMap<TimerMetadataKey, IMimdMetadataValue> values = new TreeMap<>();
+        values.put(
+                TimerMetadataKey.nanoPrecisionTimestamp, new Timer_NanoPrecisionTimestamp(nanos));
+        values.put(TimerMetadataKey.utcLeapSeconds, new Timer_UtcLeapSeconds(37));
+        values.put(TimerMetadataKey.timeTransferMethod, TimeTransferMethod.NTP_V3_3);
+        Timer timer = new Timer(values);
+        return timer;
+    }
+
+    private List_Security getSecurityOptions() {
+        Map<List_SecurityIdentifier, Security> securityList = new HashMap<>();
+        securityList.put(new List_SecurityIdentifier(0), this.getSecurityUnclas());
+        securityList.put(new List_SecurityIdentifier(1), this.getSecurityFOUO());
+        List_Security securityOptions = new List_Security(securityList);
+        return securityOptions;
+    }
+
+    private Security getSecurityUnclas() {
+        SortedMap<SecurityMetadataKey, IMimdMetadataValue> values = new TreeMap<>();
+        values.put(SecurityMetadataKey.mimdId, new MimdId(0, 1));
+        values.put(SecurityMetadataKey.classifyingMethod, new Security_ClassifyingMethod("US-1"));
+        values.put(
+                SecurityMetadataKey.classification,
+                new Security_Classification("UNCLASSIFIED//REL TO USA, AUS, CAN, GBR"));
+        Security security = new Security(values);
+        return security;
+    }
+
+    private Security getSecurityFOUO() {
+        SortedMap<SecurityMetadataKey, IMimdMetadataValue> values = new TreeMap<>();
+        values.put(SecurityMetadataKey.mimdId, new MimdId(1, 1));
+        values.put(SecurityMetadataKey.classifyingMethod, new Security_ClassifyingMethod("US-1"));
+        values.put(
+                SecurityMetadataKey.classification,
+                new Security_Classification(
+                        "UNCLASSIFIED//FOR OFFICIAL USE ONLY//REL TO USA, AUS, CAN, GBR"));
+        Security security = new Security(values);
+        return security;
+    }
+
+    private List_Platform getPlatforms() {
+        Map<List_PlatformIdentifier, Platform> platformList = new HashMap<>();
+        platformList.put(new List_PlatformIdentifier(0), this.getPlatform());
+        List_Platform platforms = new List_Platform(platformList);
+        return platforms;
+    }
+
+    private Platform getPlatform() {
+        SortedMap<PlatformMetadataKey, IMimdMetadataValue> values = new TreeMap<>();
+        values.put(PlatformMetadataKey.name, new Platform_Name("Test System"));
+        values.put(PlatformMetadataKey.identity, new Platform_Identity("jMISB Test 1"));
+        values.put(PlatformMetadataKey.type, PlatformType.Pole);
+        values.put(PlatformMetadataKey.stages, this.getStages());
+        values.put(PlatformMetadataKey.payloads, this.getPayloads());
+        Platform platform = new Platform(values);
+        return platform;
+    }
+
+    private List_Stage getStages() {
+        Map<List_StageIdentifier, Stage> stageList = new HashMap<>();
+        stageList.put(new List_StageIdentifier(0), this.getStage());
+        List_Stage stages = new List_Stage(stageList);
+        return stages;
+    }
+
+    private Stage getStage() {
+        SortedMap<StageMetadataKey, IMimdMetadataValue> values = new TreeMap<>();
+        values.put(StageMetadataKey.position, this.getPosition());
+        values.put(StageMetadataKey.orientation, this.getOrientation());
+        Stage stage = new Stage(values);
+        return stage;
+    }
+
+    private Position getPosition() {
+        SortedMap<PositionMetadataKey, IMimdMetadataValue> values = new TreeMap<>();
+        values.put(PositionMetadataKey.absGeodetic, this.getGeodeticPosition());
+        values.put(PositionMetadataKey.country, new Position_Country("ge:ISO1:3:VII-13"));
+        Position position = new Position(values);
+        return position;
+    }
+
+    private Orientation getOrientation() {
+        SortedMap<OrientationMetadataKey, IMimdMetadataValue> values = new TreeMap<>();
+        values.put(OrientationMetadataKey.absEnu, this.getAbsEnu());
+        Orientation orientation = new Orientation(values);
+        return orientation;
+    }
+
+    private AbsEnu getAbsEnu() {
+        SortedMap<AbsEnuMetadataKey, IMimdMetadataValue> values = new TreeMap<>();
+        values.put(AbsEnuMetadataKey.rotAboutEast, new AbsEnu_RotAboutEast(0.0));
+        values.put(AbsEnuMetadataKey.rotAboutNorth, new AbsEnu_RotAboutNorth(0.0));
+        values.put(AbsEnuMetadataKey.rotAboutUp, new AbsEnu_RotAboutUp(45.0 * Math.PI / 180.0));
+        AbsEnu absEnu = new AbsEnu(values);
+        return absEnu;
+    }
+
+    private AbsGeodetic getGeodeticPosition() {
+        SortedMap<AbsGeodeticMetadataKey, IMimdMetadataValue> values = new TreeMap<>();
+        values.put(AbsGeodeticMetadataKey.lat, new AbsGeodetic_Lat(-35.35349 * Math.PI / 180.0));
+        values.put(AbsGeodeticMetadataKey.lon, new AbsGeodetic_Lon(149.08932 * Math.PI / 180.0));
+        values.put(AbsGeodeticMetadataKey.hae, new AbsGeodetic_Hae(642.1));
+        AbsGeodetic geodeticPosition = new AbsGeodetic(values);
+        return geodeticPosition;
+    }
+
+    private List_Payload getPayloads() {
+        Map<List_PayloadIdentifier, Payload> payloadList = new HashMap<>();
+        payloadList.put(new List_PayloadIdentifier(0), this.getPayload());
+        List_Payload payloads = new List_Payload(payloadList);
+        return payloads;
+    }
+
+    private Payload getPayload() {
+        SortedMap<PayloadMetadataKey, IMimdMetadataValue> values = new TreeMap<>();
+        values.put(PayloadMetadataKey.geoIntelligenceSensors, getGeoIntelligenceSensors());
+        Payload payload = new Payload(values);
+        return payload;
+    }
+
+    private List_GeoIntelligenceSensor getGeoIntelligenceSensors() {
+        Map<List_GeoIntelligenceSensorIdentifier, GeoIntelligenceSensor> sensorList =
+                new HashMap<>();
+        sensorList.put(
+                new List_GeoIntelligenceSensorIdentifier(0), this.getGeoIntelligenceSensor());
+        List_GeoIntelligenceSensor sensors = new List_GeoIntelligenceSensor(sensorList);
+        return sensors;
+    }
+
+    private GeoIntelligenceSensor getGeoIntelligenceSensor() {
+        SortedMap<GeoIntelligenceSensorMetadataKey, IMimdMetadataValue> values = new TreeMap<>();
+        values.put(GeoIntelligenceSensorMetadataKey.imagerSystem, getImagerSystem());
+        GeoIntelligenceSensor sensor = new GeoIntelligenceSensor(values);
+        return sensor;
+    }
+
+    private ImagerSystem getImagerSystem() {
+        SortedMap<ImagerSystemMetadataKey, IMimdMetadataValue> values = new TreeMap<>();
+        values.put(ImagerSystemMetadataKey.name, new ImagerSystem_Name("EO Fixed"));
+        values.put(ImagerSystemMetadataKey.fieldOfView, getFieldOfView());
+        // TODO: implement
+        // values.put(ImagerSystemMetadataKey.miis, getMiis());
+        ImagerSystem imagerSystem = new ImagerSystem(values);
+        return imagerSystem;
+    }
+
+    private FieldOfView getFieldOfView() {
+        SortedMap<FieldOfViewMetadataKey, IMimdMetadataValue> values = new TreeMap<>();
+        values.put(
+                FieldOfViewMetadataKey.horizontal,
+                new FieldOfView_Horizontal(144.571298 * Math.PI / 180.0));
+        values.put(
+                FieldOfViewMetadataKey.vertical,
+                new FieldOfView_Vertical(152.643626 * Math.PI / 180.0));
+        FieldOfView fieldOfView = new FieldOfView(values);
+        return fieldOfView;
+    }
+}

@@ -32,6 +32,7 @@ public class MisbMessageFactory {
                 KlvConstants.SecurityMetadataLocalSetUl, new SecurityMetadataLocalSetFactory());
         registerHandler(KlvConstants.PredatorMetadataLocalSetUl, new PredatorUavMessageFactory());
         registerHandler(KlvConstants.VTrackLocalSetUl, new VTrackLocalSetFactory());
+        registerHandler(KlvConstants.MIMDLocalSetUl, new VTrackLocalSetFactory());
     }
 
     /**

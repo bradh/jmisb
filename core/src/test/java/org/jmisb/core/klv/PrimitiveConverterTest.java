@@ -1258,6 +1258,60 @@ public class PrimitiveConverterTest {
         Assert.assertEquals(d, 2.0);
     }
 
+    @Test
+    public void testToDouble64_offset_length_8() {
+        double d =
+                PrimitiveConverter.toFloat64(
+                        new byte[] {
+                            (byte) 0x01,
+                            (byte) 0x40,
+                            (byte) 0x00,
+                            (byte) 0x00,
+                            (byte) 0x00,
+                            (byte) 0x00,
+                            (byte) 0x00,
+                            (byte) 0x00,
+                            (byte) 0x00
+                        },
+                        1,
+                        8);
+        Assert.assertEquals(d, 2.0);
+    }
+
+    @Test
+    public void testToDouble64_offset_length_4() {
+        double d =
+                PrimitiveConverter.toFloat64(
+                        new byte[] {
+                            (byte) 0x01,
+                            (byte) 0x02,
+                            (byte) 0x40,
+                            (byte) 0x00,
+                            (byte) 0x00,
+                            (byte) 0x00
+                        },
+                        2,
+                        4);
+        Assert.assertEquals(d, 2.0f);
+    }
+
+    @Test(expectedExceptions = IllegalArgumentException.class)
+    public void testToDouble64_offset_len_badLength() {
+        PrimitiveConverter.toFloat64(
+                new byte[] {
+                    (byte) 0x01,
+                    (byte) 0x40,
+                    (byte) 0x00,
+                    (byte) 0x00,
+                    (byte) 0x00,
+                    (byte) 0x00,
+                    (byte) 0x00,
+                    (byte) 0x00
+                },
+                1,
+                5);
+    }
+
     @Test(expectedExceptions = IllegalArgumentException.class)
     public void testToDouble64_offset_badLength() {
         PrimitiveConverter.toFloat64(

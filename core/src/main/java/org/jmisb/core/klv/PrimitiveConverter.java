@@ -508,6 +508,25 @@ public class PrimitiveConverter {
     }
 
     /**
+     * Extract a double (8 byte floating point value) from a byte array.
+     *
+     * @param bytes The array
+     * @param offset the offset to start the extraction from
+     * @param len the number of bytes to convert (4 or 8)
+     * @return The double value
+     */
+    public static double toFloat64(byte[] bytes, int offset, int len) {
+        switch (len) {
+            case Float.BYTES:
+                return toFloat32(bytes, offset);
+            case Double.BYTES:
+                return toFloat64(bytes, offset);
+            default:
+                throw new IllegalArgumentException("Invalid buffer length");
+        }
+    }
+
+    /**
      * Convert a 64-bit floating point number to a byte array
      *
      * @param val The double value
