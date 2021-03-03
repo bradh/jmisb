@@ -6,9 +6,11 @@ import java.nio.charset.StandardCharsets;
 import org.jmisb.api.klv.st190x.IMimdMetadataValue;
 
 /**
- * ${name} MIMD String.
+ * MIMD {@link ${parentName}} ${name} attribute.
  *
- * See ${document} for more information on this data type.
+ * <p>This is a specialisation of a string, using UTF-8 encoding.
+ *
+ * <p>See ${document} for more information on this data type.
  */
 public class ${namespacedName} implements IMimdMetadataValue {
     private final String stringValue;

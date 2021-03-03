@@ -8,9 +8,11 @@ import org.jmisb.api.klv.st190x.IMimdMetadataValue;
 import org.jmisb.core.klv.PrimitiveConverter;
 
 /**
- * ${name} MIMD Signed Integer.
+ * MIMD {@link ${parentName}} ${name} attribute.
  *
- * See ${document} for more information on this data type.
+ * <p>This is a specialisation of a signed integer.
+ *
+ * <p>See ${document} for more information on this data type.
  */
 public class ${namespacedName} implements IMimdMetadataValue {
     private final long intValue;

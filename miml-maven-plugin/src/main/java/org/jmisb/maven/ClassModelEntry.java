@@ -40,6 +40,10 @@ public class ClassModelEntry {
         return name;
     }
 
+    public String getParentName() {
+        return parent.getName();
+    }
+
     public String getNamespacedName() {
         return parent.getName() + "_" + getNameSentenceCase();
     }
@@ -69,7 +73,7 @@ public class ClassModelEntry {
     }
 
     public String getQualifiedListTypeName() {
-        return parent.getTypePackage(typeName) + ".List_" + typeName;
+        return parent.getTypePackage(typeName) + ".ListOf" + typeName;
     }
 
     public void setTypeName(String typeName) {

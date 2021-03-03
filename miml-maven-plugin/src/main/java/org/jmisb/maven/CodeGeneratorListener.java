@@ -155,12 +155,12 @@ public class CodeGeneratorListener implements MIML_v3Listener {
 
     private void generateListFormOfClass(File targetDirectory, ClassModel classModel)
             throws TemplateException, IOException {
-        File outputFile = new File(targetDirectory, "List_" + classModel.getName() + ".java");
+        File outputFile = new File(targetDirectory, "ListOf" + classModel.getName() + ".java");
         Template temp = templateConfiguration.getTemplate("listClass.ftl");
         Writer out = new FileWriter(outputFile);
         temp.process(classModel, out);
 
-        outputFile = new File(targetDirectory, "List_" + classModel.getName() + "Identifier.java");
+        outputFile = new File(targetDirectory, classModel.getName() + "Identifier.java");
         temp = templateConfiguration.getTemplate("listItemIdentifier.ftl");
         out = new FileWriter(outputFile);
         temp.process(classModel, out);
@@ -273,8 +273,7 @@ public class CodeGeneratorListener implements MIML_v3Listener {
                         + templateFile
                         + " for "
                         + entry.getNameSentenceCase());
-        File outputFile =
-                new File(targetDirectory, "List_" + entry.getTypeName() + "IdentifierTest.java");
+        File outputFile = new File(targetDirectory, entry.getTypeName() + "IdentifierTest.java");
         processTemplate(templateFile, outputFile, entry);
     }
 

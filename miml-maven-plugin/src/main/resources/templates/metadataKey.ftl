@@ -7,7 +7,7 @@ import java.util.Map;
 import org.jmisb.api.klv.IKlvKey;
 
 /**
- * ${name} metadata keys.
+ * {@link ${name}} metadata keys.
  *
  * See ${document} for more information on these values.
  */

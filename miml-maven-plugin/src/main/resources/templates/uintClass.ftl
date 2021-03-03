@@ -8,9 +8,11 @@ import org.jmisb.api.klv.st190x.IMimdMetadataValue;
 import org.jmisb.core.klv.PrimitiveConverter;
 
 /**
- * ${name} MIMD Unsigned Integer.
+ * MIMD {@link ${parentName}} ${name} attribute.
  *
- * See ${document} for more information on this data type.
+ * <p>This is a specialisation of an unsigned integer.
+ *
+ * <p>See ${document} for more information on this data type.
  */
 public class ${namespacedName} implements IMimdMetadataValue {
     private final long uintValue;
@@ -19,9 +21,15 @@ public class ${namespacedName} implements IMimdMetadataValue {
      * Construct from value.
      *
 <#if minValue?? && maxValue??>
-     * The value must be in the range [${minValue}, ${maxValue}].
+     * <p>The value must be in the range [${minValue}, ${maxValue}].
+     *
 <#elseif minValue??>
-     * The value must be at least ${minValue}.
+     * <p>The value must be at least ${minValue}.
+     *
+</#if>
+<#if units?has_content>
+     * <p>The value is in units of ${units}.
+     * 
 </#if>
      * @param value the unsigned integer value to initialise this ${namespacedName} with.
      */

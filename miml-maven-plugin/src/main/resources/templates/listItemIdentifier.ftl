@@ -6,7 +6,7 @@ import java.util.Objects;
 import org.jmisb.api.klv.IKlvKey;
 
 /** Pseudo-key item for series identifier. */
-public class List_${name}Identifier implements IKlvKey, Comparable<List_${name}Identifier> {
+public class ${name}Identifier implements IKlvKey, Comparable<${name}Identifier> {
 
     private final Integer identifier;
 
@@ -15,7 +15,7 @@ public class List_${name}Identifier implements IKlvKey, Comparable<List_${name}I
      *
      * @param identifier the integer code for this ${name} identifier.
      */
-    public List_${name}Identifier(int identifier) {
+    public ${name}Identifier(int identifier) {
         this.identifier = identifier;
     }
 
@@ -40,12 +40,12 @@ public class List_${name}Identifier implements IKlvKey, Comparable<List_${name}I
         if (getClass() != obj.getClass()) {
             return false;
         }
-        final List_${name}Identifier other = (List_${name}Identifier) obj;
+        final ${name}Identifier other = (${name}Identifier) obj;
         return Objects.equals(this.identifier, other.identifier);
     }
 
     @Override
-    public int compareTo(List_${name}Identifier o) {
+    public int compareTo(${name}Identifier o) {
         return identifier.compareTo(o.identifier);
     }
 

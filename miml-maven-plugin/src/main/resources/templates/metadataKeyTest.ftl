@@ -6,7 +6,7 @@ import static org.testng.Assert.*;
 
 import org.testng.annotations.Test;
 
-/** Unit tests for ${name}MetadataKey. */
+/** Unit tests for {@link ${name}MetadataKey}. */
 public class ${name}MetadataKeyTest {
 
     @Test

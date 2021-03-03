@@ -13,9 +13,11 @@ import org.jmisb.core.klv.PrimitiveConverter;
 </#if>
 
 /**
- * ${name} MIMD Floating Point value.
+ * MIMD {@link ${parentName}} ${name} attribute.
  *
- * See ${document} for more information on this data type.
+ * <p>This is a specialisation of a floating point value.
+ *
+ * <p>See ${document} for more information on this data type.
  */
 public class ${namespacedName} implements IMimdMetadataValue {
     private final double doubleValue;
@@ -24,11 +26,15 @@ public class ${namespacedName} implements IMimdMetadataValue {
      * Construct from value.
      *
 <#if maxValue??>
-     * The value must be in the range [${minValue}, ${maxValue}].
+     * <p>The value must be in the range [${minValue}, ${maxValue}].
      *
 <#elseif minValue??>
-     * The minimum value is ${minValue}.
+     * <p>The minimum value is ${minValue}.
      *
+</#if>
+<#if units?has_content>
+     * <p>The value is in units of ${units}.
+     * 
 </#if>
      * @param value the floating point value to initialise this ${namespacedName} with.
      */
