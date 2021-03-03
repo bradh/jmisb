@@ -200,7 +200,7 @@ public class MimdParseTest {
         assertEquals(mimd.getField(MIMDMetadataKey.version).getDisplayName(), "Version");
         assertEquals(mimd.getField(MIMDMetadataKey.version).getDisplayableValue(), "1");
         assertTrue(mimd.getIdentifiers().contains(MIMDMetadataKey.timers));
-        assertEquals(mimd.getField(MIMDMetadataKey.timers).getDisplayName(), "LIST<Timer>");
+        assertEquals(mimd.getField(MIMDMetadataKey.timers).getDisplayName(), "Timers");
         assertEquals(mimd.getField(MIMDMetadataKey.timers).getDisplayableValue(), "LIST[Timer]");
         assertEquals(mimd.frameMessage(false), missionSupportProfileBytes);
     }

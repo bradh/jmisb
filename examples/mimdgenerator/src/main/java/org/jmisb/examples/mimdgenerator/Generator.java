@@ -137,7 +137,7 @@ public class Generator {
     private List_Timer getTimers(long nanos) {
         Map<List_TimerIdentifier, Timer> timerList = new HashMap<>();
         timerList.put(new List_TimerIdentifier(0), this.getTimer(nanos));
-        List_Timer timers = new List_Timer(timerList);
+        List_Timer timers = new List_Timer(timerList, "Timers");
         return timers;
     }
 
@@ -155,7 +155,7 @@ public class Generator {
         Map<List_SecurityIdentifier, Security> securityList = new HashMap<>();
         securityList.put(new List_SecurityIdentifier(0), this.getSecurityUnclas());
         securityList.put(new List_SecurityIdentifier(1), this.getSecurityFOUO());
-        List_Security securityOptions = new List_Security(securityList);
+        List_Security securityOptions = new List_Security(securityList, "SecurityOptions");
         return securityOptions;
     }
 
@@ -185,7 +185,7 @@ public class Generator {
     private List_Platform getPlatforms() {
         Map<List_PlatformIdentifier, Platform> platformList = new HashMap<>();
         platformList.put(new List_PlatformIdentifier(0), this.getPlatform());
-        List_Platform platforms = new List_Platform(platformList);
+        List_Platform platforms = new List_Platform(platformList, "Platforms");
         return platforms;
     }
 
@@ -203,7 +203,7 @@ public class Generator {
     private List_Stage getStages() {
         Map<List_StageIdentifier, Stage> stageList = new HashMap<>();
         stageList.put(new List_StageIdentifier(0), this.getStage());
-        List_Stage stages = new List_Stage(stageList);
+        List_Stage stages = new List_Stage(stageList, "Stages");
         return stages;
     }
 
@@ -251,7 +251,7 @@ public class Generator {
     private List_Payload getPayloads() {
         Map<List_PayloadIdentifier, Payload> payloadList = new HashMap<>();
         payloadList.put(new List_PayloadIdentifier(0), this.getPayload());
-        List_Payload payloads = new List_Payload(payloadList);
+        List_Payload payloads = new List_Payload(payloadList, "Payloads");
         return payloads;
     }
 
@@ -267,7 +267,8 @@ public class Generator {
                 new HashMap<>();
         sensorList.put(
                 new List_GeoIntelligenceSensorIdentifier(0), this.getGeoIntelligenceSensor());
-        List_GeoIntelligenceSensor sensors = new List_GeoIntelligenceSensor(sensorList);
+        List_GeoIntelligenceSensor sensors =
+                new List_GeoIntelligenceSensor(sensorList, "GeoIntelligenceSensors");
         return sensors;
     }
 

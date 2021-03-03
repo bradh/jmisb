@@ -25,8 +25,6 @@ public class CodeGeneratorListener implements MIML_v3Listener {
 
     private File generatedSourceDirectory;
     private File generatedTestDirectory;
-    // private final List<ClassModel> classModels = new ArrayList<>();
-    // private final List<String> enumerationModelNames = new ArrayList<>();
     private final Models models = new Models();
     private ClassModel currentClassModel = null;
     private ClassModelEntry currentClassModelEntry = null;

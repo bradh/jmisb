@@ -21,14 +21,17 @@ import org.jmisb.api.klv.st190x.IMimdMetadataValue;
  */
 public class List_${name} implements IMimdMetadataValue, INestedKlvValue {
     private final Map<List_${name}Identifier, ${name}> listValues = new HashMap<>();
+    private final String displayName;
 
     /**
      * Create a $LIST&lt;${name}&gt; from values.
      *
      * @param values the values to construct from
+     * @param displayName the display name (label) to use for this list.
      */
-    public List_${name}(Map<List_${name}Identifier, ${name}> values) {
+    public List_${name}(Map<List_${name}Identifier, ${name}> values, String displayName) {
         listValues.putAll(values);
+        this.displayName = displayName;
     }
 
     /**
@@ -37,9 +40,11 @@ public class List_${name} implements IMimdMetadataValue, INestedKlvValue {
      * @param data the bytes to build from
      * @param offset the offset into {@code bytes} to start parsing from
      * @param numBytes the number of bytes to parse
+     * @param displayName the display name (label) to use for this list.
      * @throws KlvParseException if parsing fails
      */
-    public List_${name}(byte[] data, int offset, int numBytes) throws KlvParseException {
+    public List_${name}(byte[] data, int offset, int numBytes, String displayName) throws KlvParseException {
+        this.displayName = displayName;
         int index = offset;
         int itemCount = 0;
         while (index < data.length - 1) {
@@ -58,16 +63,17 @@ public class List_${name} implements IMimdMetadataValue, INestedKlvValue {
      * Build a LIST&lt;${name}&gt; from encoded bytes.
      *
      * @param data the bytes to build from
+     * @param displayName the display name (label) to use for this list.
      * @return new LIST_${name} corresponding to the encoded byte array.
      * @throws KlvParseException if parsing fails
      */
-    public static List_${name} fromBytes(byte[] data) throws KlvParseException {
-        return new List_${name}(data, 0, data.length);
+    public static List_${name} fromBytes(byte[] data, String displayName) throws KlvParseException {
+        return new List_${name}(data, 0, data.length, displayName);
     }
 
     @Override
     public String getDisplayName() {
-        return "LIST<${name}>";
+        return displayName;
     }
 
     @Override
