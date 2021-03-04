@@ -8,7 +8,7 @@ public class Models {
 
     private final List<EnumerationModel> enumerationModels = new ArrayList<>();
     private final List<ClassModel> classModels = new ArrayList<>();
-    private final List<String> st190xClassNames =
+    private final List<String> st1902ClassNames =
             new ArrayList<String>() {
                 {
                     add("IMimdMetadataValue");
@@ -57,8 +57,8 @@ public class Models {
             }
         }
 
-        if (st190xClassNames.contains(typeName)) {
-            return "org.jmisb.api.klv.st190x";
+        if (st1902ClassNames.contains(typeName)) {
+            return "org.jmisb.api.klv.st1902";
         }
         return null;
     }

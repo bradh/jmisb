@@ -90,21 +90,17 @@ public class CodeGeneratorListener implements MIML_v3Listener {
             outputSourceDirectory.mkdirs();
             File outputTestDirectory = makeOutputTestDirectory(classModel);
             incorporateIncludes(classModel);
-            if (!classModel.isAbstract()) {
+            if (!classModel.getName().equals("Base")) {
                 generateMetadataKey(outputSourceDirectory, classModel);
-                generateLocalSet(outputSourceDirectory, classModel);
-                if (classModel.needListForm()) {
-                    generateListFormOfClass(outputSourceDirectory, classModel);
-                }
-            }
-            generateComponentClasses(outputSourceDirectory, classModel);
-            if (!classModel.isAbstract()) {
                 generateMetadataKeyTests(outputTestDirectory, classModel);
+                generateLocalSet(outputSourceDirectory, classModel);
                 generateLocalSetTests(outputTestDirectory, classModel);
                 if (classModel.needListForm()) {
+                    generateListFormOfClass(outputSourceDirectory, classModel);
                     generateListFormOfClassTests(outputTestDirectory, classModel);
                 }
             }
+            generateComponentClasses(outputSourceDirectory, classModel);
             generateComponentClassTests(outputTestDirectory, classModel);
         } catch (TemplateException | IOException ex) {
             log("Failed to generate classes for " + classModel.getName());
@@ -194,37 +190,42 @@ public class CodeGeneratorListener implements MIML_v3Listener {
     private void generateComponentClasses(File targetDirectory, ClassModel classModel)
             throws TemplateException, IOException {
         for (ClassModelEntry entry : classModel.getEntries()) {
-            if ((entry.getNumber() < 33) && (!classModel.isAbstract())) {
+            if (entry.getNumber() < 33) {
                 // We don't want to regenerate "Base" components in every namespace
                 continue;
             }
-            if (entry.getTypeName().equals("String")) {
-                processClassTemplate(targetDirectory, entry, "stringClass.ftl");
-            } else if (entry.getTypeName().equals("UInt")) {
-                processClassTemplate(targetDirectory, entry, "uintClass.ftl");
-            } else if (entry.getTypeName().equals("Integer")) {
-                processClassTemplate(targetDirectory, entry, "intClass.ftl");
-            } else if (entry.getTypeName().equals("Real")) {
-                processClassTemplate(targetDirectory, entry, "realClass.ftl");
-            } else if (entry.getTypeName().equals("Real[]")) {
-                processClassTemplate(targetDirectory, entry, "realArray1D.ftl");
-            } else if (entry.isList()) {
-                // Nothing - we've got this already
-            } else if (isEnumerationName(entry.getTypeName())) {
-                // Nothing - we've got this already
-            } else if (isClassName(entry.getTypeName())) {
-                // Nothing - we've got this already
-            } else if (entry.isRef()) {
-                // special case for this
-            } else if (entry.getName().equals("mimdId")) {
-                // Nothing - special case
-            } else {
-                log(
-                        "Need to implement component class for "
-                                + entry.getName()
-                                + " - "
-                                + entry.getTypeName());
-            }
+            processEntry(entry, targetDirectory);
+        }
+    }
+
+    private void processEntry(ClassModelEntry entry, File targetDirectory)
+            throws TemplateException, IOException {
+        if (entry.getTypeName().equals("String")) {
+            processClassTemplate(targetDirectory, entry, "stringClass.ftl");
+        } else if (entry.getTypeName().equals("UInt")) {
+            processClassTemplate(targetDirectory, entry, "uintClass.ftl");
+        } else if (entry.getTypeName().equals("Integer")) {
+            processClassTemplate(targetDirectory, entry, "intClass.ftl");
+        } else if (entry.getTypeName().equals("Real")) {
+            processClassTemplate(targetDirectory, entry, "realClass.ftl");
+        } else if (entry.getTypeName().equals("Real[]")) {
+            processClassTemplate(targetDirectory, entry, "realArray1D.ftl");
+        } else if (entry.isList()) {
+            // Nothing - we've got this already
+        } else if (isEnumerationName(entry.getTypeName())) {
+            // Nothing - we've got this already
+        } else if (isClassName(entry.getTypeName())) {
+            // Nothing - we've got this already
+        } else if (entry.isRef()) {
+            // special case for this
+        } else if (entry.getName().equals("mimdId")) {
+            // Nothing - special case
+        } else {
+            log(
+                    "Need to implement component class for "
+                            + entry.getName()
+                            + " - "
+                            + entry.getTypeName());
         }
     }
 
@@ -232,35 +233,40 @@ public class CodeGeneratorListener implements MIML_v3Listener {
             throws TemplateException, IOException {
         // String packagePart = classModel.getDirectoryPackagePart();
         for (ClassModelEntry entry : classModel.getEntries()) {
-            if ((entry.getNumber() < 33) && (!classModel.isAbstract())) {
+            if (entry.getNumber() < 33) {
                 // We don't want to regenerate "Base" component tests in every namespace
                 continue;
             }
-            if (entry.getTypeName().equals("String")) {
-                processClassTestTemplate(outputTestDirectory, entry, "stringClassTest.ftl");
-            } else if (entry.getTypeName().equals("UInt")) {
-                processClassTestTemplate(outputTestDirectory, entry, "uintClassTest.ftl");
-            } else if (entry.getTypeName().equals("Integer")) {
-                processClassTestTemplate(outputTestDirectory, entry, "intClassTest.ftl");
-            } else if (entry.getTypeName().equals("Real")) {
-                processClassTestTemplate(outputTestDirectory, entry, "realClassTest.ftl");
-            } else if (isEnumerationName(entry.getTypeName())) {
-                // Nothing - we've got this already
-            } else if (entry.isList()) {
-                // Nothing - we've got this already
-            } else if (isClassName(entry.getTypeName())) {
-                // Nothing - we've got this already
-            } else if (entry.isRef()) {
-                // special case for this
-            } else if (entry.getName().equals("mimdId")) {
-                // Nothing - special case, hand coded tests
-            } else {
-                log(
-                        "Need to implement component class test for "
-                                + entry.getName()
-                                + " - "
-                                + entry.getTypeName());
-            }
+            processEntryTest(entry, outputTestDirectory);
+        }
+    }
+
+    private void processEntryTest(ClassModelEntry entry, File outputTestDirectory)
+            throws TemplateException, IOException {
+        if (entry.getTypeName().equals("String")) {
+            processClassTestTemplate(outputTestDirectory, entry, "stringClassTest.ftl");
+        } else if (entry.getTypeName().equals("UInt")) {
+            processClassTestTemplate(outputTestDirectory, entry, "uintClassTest.ftl");
+        } else if (entry.getTypeName().equals("Integer")) {
+            processClassTestTemplate(outputTestDirectory, entry, "intClassTest.ftl");
+        } else if (entry.getTypeName().equals("Real")) {
+            processClassTestTemplate(outputTestDirectory, entry, "realClassTest.ftl");
+        } else if (isEnumerationName(entry.getTypeName())) {
+            // Nothing - we've got this already
+        } else if (entry.isList()) {
+            // Nothing - we've got this already
+        } else if (isClassName(entry.getTypeName())) {
+            // Nothing - we've got this already
+        } else if (entry.isRef()) {
+            // special case for this
+        } else if (entry.getName().equals("mimdId")) {
+            // Nothing - special case, hand coded tests
+        } else {
+            log(
+                    "Need to implement component class test for "
+                            + entry.getName()
+                            + " - "
+                            + entry.getTypeName());
         }
     }
 
@@ -858,36 +864,11 @@ public class CodeGeneratorListener implements MIML_v3Listener {
         try {
             String packagePart = base.getDirectoryPackagePart();
             File outputSourceDirectory = new File(generatedSourceDirectory, packagePart);
+            File outputTestDirectory = makeOutputTestDirectory(base);
             outputSourceDirectory.mkdirs();
             for (ClassModelEntry entry : base.getEntries()) {
-                if (entry.getTypeName().equals("String")) {
-                    processClassTemplate(outputSourceDirectory, entry, "stringClass.ftl");
-                } else if (entry.getTypeName().equals("UInt")) {
-                    processClassTemplate(outputSourceDirectory, entry, "uintClass.ftl");
-                } else if (entry.getTypeName().equals("Integer")) {
-                    processClassTemplate(outputSourceDirectory, entry, "intClass.ftl");
-                } else if (entry.getTypeName().equals("Real")) {
-                    processClassTemplate(outputSourceDirectory, entry, "realClass.ftl");
-                } else if (entry.getTypeName().equals("Real[]")) {
-                    processClassTemplate(outputSourceDirectory, entry, "realArray1D.ftl");
-                } else if (entry.isList()) {
-                    // Nothing - we've got this already
-                } else if (isEnumerationName(entry.getTypeName())) {
-                    // Nothing - we've got this already
-                } else if (isClassName(entry.getTypeName())) {
-                    // Nothing - we've got this already
-                } else if (entry.isRef()) {
-                    // special case for this
-
-                } else if (entry.getName().equals("mimdId")) {
-                    // Nothing - special case
-                } else {
-                    log(
-                            "Need to implement component class for "
-                                    + entry.getName()
-                                    + " - "
-                                    + entry.getTypeName());
-                }
+                processEntry(entry, outputSourceDirectory);
+                processEntryTest(entry, outputTestDirectory);
             }
         } catch (TemplateException | IOException ex) {
             log("Failed to generate classes for " + base.getName());

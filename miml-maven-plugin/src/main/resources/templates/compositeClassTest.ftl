@@ -3,22 +3,18 @@
 // Template: ${.current_template_name}
 package ${packageName};
 
+import java.util.SortedMap;
 import java.util.TreeMap;
 import org.jmisb.api.common.KlvParseException;
 import org.jmisb.api.klv.LoggerChecks;
-import org.jmisb.api.klv.st190x.IMimdMetadataValue;
+import org.jmisb.api.klv.st1902.IMimdMetadataValue;
 <#list entries as entry>
     <#if entry.name == "mimdId">
-import org.jmisb.api.klv.st190x.MimdId;
+import org.jmisb.api.klv.st1902.MimdId;
     <#break>
     </#if>
 </#list>
-<#list entries as entry>
-    <#if entry.ref>
-import org.jmisb.api.klv.st190x.MimdIdReference;
-    <#break>
-    </#if>
-</#list>
+import org.jmisb.api.klv.st1902.MimdIdReference;
 import static org.testng.Assert.*;
 
 import org.testng.annotations.Test;
@@ -88,8 +84,7 @@ public class ${name}Test extends LoggerChecks {
         assertEquals(uut.getBytes().length, 0);
     }
 
-    <#if (inherits??)>
-        <#if !(extends??)>
+    <#if includes??>
     @Test
     public void parseFromBytesMimdId() throws KlvParseException {
         verifyNoLoggerMessages();
@@ -101,7 +96,16 @@ public class ${name}Test extends LoggerChecks {
         assertNotNull(uut.getField(${name}MetadataKey.mimdId));
     }
 
-        </#if>
+    public void parseFromBytesMimdIdNoOffset() throws KlvParseException {
+        verifyNoLoggerMessages();
+        ${name} uut = ${name}.fromBytes(new byte[]{0x01, 0x02, 0x04, 0x03});
+        verifyNoLoggerMessages();
+        assertEquals(uut.getBytes(), new byte[]{0x01, 0x02, 0x04, 0x03});
+        assertNotNull(uut.getIdentifiers());
+        assertEquals(uut.getIdentifiers().size(), 1);
+        assertNotNull(uut.getField(${name}MetadataKey.mimdId));
+    }
+
     @Test(expectedExceptions = KlvParseException.class)
     public void parseFromBytesBadValue() throws KlvParseException {
         new ${name}(new byte[]{0x01, 0x01, (byte)0x81}, 0, 3);
@@ -113,6 +117,18 @@ public class ${name}Test extends LoggerChecks {
         IMimdMetadataValue uut = new ${name}(new byte[]{0x7F, 0x01, 0x00, 0x01, 0x02, 0x04, 0x03}, 0, 7);
         verifySingleLoggerMessage("Unknown MIMD ${name} Metadata tag: 127");
         assertEquals(uut.getBytes(), new byte[]{0x01, 0x02, 0x04, 0x03});
+    }
+    @Test
+    public void parseFromBytesBadTagNoOffset() throws KlvParseException {
+        verifyNoLoggerMessages();
+        IMimdMetadataValue uut = ${name}.fromBytes(new byte[]{0x7F, 0x01, 0x00, 0x01, 0x02, 0x04, 0x03});
+        verifySingleLoggerMessage("Unknown MIMD ${name} Metadata tag: 127");
+        assertEquals(uut.getBytes(), new byte[]{0x01, 0x02, 0x04, 0x03});
+    }
+
+    @Test(expectedExceptions = KlvParseException.class)
+    public void parseFromBytesBadValueNoOffset() throws KlvParseException {
+        ${name}.fromBytes(new byte[]{0x01, 0x01, (byte)0x81});
     }
     </#if>
 </#if>
@@ -180,5 +196,65 @@ public class ${name}Test extends LoggerChecks {
         assertTrue(uut instanceof ${entry.qualifiedTypeName});
     </#if>
     }
+
 </#list>
+    @Test
+    public void testBuildRef() throws KlvParseException {
+        SortedMap<${name}MetadataKey, IMimdMetadataValue> values = new TreeMap<>();
+<#list entries as entry>
+    <#if entry.ref>
+        // Ref
+        IMimdMetadataValue refValue${entry?index} = ${name}.createValue(${name}MetadataKey.${entry.name}, new byte[]{(byte) 0x00});
+        values.put(${name}MetadataKey.${entry.name}, refValue${entry?index});
+    </#if>
+</#list>
+        ${name} uut = new ${name}(values);
+        assertEquals(uut.getIdentifiers().size(), values.keySet().size());
+        if (uut.getIdentifiers().size() > 0) {
+            uut.getIdentifiers().stream().forEach(id -> {
+                assertNotNull(uut.getField(id));
+                assertTrue(uut.getField(id) instanceof MimdIdReference);
+            });
+            byte[] bytes = uut.getBytes();
+            assertTrue(bytes.length >= 3);
+<#if topLevel>
+            ${name} parseResult = new ${name}(bytes);
+<#else>
+            ${name} parseResult = ${name}.fromBytes(bytes);
+</#if>
+            assertEquals(parseResult.getIdentifiers().size(), values.keySet().size());
+        }
+    }
+
+    @Test
+    public void testBuildReal() throws KlvParseException {
+        SortedMap<${name}MetadataKey, IMimdMetadataValue> values = new TreeMap<>();
+<#list entries as entry>
+    <#if entry.typeName == "Real">
+        IMimdMetadataValue refValue${entry?index} = ${name}.createValue(
+            ${name}MetadataKey.${entry.name},
+            new byte[]{
+                (byte) 0x00,
+                (byte) 0x00,
+                (byte) 0x01,
+                (byte) 0x00});
+        values.put(${name}MetadataKey.${entry.name}, refValue${entry?index});
+    </#if>
+</#list>
+        ${name} uut = new ${name}(values);
+        assertEquals(uut.getIdentifiers().size(), values.keySet().size());
+        if (uut.getIdentifiers().size() > 0) {
+            uut.getIdentifiers().stream().forEach(id -> {
+                assertNotNull(uut.getField(id));
+            });
+            byte[] bytes = uut.getBytes();
+            assertTrue(bytes.length >= 3);
+<#if topLevel>
+            ${name} parseResult = new ${name}(bytes);
+<#else>
+            ${name} parseResult = ${name}.fromBytes(bytes);
+</#if>
+            assertEquals(parseResult.getIdentifiers().size(), values.keySet().size());
+        }
+    }    
 }

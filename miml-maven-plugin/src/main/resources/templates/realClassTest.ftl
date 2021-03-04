@@ -37,6 +37,18 @@ public class ${namespacedName}Test {
         assertEquals(uut.getDisplayableValue(), "${minValue?string["0.000"]} ${units}");
     }
 
+    @Test
+    public void constructorOffset() throws KlvParseException {
+        ${namespacedName} uut = new ${namespacedName}(new byte[] {
+                    (byte) 0x7F,
+                    (byte) 0x00,
+                    (byte) 0x00,
+                    (byte) 0x00},
+                    1,
+                    3);
+        assertEquals(uut.getDisplayableValue(), "${minValue?string["0.000"]} ${units}");
+    }
+
     @Test(expectedExceptions = KlvParseException.class)
     public void fromBytesBad() throws KlvParseException {
         ${namespacedName}.fromBytes(new byte[] {
@@ -50,6 +62,23 @@ public class ${namespacedName}Test {
                     (byte) 0x08,
                     (byte) 0x09});
     }
+
+    @Test(expectedExceptions = KlvParseException.class)
+    public void ConstructorOffsetLengthBad() throws KlvParseException {
+        new ${namespacedName}(new byte[] {
+                    (byte) 0x01,
+                    (byte) 0x02,
+                    (byte) 0x03,
+                    (byte) 0x04,
+                    (byte) 0x05,
+                    (byte) 0x06,
+                    (byte) 0x07,
+                    (byte) 0x08,
+                    (byte) 0x09},
+                    0,
+                    9);
+    }
+
 <#else>
     @Test
     public void fromBytes8() throws KlvParseException {

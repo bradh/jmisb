@@ -55,7 +55,6 @@ public class ModelsTest {
         ClassModel class3 = makeClassModel("Class3", "ST1903", "mimd.tests");
         uut.addClassModel(class3);
         ClassModel class4 = makeClassModel("Class4", "ST1904", "mimd.tests");
-        class4.setAbstract(true);
         uut.addClassModel(class4);
         assertEquals(uut.getClassModels().size(), 4);
         assertEquals(class3.getPackageName(), "mimd.tests.st1903");

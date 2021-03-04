@@ -1,4 +1,4 @@
-package org.jmisb.api.klv.st190x;
+package org.jmisb.api.klv.st1902;
 
 import org.jmisb.api.common.KlvParseException;
 import org.jmisb.api.klv.IMisbMessageFactory;

@@ -12,7 +12,7 @@ import org.jmisb.api.klv.BerField;
 import org.jmisb.api.klv.IKlvKey;
 import org.jmisb.api.klv.IKlvValue;
 import org.jmisb.api.klv.INestedKlvValue;
-import org.jmisb.api.klv.st190x.IMimdMetadataValue;
+import org.jmisb.api.klv.st1902.IMimdMetadataValue;
 
 /**
  * MIMD LIST&lt;${name}&gt; implementation.

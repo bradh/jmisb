@@ -11,7 +11,6 @@ public class ClassModel extends AbstractModel {
     private final List<ClassModelEntry> entries = new ArrayList<>();
     private boolean topLevel = false;
     private boolean needListForm = false;
-    private boolean isAbstract;
     private Models parent;
 
     public String getIncludes() {
@@ -36,14 +35,6 @@ public class ClassModel extends AbstractModel {
 
     public void setTopLevel(boolean topLevel) {
         this.topLevel = topLevel;
-    }
-
-    public boolean isAbstract() {
-        return isAbstract;
-    }
-
-    public void setAbstract(boolean isAbstract) {
-        this.isAbstract = isAbstract;
     }
 
     public List<ClassModelEntry> getEntries() {

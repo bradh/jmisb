@@ -27,21 +27,21 @@ import org.jmisb.api.klv.UniversalLabel;
 <#else>
 import org.jmisb.api.klv.LdsParser;
 </#if>
-import org.jmisb.api.klv.st190x.IMimdMetadataValue;
+import org.jmisb.api.klv.st1902.IMimdMetadataValue;
 <#list entries as entry>
     <#if entry.name == "mimdId">
-import org.jmisb.api.klv.st190x.MimdId;
+import org.jmisb.api.klv.st1902.MimdId;
     <#break>
     </#if>
 </#list>
 <#list entries as entry>
     <#if entry.ref>
-import org.jmisb.api.klv.st190x.MimdIdReference;
+import org.jmisb.api.klv.st1902.MimdIdReference;
     <#break>
     </#if>
 </#list>
 <#if topLevel>
-import org.jmisb.api.klv.st190x.MimdParser;
+import org.jmisb.api.klv.st1902.MimdParser;
 </#if>
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -221,8 +221,8 @@ public class ${name} implements <#if topLevel>IMisbMessage, </#if>IMimdMetadataV
                 // primitive type
                 return ${entry.namespacedQualifiedName}.fromBytes(data);
 <#elseif entry.primitiveTypeArray>
-                // primitive type array
-                return null;
+                // TODO: primitive type array - this isn't even close
+                return ${entry.namespacedQualifiedName}.fromBytes(data);
 <#elseif entry.name == "mimdId">
                 return MimdId.fromBytes(data);
 <#else>

@@ -7,7 +7,7 @@ import org.jmisb.api.common.KlvParseException;
 <#if minValue?? && maxValue??>
 import org.jmisb.api.klv.st1201.FpEncoder;
 </#if>
-import org.jmisb.api.klv.st190x.IMimdMetadataValue;
+import org.jmisb.api.klv.st1902.IMimdMetadataValue;
 <#if !(minValue?? && maxValue??)>
 import org.jmisb.core.klv.PrimitiveConverter;
 </#if>

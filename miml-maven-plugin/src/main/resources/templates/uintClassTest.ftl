@@ -27,6 +27,12 @@ public class ${namespacedName}Test {
         assertEquals(uut.getDisplayableValue(), "${minValue} ${units}");
         </#if>
     }
+
+    @Test
+    public void testGetValue() {
+        ${namespacedName} uut = new ${namespacedName}(${minValue});
+        assertEquals(uut.getValue(), ${minValue?c});
+    }
 <#else>
     @Test
     public void displayName() {
@@ -53,6 +59,7 @@ public class ${namespacedName}Test {
         <#else>
         assertEquals(uut.getDisplayableValue(), "1 ${units}");
         </#if>
+        assertEquals(uut.getValue(), 1);
     }
 
     @Test
@@ -63,6 +70,7 @@ public class ${namespacedName}Test {
         <#else>
         assertEquals(uut.getDisplayableValue(), "1 ${units}");
         </#if>
+        assertEquals(uut.getValue(), 1);
     }
 
     @Test

@@ -4,7 +4,7 @@
 package ${packageName};
 
 import org.jmisb.api.common.KlvParseException;
-import org.jmisb.api.klv.st190x.IMimdMetadataValue;
+import org.jmisb.api.klv.st1902.IMimdMetadataValue;
 import org.jmisb.core.klv.PrimitiveConverter;
 
 /**

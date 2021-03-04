@@ -3,7 +3,7 @@
 package ${packageName};
 
 import java.nio.charset.StandardCharsets;
-import org.jmisb.api.klv.st190x.IMimdMetadataValue;
+import org.jmisb.api.klv.st1902.IMimdMetadataValue;
 
 /**
  * MIMD {@link ${parentName}} ${name} attribute.
