@@ -6,20 +6,20 @@ import static org.testng.Assert.*;
 
 import org.testng.annotations.Test;
 
-/** Unit tests for ${listItemType}Identifier. */
-public class ${listItemType}IdentifierTest {
+/** Unit tests for ${name}Identifier. */
+public class ${name}IdentifierTest {
 
     @Test
     public void constructFromInteger() {
-        ${listItemType}Identifier uut = new ${listItemType}Identifier(1);
+        ${name}Identifier uut = new ${name}Identifier(1);
         assertEquals(uut.getIdentifier(), 1);
-        assertEquals(uut.toString(), "${listItemType} 1");
+        assertEquals(uut.toString(), "List<${name}> item 1");
     }
 
     @Test
-    public void equals() {
-        ${listItemType}Identifier uut1 = new ${listItemType}Identifier(1);
-        ${listItemType}Identifier uut2 = new ${listItemType}Identifier(2);
+    public void testEquals() {
+        ${name}Identifier uut1 = new ${name}Identifier(1);
+        ${name}Identifier uut2 = new ${name}Identifier(2);
         assertFalse(uut1.equals(null));
         assertTrue(uut1.equals(uut1));
         assertFalse(uut1.equals("1"));
@@ -27,11 +27,18 @@ public class ${listItemType}IdentifierTest {
     }
 
     @Test
-    public void compareTo() {
-        ${listItemType}Identifier uut1 = new ${listItemType}Identifier(1);
-        ${listItemType}Identifier uut2 = new ${listItemType}Identifier(2);
+    public void testCompareTo() {
+        ${name}Identifier uut1 = new ${name}Identifier(1);
+        ${name}Identifier uut2 = new ${name}Identifier(2);
         assertEquals(uut1.compareTo(uut1), 0);
         assertTrue(uut1.compareTo(uut2) < 0);
         assertTrue(uut2.compareTo(uut1) > 0);
+    }
+
+    @Test
+    public void testHashCode() {
+        ${name}Identifier uut1 = new ${name}Identifier(1);
+        ${name}Identifier uut2 = new ${name}Identifier(2);
+        assertNotEquals(uut1.hashCode(), uut2.hashCode());
     }
 }

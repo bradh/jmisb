@@ -171,6 +171,19 @@ public class ${namespacedName}Test {
     }
 
     @Test (expectedExceptions = KlvParseException.class)
+    public void fromBytesBadLengthConstructorOffset() throws KlvParseException {
+        ${namespacedName} uut = new ${namespacedName}(new byte[] {
+                    (byte) 0x00,
+                    (byte) 0x00,
+                    (byte) 0x00,
+                    (byte) 0x00,
+                    (byte) 0x00,
+                    (byte) 0x00},
+                    1,
+                    5);
+    }
+
+    @Test (expectedExceptions = KlvParseException.class)
     public void fromBytesBadLength() throws KlvParseException {
         ${namespacedName} uut = ${namespacedName}.fromBytes(new byte[] {
                     (byte) 0x40,

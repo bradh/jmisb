@@ -60,7 +60,7 @@ public class ${namespacedName} implements IMimdMetadataValue {
 <#else>
      * @param bytes Encoded byte array (4 or 8 bytes)
 </#if>
-     * @throws KlvParseException if the array could not be parsed
+     * @throws KlvParseException if the byte array could not be parsed
      */
     public ${namespacedName}(byte[] bytes) throws KlvParseException {
         try {
@@ -76,12 +76,18 @@ public class ${namespacedName} implements IMimdMetadataValue {
     }
 
     /**
-     * Create ${namespacedName} from encoded bytes with offset.
+     * Create ${namespacedName} from encoded bytes.
+     *
+     * This version allows parsing of a specific number of bytes from a given offset.
      *
      * @param bytes Encoded byte array
      * @param offset the offset into the byte array to start decoding
+<#if minValue?? && maxValue??>
      * @param length the number of bytes to decode
-     * @throws KlvParseException if the array could not be parsed
+<#else>
+     * @param length the number of bytes to decode (4 or 8)
+</#if>
+     * @throws KlvParseException if the byte array could not be parsed
      */
     public ${namespacedName}(byte[] bytes, int offset, int length) throws KlvParseException {
         try {
@@ -100,8 +106,8 @@ public class ${namespacedName} implements IMimdMetadataValue {
      * Create ${namespacedName} from encoded bytes.
      *
      * @param bytes Encoded byte array
-     * @return new ${namespacedName} corresponding to the encoded byte array.
-     * @throws KlvParseException if the array could not be parsed
+     * @return A ${namespacedName} corresponding to the encoded byte array.
+     * @throws KlvParseException if the byte array could not be parsed
      */
     public static ${namespacedName} fromBytes(byte[] bytes) throws KlvParseException {
         return new ${namespacedName}(bytes);
@@ -118,7 +124,7 @@ public class ${namespacedName} implements IMimdMetadataValue {
     <#if resolution??>
         FpEncoder encoder = new FpEncoder(${minValue}, ${maxValue}, (double)${resolution});
     <#else>
-        FpEncoder encoder = new FpEncoder(${minValue}, ${maxValue}, 4);
+        FpEncoder encoder = new FpEncoder(${minValue}, ${maxValue}, Float.BYTES);
     </#if>
         return encoder.encode(doubleValue);
 <#else>
@@ -129,17 +135,21 @@ public class ${namespacedName} implements IMimdMetadataValue {
 
     @Override
     public String getDisplayableValue() {
-        <#if units?has_content>
+<#if units?has_content>
         return String.format("%.3f ${escapedUnits}", this.doubleValue);
-        <#else>
+<#else>
         return String.format("%.3f", this.doubleValue);
-        </#if>
+</#if>
     }
 
     /**
      * Get the value of this ${namespacedName}.
      *
-     * @return the value as a double
+<#if units?has_content>
+     * @return The value as a double, in units of ${units}.
+<#else>
+     * @return The value as a double.
+</#if>
      */
     public double getValue() {
         return this.doubleValue;

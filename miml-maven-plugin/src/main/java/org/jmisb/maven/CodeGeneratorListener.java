@@ -101,6 +101,9 @@ public class CodeGeneratorListener implements MIML_v3Listener {
             if (!classModel.isAbstract()) {
                 generateMetadataKeyTests(outputTestDirectory, classModel);
                 generateLocalSetTests(outputTestDirectory, classModel);
+                if (classModel.needListForm()) {
+                    generateListFormOfClassTests(outputTestDirectory, classModel);
+                }
             }
             generateComponentClassTests(outputTestDirectory, classModel);
         } catch (TemplateException | IOException ex) {
@@ -174,6 +177,20 @@ public class CodeGeneratorListener implements MIML_v3Listener {
         temp.process(classModel, out);
     }
 
+    private void generateListFormOfClassTests(File outputTestDirectory, ClassModel classModel)
+            throws TemplateException, IOException {
+        File outputFile =
+                new File(outputTestDirectory, "ListOf" + classModel.getName() + "Test.java");
+        Template temp = templateConfiguration.getTemplate("listClassTest.ftl");
+        Writer out = new FileWriter(outputFile);
+        temp.process(classModel, out);
+
+        outputFile = new File(outputTestDirectory, classModel.getName() + "IdentifierTest.java");
+        temp = templateConfiguration.getTemplate("listItemIdentifierTest.ftl");
+        out = new FileWriter(outputFile);
+        temp.process(classModel, out);
+    }
+
     private void generateComponentClasses(File targetDirectory, ClassModel classModel)
             throws TemplateException, IOException {
         for (ClassModelEntry entry : classModel.getEntries()) {
@@ -213,7 +230,7 @@ public class CodeGeneratorListener implements MIML_v3Listener {
 
     private void generateComponentClassTests(File outputTestDirectory, ClassModel classModel)
             throws TemplateException, IOException {
-        String packagePart = classModel.getDirectoryPackagePart();
+        // String packagePart = classModel.getDirectoryPackagePart();
         for (ClassModelEntry entry : classModel.getEntries()) {
             if ((entry.getNumber() < 33) && (!classModel.isAbstract())) {
                 // We don't want to regenerate "Base" component tests in every namespace
@@ -229,14 +246,12 @@ public class CodeGeneratorListener implements MIML_v3Listener {
                 processClassTestTemplate(outputTestDirectory, entry, "realClassTest.ftl");
             } else if (isEnumerationName(entry.getTypeName())) {
                 // Nothing - we've got this already
+            } else if (entry.isList()) {
+                // Nothing - we've got this already
             } else if (isClassName(entry.getTypeName())) {
                 // Nothing - we've got this already
             } else if (entry.isRef()) {
                 // special case for this
-            } else if (entry.isList()) {
-                processClassTestTemplate(outputTestDirectory, entry, "listClassTest.ftl");
-                processListItemIdentifierTestTemplate(
-                        outputTestDirectory, entry, "listItemIdentifierTest.ftl");
             } else if (entry.getName().equals("mimdId")) {
                 // Nothing - special case, hand coded tests
             } else {

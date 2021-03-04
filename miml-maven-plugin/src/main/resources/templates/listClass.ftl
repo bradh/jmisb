@@ -24,7 +24,7 @@ public class ListOf${name} implements IMimdMetadataValue, INestedKlvValue {
     private final String displayName;
 
     /**
-     * Create a $LIST&lt;${name}&gt; from values.
+     * Create a LIST&lt;${name}&gt; from values.
      *
      * @param values the values to construct from
      * @param displayName the display name (label) to use for this list.
@@ -35,7 +35,7 @@ public class ListOf${name} implements IMimdMetadataValue, INestedKlvValue {
     }
 
     /**
-     * Build a $LIST&lt;${name}&gt; from encoded bytes.
+     * Build a LIST&lt;${name}&gt; from encoded bytes.
      *
      * @param data the bytes to build from
      * @param offset the offset into {@code bytes} to start parsing from

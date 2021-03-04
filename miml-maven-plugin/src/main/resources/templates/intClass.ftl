@@ -21,7 +21,12 @@ public class ${namespacedName} implements IMimdMetadataValue {
      * Construct from value.
      *
 <#if minValue?? && maxValue??>
-     * The value must be in the range [${minValue}, ${maxValue}].
+     * <p>The value must be in the range [${minValue}, ${maxValue}].
+     *
+</#if>
+<#if units?has_content>
+     * <p>The value is in units of ${units}.
+     * 
 </#if>
      * @param value the signed integer value to initialise this ${namespacedName} with.
      */
@@ -43,7 +48,7 @@ public class ${namespacedName} implements IMimdMetadataValue {
      * Create ${namespacedName} from encoded bytes.
      *
      * @param bytes Encoded byte array
-     * @throws KlvParseException if the array could not be parsed
+     * @throws KlvParseException if the byte array could not be parsed
      */
     public ${namespacedName}(byte[] bytes) throws KlvParseException {
         try {
@@ -58,7 +63,7 @@ public class ${namespacedName} implements IMimdMetadataValue {
      *
      * @param bytes Encoded byte array
      * @return new ${namespacedName} corresponding to the encoded byte array.
-     * @throws KlvParseException if the array could not be parsed
+     * @throws KlvParseException if the byte array could not be parsed
      */
     public static ${namespacedName} fromBytes(byte[] bytes) throws KlvParseException {
         return new ${namespacedName}(bytes);
@@ -86,7 +91,11 @@ public class ${namespacedName} implements IMimdMetadataValue {
     /**
      * Get the value of this ${namespacedName}.
      *
-     * @return the value as a signed long
+<#if units?has_content>
+     * @return The value as an signed long, in units of ${units}.
+<#else>
+     * @return The value as an signed long.
+</#if>
      */
     public long getValue() {
         return this.intValue;

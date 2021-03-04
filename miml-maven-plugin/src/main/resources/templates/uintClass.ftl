@@ -54,8 +54,8 @@ public class ${namespacedName} implements IMimdMetadataValue {
     /**
      * Create ${namespacedName} from encoded bytes.
      *
-     * @param bytes Encoded byte array
-     * @throws KlvParseException if the array could not be parsed
+     * @param bytes Encoded byte array.
+     * @throws KlvParseException if the byte array could not be parsed.
      */
     public ${namespacedName}(byte[] bytes) throws KlvParseException {
         try {
@@ -68,9 +68,9 @@ public class ${namespacedName} implements IMimdMetadataValue {
     /**
      * Create ${namespacedName} from encoded bytes.
      *
-     * @param bytes Encoded byte array
+     * @param bytes Encoded byte array.
      * @return new ${namespacedName} corresponding to the encoded byte array.
-     * @throws KlvParseException if the array could not be parsed
+     * @throws KlvParseException if the byte array could not be parsed.
      */
     public static ${namespacedName} fromBytes(byte[] bytes) throws KlvParseException {
         return new ${namespacedName}(bytes);
@@ -98,7 +98,11 @@ public class ${namespacedName} implements IMimdMetadataValue {
     /**
      * Get the value of this ${namespacedName}.
      *
-     * @return the value as an unsigned long
+<#if units?has_content>
+     * @return The value as an unsigned long, in units of ${units}.
+<#else>
+     * @return The value as an unsigned long.
+</#if>
      */
     public long getValue() {
         return this.uintValue;
