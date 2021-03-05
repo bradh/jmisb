@@ -2,7 +2,7 @@
 // Template: ${.current_template_name}
 package ${packageName};
 
-import java.util.HashMap;
+import java.util.ArrayList;
 import org.jmisb.api.common.KlvParseException;
 import org.jmisb.api.klv.LoggerChecks;
 import static org.testng.Assert.*;
@@ -18,13 +18,13 @@ public class ListOf${name}Test extends LoggerChecks {
 
     @Test
     public void displayName() {
-        ListOf${name} uut = new ListOf${name}(new HashMap<>(), "testDisplayName");
+        ListOf${name} uut = new ListOf${name}(new ArrayList<>(), "testDisplayName");
         assertEquals(uut.getDisplayName(), "testDisplayName");
     }
 
     @Test
     public void displayableValue() {
-        ListOf${name} uut = new ListOf${name}(new HashMap<>(), "testDisplayName");
+        ListOf${name} uut = new ListOf${name}(new ArrayList<>(), "testDisplayName");
         assertEquals(uut.getDisplayableValue(), "LIST[${name}]");
     }
 

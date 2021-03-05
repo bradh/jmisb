@@ -3,6 +3,7 @@
 package ${packageName};
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import org.jmisb.api.common.KlvParseException;
@@ -29,8 +30,11 @@ public class ListOf${name} implements IMimdMetadataValue, INestedKlvValue {
      * @param values the values to construct from
      * @param displayName the display name (label) to use for this list.
      */
-    public ListOf${name}(Map<${name}Identifier, ${name}> values, String displayName) {
-        listValues.putAll(values);
+    public ListOf${name}(List<${name}> values, String displayName) {
+        for (int i = 0; i < values.size(); i++) {
+            ${name}Identifier identifier = new ${name}Identifier(i);
+            listValues.put(identifier, values.get(i));
+        }
         this.displayName = displayName;
     }
 

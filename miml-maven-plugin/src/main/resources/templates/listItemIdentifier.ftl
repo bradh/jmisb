@@ -6,7 +6,7 @@ import java.util.Objects;
 import org.jmisb.api.klv.IKlvKey;
 
 /** Pseudo-key item for series identifier. */
-public class ${name}Identifier implements IKlvKey, Comparable<${name}Identifier> {
+class ${name}Identifier implements IKlvKey, Comparable<${name}Identifier> {
 
     private final Integer identifier;
 
