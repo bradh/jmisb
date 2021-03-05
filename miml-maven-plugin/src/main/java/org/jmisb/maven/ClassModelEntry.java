@@ -165,6 +165,9 @@ public class ClassModelEntry {
     }
 
     public String getUnits() {
+        if (units.equalsIgnoreCase("None")) {
+            return null;
+        }
         return units;
     }
 

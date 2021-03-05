@@ -34,7 +34,11 @@ public class ${namespacedName}Test {
                     (byte) 0x00,
                     (byte) 0x00,
                     (byte) 0x00});
+    <#if units?has_content>
         assertEquals(uut.getDisplayableValue(), "${minValue?string["0.000"]} ${units}");
+    <#else>
+        assertEquals(uut.getDisplayableValue(), "${minValue?string["0.000"]}");
+    </#if>
     }
 
     @Test
@@ -46,7 +50,11 @@ public class ${namespacedName}Test {
                     (byte) 0x00},
                     1,
                     3);
+    <#if units?has_content>
         assertEquals(uut.getDisplayableValue(), "${minValue?string["0.000"]} ${units}");
+    <#else>
+        assertEquals(uut.getDisplayableValue(), "${minValue?string["0.000"]}");
+    </#if>
     }
 
     @Test(expectedExceptions = KlvParseException.class)

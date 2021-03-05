@@ -21,10 +21,10 @@ public class ${namespacedName}Test {
     @Test
     public void displayableValue() {
         ${namespacedName} uut = new ${namespacedName}(${minValue});
-        <#if (units == "None")>
-        assertEquals(uut.getDisplayableValue(), "${minValue}");
-        <#else>
+        <#if units?has_content>
         assertEquals(uut.getDisplayableValue(), "${minValue} ${units}");
+        <#else>
+        assertEquals(uut.getDisplayableValue(), "${minValue}");
         </#if>
     }
 
@@ -43,10 +43,10 @@ public class ${namespacedName}Test {
     @Test
     public void displayableValue() {
         ${namespacedName} uut = new ${namespacedName}(0);
-        <#if (units == "None")>
-        assertEquals(uut.getDisplayableValue(), "0");
-        <#else>
+        <#if units?has_content>
         assertEquals(uut.getDisplayableValue(), "0 ${units}");
+        <#else>
+        assertEquals(uut.getDisplayableValue(), "0");
         </#if>
     }
 </#if>
@@ -54,10 +54,10 @@ public class ${namespacedName}Test {
     @Test
     public void fromBytes1() throws KlvParseException {
         ${namespacedName} uut = ${namespacedName}.fromBytes(new byte[] {0x01});
-        <#if (units == "None")>
-        assertEquals(uut.getDisplayableValue(), "1");
-        <#else>
+        <#if units?has_content>
         assertEquals(uut.getDisplayableValue(), "1 ${units}");
+        <#else>
+        assertEquals(uut.getDisplayableValue(), "1");
         </#if>
         assertEquals(uut.getValue(), 1);
     }
@@ -65,10 +65,10 @@ public class ${namespacedName}Test {
     @Test
     public void fromBytesConstructor1() throws KlvParseException {
         ${namespacedName} uut = new ${namespacedName}(new byte[] {0x01});
-        <#if (units == "None")>
-        assertEquals(uut.getDisplayableValue(), "1");
-        <#else>
+        <#if units?has_content>
         assertEquals(uut.getDisplayableValue(), "1 ${units}");
+        <#else>
+        assertEquals(uut.getDisplayableValue(), "1");
         </#if>
         assertEquals(uut.getValue(), 1);
     }

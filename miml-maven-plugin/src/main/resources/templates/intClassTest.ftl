@@ -20,19 +20,31 @@ public class ${namespacedName}Test {
     @Test
     public void displayableValue() {
         ${namespacedName} uut = new ${namespacedName}(0);
+<#if units?has_content>
         assertEquals(uut.getDisplayableValue(), "0 ${units}");
+<#else>
+        assertEquals(uut.getDisplayableValue(), "0");
+</#if>
     }
 
     @Test
     public void fromBytes1() throws KlvParseException {
         ${namespacedName} uut = ${namespacedName}.fromBytes(new byte[] {0x01});
+<#if units?has_content>
         assertEquals(uut.getDisplayableValue(), "1 ${units}");
+<#else>
+        assertEquals(uut.getDisplayableValue(), "1");
+</#if>
     }
 
     @Test
     public void fromBytesConstructor1() throws KlvParseException {
         ${namespacedName} uut = new ${namespacedName}(new byte[] {0x01});
+<#if units?has_content>
         assertEquals(uut.getDisplayableValue(), "1 ${units}");
+<#else>
+        assertEquals(uut.getDisplayableValue(), "1");
+</#if>
     }
 
     @Test
