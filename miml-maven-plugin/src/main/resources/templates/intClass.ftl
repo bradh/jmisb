@@ -8,7 +8,11 @@ import org.jmisb.api.klv.st1902.IMimdMetadataValue;
 import org.jmisb.core.klv.PrimitiveConverter;
 
 /**
+<#if parentName == "Base">
+ * MIMD ${parentName} ${name} attribute.
+<#else>
  * MIMD {@link ${parentName}} ${name} attribute.
+</#if>
  *
  * <p>This is a specialisation of a signed integer.
  *
