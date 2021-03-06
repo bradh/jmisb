@@ -8,6 +8,7 @@ import org.jmisb.core.klv.PrimitiveConverter;
 
 /** Decoder for MISB ST1303 Multi-Dimensional Array Pack (MDAP) encoded byte arrays. */
 public class MDAPDecoder {
+
     /**
      * Decode a two-dimensional floating point array from a byte array.
      *
@@ -130,5 +131,134 @@ public class MDAPDecoder {
             }
         }
         return result;
+    }
+
+    /**
+     * Decode a two-dimensional boolean array from a byte array.
+     *
+     * @param bytes the byte array to decode from
+     * @param offset the offset to start the decoding from
+     * @return boolean 2D array containing the data decoded from the byte array.
+     * @throws KlvParseException if the parsing fails.
+     */
+    public boolean[][] decodeBoolean2D(byte[] bytes, final int offset) throws KlvParseException {
+        int i = offset;
+        try {
+            BerField ndim = BerDecoder.decode(bytes, i, true);
+            if (ndim.getValue() != 2) {
+                throw new KlvParseException("Wrong dimensions for this call");
+            }
+            i += ndim.getLength();
+            BerField dim1 = BerDecoder.decode(bytes, i, true);
+            i += dim1.getLength();
+            int numRows = dim1.getValue();
+            BerField dim2 = BerDecoder.decode(bytes, i, true);
+            i += dim2.getLength();
+            int numColumns = dim2.getValue();
+            BerField ebytes = BerDecoder.decode(bytes, i, true);
+            i += ebytes.getLength();
+            if (ebytes.getLength() != Byte.BYTES) {
+                throw new KlvParseException("Expected 1 byte encoding for boolean RLE");
+            }
+            BerField apa = BerDecoder.decode(bytes, i, true);
+            i += apa.getLength();
+            switch (ArrayProcessingAlgorithm.getValue(apa.getValue())) {
+                case NaturalFormat:
+                    return decodeBoolean2D_NaturalFormat(numRows, numColumns, bytes, i);
+                case ST1201:
+                    throw new KlvParseException(
+                            "Unsupported APA algorithm for boolean 2D decode: ST1201");
+                case BooleanArray:
+                    return decodeBoolean2D_BooleanArray(numRows, numColumns, bytes, i);
+                case UnsignedInteger:
+                    throw new KlvParseException(
+                            "Unsupported APA algorithm for boolean 2D decode: Unsigned Integer");
+                case RunLengthEncoding:
+                    int apas = bytes[i];
+                    i += Byte.BYTES;
+                    return decodeBoolean2D_RunLengthEncoding(numRows, numColumns, bytes, i, apas);
+                default:
+                    throw new KlvParseException(
+                            String.format(
+                                    "Unknown APA algorithm for boolean 2D decode: %d",
+                                    apa.getValue()));
+            }
+        } catch (java.lang.IllegalArgumentException ex) {
+            throw new KlvParseException(ex.getMessage());
+        }
+    }
+
+    private boolean[][] decodeBoolean2D_NaturalFormat(
+            int numRows, int numColumns, byte[] bytes, int i) {
+        boolean[][] result = new boolean[numRows][numColumns];
+        for (int r = 0; r < numRows; ++r) {
+            for (int c = 0; c < numColumns; ++c) {
+                // The only legal values are 0x00 or 0x01
+                result[r][c] = bytes[i] != 0x00;
+                i++;
+            }
+        }
+        return result;
+    }
+
+    private boolean[][] decodeBoolean2D_BooleanArray(
+            int numRows, int numColumns, byte[] bytes, int i) {
+        boolean[][] result = new boolean[numRows][numColumns];
+        int bitOffset = Byte.SIZE - 1;
+        int currentByte = bytes[i];
+        i++;
+        for (int r = 0; r < numRows; ++r) {
+            for (int c = 0; c < numColumns; ++c) {
+                int mask = 0x01 << bitOffset;
+                result[r][c] = (currentByte & mask) == mask;
+                bitOffset -= 1;
+                if (bitOffset < 0) {
+                    bitOffset = Byte.SIZE - 1;
+                    currentByte = bytes[i];
+                    i++;
+                }
+            }
+        }
+        return result;
+    }
+
+    private boolean[][] decodeBoolean2D_RunLengthEncoding(
+            int numRows, int numColumns, byte[] bytes, int i, int apas) {
+        boolean[][] result = new boolean[numRows][numColumns];
+        // Fill "background" with APAS value
+        for (int r = 0; r < numRows; ++r) {
+            for (int c = 0; c < numColumns; ++c) {
+                // The only legal values are 0x00 or 0x01
+                result[r][c] = apas != 0x00;
+            }
+        }
+        while (i < bytes.length) {
+            i = processNextPatch(bytes, i, result);
+        }
+        return result;
+    }
+
+    private int processNextPatch(byte[] bytes, int i, boolean[][] result)
+            throws IllegalArgumentException {
+        boolean value = bytes[i] != 0x00;
+        i++;
+        BerField dim1 = BerDecoder.decode(bytes, i, true);
+        i += dim1.getLength();
+        int startRow = dim1.getValue();
+        BerField dim2 = BerDecoder.decode(bytes, i, true);
+        i += dim2.getLength();
+        int startColumn = dim2.getValue();
+        BerField runLength1 = BerDecoder.decode(bytes, i, true);
+        i += runLength1.getLength();
+        int numRowsForRun = runLength1.getValue();
+        BerField runLength2 = BerDecoder.decode(bytes, i, true);
+        i += runLength2.getLength();
+        int numColumnsForRun = runLength2.getValue();
+        for (int r = startRow; r < startRow + numRowsForRun; ++r) {
+            for (int c = startColumn; c < startColumn + numColumnsForRun; ++c) {
+                result[r][c] = value;
+            }
+        }
+        return i;
     }
 }

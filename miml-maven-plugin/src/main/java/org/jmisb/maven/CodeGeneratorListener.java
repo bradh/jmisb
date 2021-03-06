@@ -200,7 +200,17 @@ public class CodeGeneratorListener implements MIML_v3Listener {
 
     private void processEntry(ClassModelEntry entry, File targetDirectory)
             throws TemplateException, IOException {
-        if (entry.getTypeName().equals("String")) {
+        if (entry.isArray()) {
+            if ((entry.getTypeName().equals("Boolean")) && (entry.isArray2D())) {
+                processClassTemplate(targetDirectory, entry, "booleanArray2D.ftl");
+            } else {
+                log(
+                        "Need to implement array class for "
+                                + entry.getName()
+                                + " - "
+                                + entry.getTypeName());
+            }
+        } else if (entry.getTypeName().equals("String")) {
             processClassTemplate(targetDirectory, entry, "stringClass.ftl");
         } else if (entry.getTypeName().equals("UInt")) {
             processClassTemplate(targetDirectory, entry, "uintClass.ftl");
@@ -208,8 +218,6 @@ public class CodeGeneratorListener implements MIML_v3Listener {
             processClassTemplate(targetDirectory, entry, "intClass.ftl");
         } else if (entry.getTypeName().equals("Real")) {
             processClassTemplate(targetDirectory, entry, "realClass.ftl");
-        } else if (entry.getTypeName().equals("Real[]")) {
-            processClassTemplate(targetDirectory, entry, "realArray1D.ftl");
         } else if (entry.isList()) {
             // Nothing - we've got this already
         } else if (isEnumerationName(entry.getTypeName())) {
@@ -596,11 +604,12 @@ public class CodeGeneratorListener implements MIML_v3Listener {
     @Override
     public void enterArray(MIML_v3Parser.ArrayContext ctx) {
         TerminalNode arrayLengthNode = ctx.UINTVAL();
+        ArrayDimension arrayDimension = new ArrayDimension();
         if (arrayLengthNode != null) {
             int arrayLength = Integer.parseInt(arrayLengthNode.toString());
-            this.currentClassModelEntry.setMaxLength(arrayLength);
+            arrayDimension.setMaxLength(arrayLength);
         }
-        this.currentClassModelEntry.setIsArray(true);
+        this.currentClassModelEntry.addArrayDimension(arrayDimension);
     }
 
     @Override

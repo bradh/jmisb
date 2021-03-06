@@ -1,5 +1,7 @@
 package org.jmisb.maven;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Stack;
 
 public class ClassModelEntry {
@@ -7,7 +9,7 @@ public class ClassModelEntry {
     private int number;
     private String name;
     private String typeName;
-    private boolean array = false;
+    private List<ArrayDimension> arrayDimensions = new ArrayList<>();
     private boolean list = false;
     private Double minValue = null;
     private Double maxValue = null;
@@ -85,11 +87,15 @@ public class ClassModelEntry {
     }
 
     public boolean isArray() {
-        return array;
+        return (!arrayDimensions.isEmpty());
     }
 
-    public void setIsArray(boolean array) {
-        this.array = array;
+    public boolean isArray2D() {
+        return arrayDimensions.size() == 2;
+    }
+
+    public void addArrayDimension(ArrayDimension arrayDimension) {
+        this.arrayDimensions.add(arrayDimension);
     }
 
     public boolean isList() {
