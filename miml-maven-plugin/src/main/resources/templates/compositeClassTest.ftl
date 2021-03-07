@@ -230,7 +230,7 @@ public class ${name}Test extends LoggerChecks {
     public void testBuildReal() throws KlvParseException {
         SortedMap<${name}MetadataKey, IMimdMetadataValue> values = new TreeMap<>();
 <#list entries as entry>
-    <#if entry.typeName == "Real">
+    <#if (entry.typeName == "Real") && (!entry.array)>
         IMimdMetadataValue refValue${entry?index} = ${name}.createValue(
             ${name}MetadataKey.${entry.name},
             new byte[]{

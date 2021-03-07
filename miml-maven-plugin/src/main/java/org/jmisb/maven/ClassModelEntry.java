@@ -90,6 +90,10 @@ public class ClassModelEntry {
         return (!arrayDimensions.isEmpty());
     }
 
+    public boolean isArray1D() {
+        return arrayDimensions.size() == 1;
+    }
+
     public boolean isArray2D() {
         return arrayDimensions.size() == 2;
     }

@@ -16,12 +16,12 @@ import org.jmisb.core.klv.PrimitiveConverter;
  * MIMD {@link ${parentName}} ${name} attribute.
 </#if>
  *
- * <p>This is a specialisation of an array of floating point values.
+ * <p>This is a specialisation of a 2D array of floating point values.
  *
  * See ${document} for more information on this data type.
  */
 public class ${namespacedName} implements IMimdMetadataValue {
-    private final double[] doubleArray;
+    private final double[][] doubleArray;
 
     /**
      * Construct from value.
@@ -35,18 +35,22 @@ public class ${namespacedName} implements IMimdMetadataValue {
 </#if>
      * @param value the floating point values to initialise this ${nameSentenceCase} with.
      */
-    public ${namespacedName}(double[] value) throws IllegalArgumentException{
+    public ${namespacedName}(double[][] value) throws IllegalArgumentException{
 <#if minValue??>
         for (int i = 0; i < value.length; ++i) {
-            if (value[i] < ${minValue}) {
-                throw new IllegalArgumentException("Minimum value for ${namespacedName} elements is ${minValue}");
+            for (int j = 0; j < value[i].length; ++j) {
+                if (value[i][j] < ${minValue?string["0.000"]}) {
+                    throw new IllegalArgumentException("Minimum value for ${namespacedName} elements is ${minValue}");
+                }
             }
         }
 </#if>
 <#if maxValue??>
         for (int i = 0; i < value.length; ++i) {
-            if (value[i] > ${maxValue}) {
-                throw new IllegalArgumentException("Maximum value for ${namespacedName} elements is ${maxValue}");
+            for (int j = 0; j < value[i].length; ++j) {
+                if (value[i][j] > ${maxValue?string["0.000"]}) {
+                    throw new IllegalArgumentException("Maximum value for ${namespacedName} elements is ${maxValue}");
+                }
             }
         }
 </#if>
@@ -61,7 +65,7 @@ public class ${namespacedName} implements IMimdMetadataValue {
      */
     public ${namespacedName}(byte[] bytes) throws KlvParseException {
         // TODO: decode using ST1303 rules
-        this.doubleArray = new double[0];
+        this.doubleArray = new double[0][0];
     }
 
     /**
@@ -95,9 +99,9 @@ public class ${namespacedName} implements IMimdMetadataValue {
     /**
      * Get the value of this ${namespacedName}.
      *
-     * @return the value as a double array
+     * @return the value as a 2D double array
      */
-    public double[] getValue() {
+    public double[][] getValue() {
         return this.doubleArray.clone();
     }
 }

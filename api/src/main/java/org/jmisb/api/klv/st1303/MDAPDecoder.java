@@ -143,48 +143,43 @@ public class MDAPDecoder {
      */
     public boolean[][] decodeBoolean2D(byte[] bytes, final int offset) throws KlvParseException {
         int i = offset;
-        try {
-            BerField ndim = BerDecoder.decode(bytes, i, true);
-            if (ndim.getValue() != 2) {
-                throw new KlvParseException("Wrong dimensions for this call");
-            }
-            i += ndim.getLength();
-            BerField dim1 = BerDecoder.decode(bytes, i, true);
-            i += dim1.getLength();
-            int numRows = dim1.getValue();
-            BerField dim2 = BerDecoder.decode(bytes, i, true);
-            i += dim2.getLength();
-            int numColumns = dim2.getValue();
-            BerField ebytes = BerDecoder.decode(bytes, i, true);
-            i += ebytes.getLength();
-            if (ebytes.getLength() != Byte.BYTES) {
-                throw new KlvParseException("Expected 1 byte encoding for boolean RLE");
-            }
-            BerField apa = BerDecoder.decode(bytes, i, true);
-            i += apa.getLength();
-            switch (ArrayProcessingAlgorithm.getValue(apa.getValue())) {
-                case NaturalFormat:
-                    return decodeBoolean2D_NaturalFormat(numRows, numColumns, bytes, i);
-                case ST1201:
-                    throw new KlvParseException(
-                            "Unsupported APA algorithm for boolean 2D decode: ST1201");
-                case BooleanArray:
-                    return decodeBoolean2D_BooleanArray(numRows, numColumns, bytes, i);
-                case UnsignedInteger:
-                    throw new KlvParseException(
-                            "Unsupported APA algorithm for boolean 2D decode: Unsigned Integer");
-                case RunLengthEncoding:
-                    int apas = bytes[i];
-                    i += Byte.BYTES;
-                    return decodeBoolean2D_RunLengthEncoding(numRows, numColumns, bytes, i, apas);
-                default:
-                    throw new KlvParseException(
-                            String.format(
-                                    "Unknown APA algorithm for boolean 2D decode: %d",
-                                    apa.getValue()));
-            }
-        } catch (java.lang.IllegalArgumentException ex) {
-            throw new KlvParseException(ex.getMessage());
+        BerField ndim = BerDecoder.decode(bytes, i, true);
+        if (ndim.getValue() != 2) {
+            throw new KlvParseException("Wrong dimensions for this call");
+        }
+        i += ndim.getLength();
+        BerField dim1 = BerDecoder.decode(bytes, i, true);
+        i += dim1.getLength();
+        int numRows = dim1.getValue();
+        BerField dim2 = BerDecoder.decode(bytes, i, true);
+        i += dim2.getLength();
+        int numColumns = dim2.getValue();
+        BerField ebytes = BerDecoder.decode(bytes, i, true);
+        i += ebytes.getLength();
+        if (ebytes.getValue() != Byte.BYTES) {
+            throw new KlvParseException("Expected 1 byte encoding for boolean RLE");
+        }
+        BerField apa = BerDecoder.decode(bytes, i, true);
+        i += apa.getLength();
+        switch (ArrayProcessingAlgorithm.getValue(apa.getValue())) {
+            case NaturalFormat:
+                return decodeBoolean2D_NaturalFormat(numRows, numColumns, bytes, i);
+            case ST1201:
+                throw new KlvParseException(
+                        "Unsupported APA algorithm for boolean 2D decode: ST1201");
+            case BooleanArray:
+                return decodeBoolean2D_BooleanArray(numRows, numColumns, bytes, i);
+            case UnsignedInteger:
+                throw new KlvParseException(
+                        "Unsupported APA algorithm for boolean 2D decode: Unsigned Integer");
+            case RunLengthEncoding:
+                int apas = bytes[i];
+                i += Byte.BYTES;
+                return decodeBoolean2D_RunLengthEncoding(numRows, numColumns, bytes, i, apas);
+            default:
+                throw new KlvParseException(
+                        String.format(
+                                "Unknown APA algorithm for boolean 2D decode: %d", apa.getValue()));
         }
     }
 
@@ -238,8 +233,7 @@ public class MDAPDecoder {
         return result;
     }
 
-    private int processNextPatch(byte[] bytes, int i, boolean[][] result)
-            throws IllegalArgumentException {
+    private int processNextPatch(byte[] bytes, int i, boolean[][] result) {
         boolean value = bytes[i] != 0x00;
         i++;
         BerField dim1 = BerDecoder.decode(bytes, i, true);

@@ -203,6 +203,19 @@ public class CodeGeneratorListener implements MIML_v3Listener {
         if (entry.isArray()) {
             if ((entry.getTypeName().equals("Boolean")) && (entry.isArray2D())) {
                 processClassTemplate(targetDirectory, entry, "booleanArray2D.ftl");
+            } else if ((entry.getTypeName().equals("Integer")) && (entry.isArray2D())) {
+                processClassTemplate(targetDirectory, entry, "intArray2D.ftl");
+            } else if ((entry.getTypeName().equals("Real")) && (entry.isArray1D())) {
+                processClassTemplate(targetDirectory, entry, "realArray1D.ftl");
+            } else if ((entry.getTypeName().equals("Real")) && (entry.isArray2D())) {
+                processClassTemplate(targetDirectory, entry, "realArray2D.ftl");
+            } else if ((entry.getTypeName().equals("UInt")) && (entry.isArray1D())) {
+                processClassTemplate(targetDirectory, entry, "uintArray1D.ftl");
+            } else if ((entry.getTypeName().equals("UInt")) && (entry.isArray2D())) {
+                processClassTemplate(targetDirectory, entry, "uintArray2D.ftl");
+            } else if ((entry.isRef()) && (entry.isArray1D())) {
+                // TODO
+                // processClassTemplate(targetDirectory, entry, "refArray.ftl");
             } else {
                 log(
                         "Need to implement array class for "
@@ -251,7 +264,30 @@ public class CodeGeneratorListener implements MIML_v3Listener {
 
     private void processEntryTest(ClassModelEntry entry, File outputTestDirectory)
             throws TemplateException, IOException {
-        if (entry.getTypeName().equals("String")) {
+        if (entry.isArray()) {
+            if ((entry.getTypeName().equals("Boolean")) && (entry.isArray2D())) {
+                processClassTestTemplate(outputTestDirectory, entry, "booleanArrayTest2D.ftl");
+            } else if ((entry.getTypeName().equals("Integer")) && (entry.isArray2D())) {
+                processClassTestTemplate(outputTestDirectory, entry, "intArrayTest2D.ftl");
+            } else if ((entry.getTypeName().equals("Real")) && (entry.isArray1D())) {
+                processClassTestTemplate(outputTestDirectory, entry, "realArrayTest1D.ftl");
+            } else if ((entry.getTypeName().equals("Real")) && (entry.isArray2D())) {
+                processClassTestTemplate(outputTestDirectory, entry, "realArrayTest2D.ftl");
+            } else if ((entry.getTypeName().equals("UInt")) && (entry.isArray1D())) {
+                processClassTestTemplate(outputTestDirectory, entry, "uintArrayTest1D.ftl");
+            } else if ((entry.getTypeName().equals("UInt")) && (entry.isArray2D())) {
+                processClassTestTemplate(outputTestDirectory, entry, "uintArrayTest2D.ftl");
+            } else if ((entry.isRef()) && (entry.isArray1D())) {
+                // TODO
+                // processClassTestTemplate(outputTestDirectory, entry, "refArrayTest.ftl");
+            } else {
+                log(
+                        "Need to implement array class test for "
+                                + entry.getName()
+                                + " - "
+                                + entry.getTypeName());
+            }
+        } else if (entry.getTypeName().equals("String")) {
             processClassTestTemplate(outputTestDirectory, entry, "stringClassTest.ftl");
         } else if (entry.getTypeName().equals("UInt")) {
             processClassTestTemplate(outputTestDirectory, entry, "uintClassTest.ftl");

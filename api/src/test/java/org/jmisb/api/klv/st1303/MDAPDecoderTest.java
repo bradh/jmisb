@@ -21,7 +21,7 @@ public class MDAPDecoderTest {
     }
 
     @Test(expectedExceptions = KlvParseException.class)
-    public void checkBadDimensions() throws KlvParseException {
+    public void checkBadDimensionsFloatingPoint2D() throws KlvParseException {
         MDAPDecoder decoder = new MDAPDecoder();
         decoder.decodeFloatingPoint2D(
                 new byte[] {
@@ -526,6 +526,30 @@ public class MDAPDecoderTest {
                     (byte) 0x01,
                     (byte) 0x02, // APA
                     (byte) 0x00
+                },
+                0);
+    }
+
+    @Test(expectedExceptions = KlvParseException.class)
+    public void checkBadDimensionsBoolean2D() throws KlvParseException {
+        MDAPDecoder decoder = new MDAPDecoder();
+        decoder.decodeBoolean2D(
+                new byte[] {(byte) 0x01, (byte) 0x05, (byte) 0x01, (byte) 0x03, (byte) 0x00}, 0);
+    }
+
+    @Test(expectedExceptions = KlvParseException.class)
+    public void testBadEbytesBoolean2D() throws KlvParseException {
+        MDAPDecoder decoder = new MDAPDecoder();
+        decoder.decodeBoolean2D(
+                new byte[] {
+                    (byte) 0x02,
+                    (byte) 0x05,
+                    (byte) 0x04,
+                    (byte) 0x02,
+                    (byte) 0x03,
+                    (byte) 0x48,
+                    (byte) 0xA8,
+                    (byte) 0xF0
                 },
                 0);
     }
