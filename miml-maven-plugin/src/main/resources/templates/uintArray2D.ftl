@@ -4,10 +4,8 @@
 package ${packageName};
 
 import org.jmisb.api.common.KlvParseException;
+import org.jmisb.api.klv.st1303.MDAPDecoder;
 import org.jmisb.api.klv.st1902.IMimdMetadataValue;
-<#if !(minValue?? && maxValue??)>
-import org.jmisb.core.klv.PrimitiveConverter;
-</#if>
 
 /**
 <#if parentName == "Base">
@@ -21,7 +19,7 @@ import org.jmisb.core.klv.PrimitiveConverter;
  * See ${document} for more information on this data type.
  */
 public class ${namespacedName} implements IMimdMetadataValue {
-    private final int[][] uintArray;
+    private final long[][] uintArray;
 
     /**
      * Construct from value.
@@ -35,7 +33,7 @@ public class ${namespacedName} implements IMimdMetadataValue {
 </#if>
      * @param value the unsigned integer values to initialise this ${nameSentenceCase} with.
      */
-    public ${namespacedName}(int[][] value) throws IllegalArgumentException{
+    public ${namespacedName}(long[][] value) throws IllegalArgumentException{
 <#if minValue??>
         for (int i = 0; i < value.length; ++i) {
             for (int j = 0; j < value[i].length; ++j) {
@@ -64,8 +62,8 @@ public class ${namespacedName} implements IMimdMetadataValue {
      * @throws KlvParseException if the array could not be parsed
      */
     public ${namespacedName}(byte[] bytes) throws KlvParseException {
-        // TODO: decode using ST1303 rules
-        this.uintArray = new int[0][0];
+        MDAPDecoder decoder = new MDAPDecoder();
+        this.uintArray = decoder.decodeUInt2D(bytes, 0);
     }
 
     /**
@@ -101,7 +99,7 @@ public class ${namespacedName} implements IMimdMetadataValue {
      *
      * @return the value as a 2D (unsigned) integer array
      */
-    public int[][] getValue() {
+    public long[][] getValue() {
         return this.uintArray.clone();
     }
 }

@@ -32,6 +32,15 @@ public class PrimitiveConverter {
         return res;
     }
 
+    static long arrayToUnsignedLongInternal(byte[] bytes, int offset, int length) {
+        long res = 0;
+        for (int idx = offset; idx < offset + length; idx++) {
+            int i = bytes[idx] & 0xFF;
+            res = (res << 8) + i;
+        }
+        return res;
+    }
+
     /**
      * Convert an unsigned 32-bit unsigned integer (long with range of uint32) to a byte array.
      *
@@ -239,6 +248,17 @@ public class PrimitiveConverter {
     }
 
     /**
+     * Convert a byte array to an unsigned 32-bit integer (long with range of uint32)
+     *
+     * @param bytes The array
+     * @param offset the offset to convert at
+     * @return The unsigned 32-bit integer as a long
+     */
+    public static long toUint32(byte[] bytes, int offset) {
+        return Integer.toUnsignedLong(ByteBuffer.wrap(bytes, offset, Integer.BYTES).getInt());
+    }
+
+    /**
      * Convert a variable length byte array to an unsigned 32-bit integer (long with range of
      * uint32)
      *
@@ -306,6 +326,17 @@ public class PrimitiveConverter {
     }
 
     /**
+     * Convert a byte array to an unsigned 16-bit integer (int with range of uint16)
+     *
+     * @param bytes The array of data
+     * @param offset the offset to convert at
+     * @return The unsigned 16-bit integer as an int
+     */
+    public static int toUint16(byte[] bytes, int offset) {
+        return Short.toUnsignedInt(ByteBuffer.wrap(bytes, offset, Short.BYTES).getShort());
+    }
+
+    /**
      * Convert an unsigned 16-bit unsigned integer (int with range of uint16) to a byte array
      *
      * @param val The unsigned 16-bit integer as int
@@ -330,6 +361,17 @@ public class PrimitiveConverter {
             return Byte.toUnsignedInt(bytes[0]);
         }
         throw new IllegalArgumentException("Invalid buffer length");
+    }
+
+    /**
+     * Convert a byte array to an unsigned 8-bit integer (int with range of uint8)
+     *
+     * @param bytes The array of data
+     * @param offset the offset to convert at
+     * @return The unsigned 8-bit integer as an int
+     */
+    public static int toUint8(byte[] bytes, int offset) {
+        return Byte.toUnsignedInt(bytes[offset]);
     }
 
     /**
@@ -408,6 +450,38 @@ public class PrimitiveConverter {
                 return PrimitiveConverter.toUint8(bytes);
             default:
                 throw new IllegalArgumentException("Invalid buffer length");
+        }
+    }
+
+    /**
+     * Convert a variable length byte array to an unsigned 64-bit integer (long with range of
+     * uint64)
+     *
+     * @param bytes The array
+     * @param offset the starting offset into the array to start extracting
+     * @param length the number of bytes to extract (1-8)
+     * @return The unsigned 64-bit integer as a long
+     */
+    public static long variableBytesToUint64(byte[] bytes, int offset, int length) {
+        switch (length) {
+            case 8:
+                return ByteBuffer.wrap(bytes, offset, Long.BYTES).getLong();
+            case 7:
+                return arrayToUnsignedLongInternal(bytes, offset, length);
+            case 6:
+                return arrayToUnsignedLongInternal(bytes, offset, length);
+            case 5:
+                return arrayToUnsignedLongInternal(bytes, offset, length);
+            case 4:
+                return PrimitiveConverter.toUint32(bytes, offset);
+            case 3:
+                return arrayToUnsignedLongInternal(bytes, offset, length);
+            case 2:
+                return PrimitiveConverter.toUint16(bytes, offset);
+            case 1:
+                return PrimitiveConverter.toUint8(bytes, offset);
+            default:
+                throw new IllegalArgumentException("Invalid length");
         }
     }
 

@@ -364,4 +364,161 @@ public class MDAPDecoder {
         }
         return i;
     }
+
+    /**
+     * Decode a one-dimensional unsigned integer array from a byte array.
+     *
+     * @param bytes the byte array to decode from
+     * @param offset the offset to start the decoding from
+     * @return (unsigned) integer array containing the data decoded from the byte array.
+     * @throws KlvParseException if the parsing fails.
+     */
+    public long[] decodeUInt1D(byte[] bytes, final int offset) throws KlvParseException {
+        int i = offset;
+        BerField ndim = BerDecoder.decode(bytes, i, true);
+        if (ndim.getValue() != 1) {
+            throw new KlvParseException("TODO: wrong dimensions for this call");
+        }
+        i += ndim.getLength();
+        BerField dim1 = BerDecoder.decode(bytes, i, true);
+        i += dim1.getLength();
+        BerField ebytes = BerDecoder.decode(bytes, i, true);
+        i += ebytes.getLength();
+        BerField apa = BerDecoder.decode(bytes, i, true);
+        i += apa.getLength();
+        switch (ArrayProcessingAlgorithm.getValue(apa.getValue())) {
+            case NaturalFormat:
+                return decodeUInt_NaturalFormat(bytes, i, dim1.getValue(), ebytes.getValue());
+            case ST1201:
+                throw new KlvParseException(
+                        "Invalid APA algorithm for unsigned integer 1D decode: ST1201");
+            case BooleanArray:
+                throw new KlvParseException(
+                        "Invalid APA algorithm for unsigned integer 1D decode: BooleanArray");
+            case UnsignedInteger:
+                BerField biasField = BerDecoder.decode(bytes, i, true);
+                i += biasField.getLength();
+                return decodeUInt_UnsignedIntegerEncoded(
+                        bytes, i, dim1.getValue(), biasField.getValue());
+
+            case RunLengthEncoding:
+                throw new KlvParseException(
+                        "Unsupported APA algorithm for unsigned integer 1D decode: RunLengthEncoding");
+            default:
+                throw new KlvParseException(
+                        String.format(
+                                "Unknown APA algorithm for  unsigned integer 1D decode: %d",
+                                apa.getValue()));
+        }
+    }
+
+    private long[] decodeUInt_NaturalFormat(
+            byte[] bytes, final int offset, final int numElements, final int eBytes)
+            throws KlvParseException {
+        int index = offset;
+        long[] result = new long[numElements];
+        for (int i = 0; i < numElements; ++i) {
+            result[i] = PrimitiveConverter.variableBytesToUint64(bytes, index, eBytes);
+            index += eBytes;
+        }
+        return result;
+    }
+
+    private long[] decodeUInt_UnsignedIntegerEncoded(
+            byte[] bytes, final int offset, final int numElements, final int bias) {
+        int index = offset;
+        long[] result = new long[numElements];
+        for (int i = 0; i < numElements; ++i) {
+            BerField el = BerDecoder.decode(bytes, index, true);
+            result[i] = el.getValue() + bias;
+            index += el.getLength();
+        }
+        return result;
+    }
+
+    /**
+     * Decode a two-dimensional unsigned integer array from a byte array.
+     *
+     * @param bytes the byte array to decode from
+     * @param offset the offset to start the decoding from
+     * @return (unsigned) 2D integer array containing the data decoded from the byte array.
+     * @throws KlvParseException if the parsing fails.
+     */
+    public long[][] decodeUInt2D(byte[] bytes, final int offset) throws KlvParseException {
+        int i = offset;
+        BerField ndim = BerDecoder.decode(bytes, i, true);
+        if (ndim.getValue() != 2) {
+            throw new KlvParseException("TODO: wrong dimensions for this call");
+        }
+        i += ndim.getLength();
+        BerField dim1 = BerDecoder.decode(bytes, i, true);
+        i += dim1.getLength();
+        BerField dim2 = BerDecoder.decode(bytes, i, true);
+        i += dim2.getLength();
+        BerField ebytes = BerDecoder.decode(bytes, i, true);
+        i += ebytes.getLength();
+        BerField apa = BerDecoder.decode(bytes, i, true);
+        i += apa.getLength();
+        switch (ArrayProcessingAlgorithm.getValue(apa.getValue())) {
+            case NaturalFormat:
+                return decodeUInt2D_NaturalFormat(
+                        bytes, i, dim1.getValue(), dim2.getValue(), ebytes.getValue());
+            case ST1201:
+                throw new KlvParseException(
+                        "Invalid APA algorithm for unsigned integer 1D decode: ST1201");
+            case BooleanArray:
+                throw new KlvParseException(
+                        "Invalid APA algorithm for unsigned integer 1D decode: BooleanArray");
+            case UnsignedInteger:
+                BerField biasField = BerDecoder.decode(bytes, i, true);
+                i += biasField.getLength();
+                return decodeUInt2D_UnsignedIntegerEncoded(
+                        bytes, i, dim1.getValue(), dim2.getValue(), biasField.getValue());
+
+            case RunLengthEncoding:
+                throw new KlvParseException(
+                        "Unsupported APA algorithm for unsigned integer 1D decode: RunLengthEncoding");
+            default:
+                throw new KlvParseException(
+                        String.format(
+                                "Unknown APA algorithm for  unsigned integer 1D decode: %d",
+                                apa.getValue()));
+        }
+    }
+
+    private long[][] decodeUInt2D_NaturalFormat(
+            byte[] bytes,
+            final int offset,
+            final int numRows,
+            final int numColumns,
+            final int eBytes)
+            throws KlvParseException {
+        int index = offset;
+        long[][] result = new long[numRows][numColumns];
+        for (int r = 0; r < numRows; ++r) {
+            for (int c = 0; c < numColumns; ++c) {
+                result[r][c] = PrimitiveConverter.variableBytesToUint64(bytes, index, eBytes);
+                index += eBytes;
+            }
+        }
+        return result;
+    }
+
+    private long[][] decodeUInt2D_UnsignedIntegerEncoded(
+            byte[] bytes,
+            final int offset,
+            final int numRows,
+            final int numColumns,
+            final int bias) {
+        int index = offset;
+        long[][] result = new long[numRows][numColumns];
+        for (int r = 0; r < numRows; ++r) {
+            for (int c = 0; c < numColumns; ++c) {
+                BerField el = BerDecoder.decode(bytes, index, true);
+                result[r][c] = el.getValue() + bias;
+                index += el.getLength();
+            }
+        }
+        return result;
+    }
 }
