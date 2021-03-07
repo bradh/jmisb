@@ -4,10 +4,8 @@
 package ${packageName};
 
 import org.jmisb.api.common.KlvParseException;
+import org.jmisb.api.klv.st1303.MDAPDecoder;
 import org.jmisb.api.klv.st1902.IMimdMetadataValue;
-<#if !(minValue?? && maxValue??)>
-import org.jmisb.core.klv.PrimitiveConverter;
-</#if>
 
 /**
 <#if parentName == "Base">
@@ -59,9 +57,9 @@ public class ${namespacedName} implements IMimdMetadataValue {
      * @param bytes Encoded byte array
      * @throws KlvParseException if the array could not be parsed
      */
-    public ${namespacedName}(byte[] bytes) throws KlvParseException {
-        // TODO: decode using ST1303 rules
-        this.doubleArray = new double[0];
+    public ${namespacedName}(byte[] bytes) throws KlvParseException { 
+        MDAPDecoder decoder = new MDAPDecoder();
+        this.doubleArray = decoder.decodeFloatingPoint1D(bytes, 0);
     }
 
     /**

@@ -10,6 +10,115 @@ import org.jmisb.core.klv.PrimitiveConverter;
 public class MDAPDecoder {
 
     /**
+     * Decode a one-dimensional floating point array from a byte array.
+     *
+     * @param bytes the byte array to decode from
+     * @param offset the offset to start the decoding from
+     * @return floating point (double) array containing the data decoded from the byte array.
+     * @throws KlvParseException if the parsing fails.
+     */
+    public double[] decodeFloatingPoint1D(byte[] bytes, final int offset) throws KlvParseException {
+        int i = offset;
+        try {
+            BerField ndim = BerDecoder.decode(bytes, i, true);
+            if (ndim.getValue() != 1) {
+                throw new KlvParseException("TODO: wrong dimensions for this call");
+            }
+            i += ndim.getLength();
+            BerField dim1 = BerDecoder.decode(bytes, i, true);
+            i += dim1.getLength();
+            BerField ebytes = BerDecoder.decode(bytes, i, true);
+            i += ebytes.getLength();
+            BerField apa = BerDecoder.decode(bytes, i, true);
+            i += apa.getLength();
+            switch (ArrayProcessingAlgorithm.getValue(apa.getValue())) {
+                case NaturalFormat:
+                    return decodeFloatingPoint1D_NaturalFormat(
+                            bytes, i, dim1.getValue(), ebytes.getValue());
+                case ST1201:
+                    return decodeFloatingPoint1D_ST1201(
+                            bytes, i, dim1.getValue(), ebytes.getValue());
+                case BooleanArray:
+                    throw new KlvParseException(
+                            "Unsupported APA algorithm for floating point 1D decode: BooleanArray");
+                case UnsignedInteger:
+                    throw new KlvParseException(
+                            "Unsupported APA algorithm for floating point 1D decode: UnsignedInteger");
+                case RunLengthEncoding:
+                    throw new KlvParseException(
+                            "Unsupported APA algorithm for floating point 1D decode: RunLengthEncoding");
+                default:
+                    throw new KlvParseException(
+                            String.format(
+                                    "Unknown APA algorithm for floating point 1D decode: %d",
+                                    apa.getValue()));
+            }
+        } catch (java.lang.IllegalArgumentException ex) {
+            throw new KlvParseException(ex.getMessage());
+        }
+    }
+
+    private double[] decodeFloatingPoint1D_NaturalFormat(
+            byte[] bytes, final int offset, final int numElements, final int eBytes)
+            throws KlvParseException {
+        int index = offset;
+        double[] result = new double[numElements];
+        for (int i = 0; i < numElements; ++i) {
+            switch (eBytes) {
+                case Double.BYTES:
+                    result[i] = PrimitiveConverter.toFloat64(bytes, index);
+                    break;
+                case Float.BYTES:
+                    result[i] = PrimitiveConverter.toFloat32(bytes, index);
+                    break;
+                default:
+                    throw new KlvParseException(
+                            String.format("Invalid number of bytes: %d", eBytes));
+            }
+            index += eBytes;
+        }
+        return result;
+    }
+
+    private double[] decodeFloatingPoint1D_ST1201(
+            byte[] bytes, final int offset, final int numElements, final int eBytes)
+            throws KlvParseException {
+        int bytesRemaining = bytes.length - offset;
+        int lengthOfArrayOfElements = numElements * eBytes;
+        int lengthOfArrayProcessingAlgorithmSupportValues =
+                bytesRemaining - lengthOfArrayOfElements;
+        FpEncoder encoder;
+        switch (lengthOfArrayProcessingAlgorithmSupportValues) {
+            case 2 * Double.BYTES:
+                {
+                    double min = PrimitiveConverter.toFloat64(bytes, offset);
+                    double max = PrimitiveConverter.toFloat64(bytes, offset + Double.BYTES);
+                    encoder = new FpEncoder(min, max, eBytes);
+                }
+                break;
+            case 2 * Float.BYTES:
+                {
+                    double min = PrimitiveConverter.toFloat32(bytes, offset);
+                    double max = PrimitiveConverter.toFloat32(bytes, offset + Float.BYTES);
+                    encoder = new FpEncoder(min, max, eBytes);
+                }
+                break;
+            default:
+                throw new KlvParseException(
+                        String.format(
+                                "Invalid length of APAS: %d",
+                                lengthOfArrayProcessingAlgorithmSupportValues));
+        }
+        int index = offset + lengthOfArrayProcessingAlgorithmSupportValues;
+        double[] result = new double[numElements];
+        for (int i = 0; i < numElements; ++i) {
+            result[i] = encoder.decode(bytes, index);
+            index += eBytes;
+        }
+        return result;
+    }
+
+    /**
      * Decode a two-dimensional floating point array from a byte array.
      *
      * @param bytes the byte array to decode from
