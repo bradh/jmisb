@@ -102,6 +102,14 @@ public class ClassModelEntry {
         this.arrayDimensions.add(arrayDimension);
     }
 
+    public Integer getArrayDimensionSize(int dim) {
+        if (dim < arrayDimensions.size()) {
+            return this.arrayDimensions.get(dim).getMaxLength();
+        } else {
+            return null;
+        }
+    }
+
     public boolean isList() {
         return list;
     }

@@ -36,6 +36,16 @@ public class ${namespacedName} implements IMimdMetadataValue {
      * @param value the floating point values to initialise this ${nameSentenceCase} with.
      */
     public ${namespacedName}(double[][] value) throws IllegalArgumentException{
+<#if arrayDimensionSize(0)??>
+        if (value.length != ${arrayDimensionSize(0)}) {
+            throw new IllegalArgumentException("Required number of ${namespacedName} rows is ${arrayDimensionSize(0)}");
+        }
+</#if>
+<#if arrayDimensionSize(1)??>
+        if (value[0].length != ${arrayDimensionSize(1)}) {
+            throw new IllegalArgumentException("Required number of ${namespacedName} columns is ${arrayDimensionSize(1)}");
+        }
+</#if>
 <#if minValue??>
         for (int i = 0; i < value.length; ++i) {
             for (int j = 0; j < value[i].length; ++j) {
@@ -86,8 +96,16 @@ public class ${namespacedName} implements IMimdMetadataValue {
 
     @Override
     public byte[] getBytes(){
-        ElementProcessedEncoder encoder = new ElementProcessedEncoder(${minValue}, ${maxValue}, 3);
-        return encoder.encode(this.doubleArray);
+        try {
+    <#if resolution??>
+            ElementProcessedEncoder encoder = new ElementProcessedEncoder(${minValue}, ${maxValue}, (double)${resolution});
+    <#else>
+            ElementProcessedEncoder encoder = new ElementProcessedEncoder(${minValue}, ${maxValue}, Float.BYTES);
+    </#if>
+            return encoder.encode(this.doubleArray);
+        } catch (KlvParseException ex) {
+            return new byte[0];
+        }
     }
 
     @Override

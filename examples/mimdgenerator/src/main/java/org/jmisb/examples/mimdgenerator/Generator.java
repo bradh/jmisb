@@ -63,11 +63,17 @@ import org.jmisb.api.klv.st1908.FieldOfView_Vertical;
 import org.jmisb.api.klv.st1908.ImagerSystem;
 import org.jmisb.api.klv.st1908.ImagerSystemMetadataKey;
 import org.jmisb.api.klv.st1908.ImagerSystem_Name;
+import org.jmisb.api.klv.st1908.MIIS;
+import org.jmisb.api.klv.st1908.MIISMetadataKey;
+import org.jmisb.api.klv.st1908.MinorCoreId;
+import org.jmisb.api.klv.st1908.MinorCoreIdMetadataKey;
+import org.jmisb.api.klv.st1908.MinorCoreId_Uuid;
 import org.jmisb.api.video.IVideoFileOutput;
 import org.jmisb.api.video.MetadataFrame;
 import org.jmisb.api.video.VideoFileOutput;
 import org.jmisb.api.video.VideoFrame;
 import org.jmisb.api.video.VideoOutputOptions;
+import org.jmisb.core.klv.UuidUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -83,8 +89,11 @@ public class Generator {
     private final String filename = "mimd.mpeg";
 
     private static final Logger LOG = LoggerFactory.getLogger(Generator.class);
+    private final UUID coreIdentifierUUID;
 
-    public Generator() {}
+    public Generator() {
+        coreIdentifierUUID = UUID.randomUUID();
+    }
 
     public void generate() {
 
@@ -212,7 +221,7 @@ public class Generator {
     private Position getPosition() {
         SortedMap<PositionMetadataKey, IMimdMetadataValue> values = new TreeMap<>();
         values.put(PositionMetadataKey.absGeodetic, this.getGeodeticPosition());
-        values.put(PositionMetadataKey.country, new Position_Country("ge:ISO1:3:VII-13"));
+        values.put(PositionMetadataKey.country, new Position_Country("ge:ISO1:3:VII-13:AUS"));
         Position position = new Position(values);
         return position;
     }
@@ -275,8 +284,7 @@ public class Generator {
         SortedMap<ImagerSystemMetadataKey, IMimdMetadataValue> values = new TreeMap<>();
         values.put(ImagerSystemMetadataKey.name, new ImagerSystem_Name("EO Fixed"));
         values.put(ImagerSystemMetadataKey.fieldOfView, getFieldOfView());
-        // TODO: implement
-        // values.put(ImagerSystemMetadataKey.miis, getMiis());
+        values.put(ImagerSystemMetadataKey.miis, getMiis());
         ImagerSystem imagerSystem = new ImagerSystem(values);
         return imagerSystem;
     }
@@ -291,5 +299,25 @@ public class Generator {
                 new FieldOfView_Vertical(152.643626 * Math.PI / 180.0));
         FieldOfView fieldOfView = new FieldOfView(values);
         return fieldOfView;
+    }
+
+    private MIIS getMiis() {
+        SortedMap<MIISMetadataKey, IMimdMetadataValue> values = new TreeMap<>();
+        values.put(MIISMetadataKey.minorCoreId, getMinorCoreId());
+        MIIS miis = new MIIS(values);
+        return miis;
+    }
+
+    private MinorCoreId getMinorCoreId() {
+        SortedMap<MinorCoreIdMetadataKey, IMimdMetadataValue> values = new TreeMap<>();
+        byte[] coreIdentifierAsBytes = UuidUtils.uuidToArray(coreIdentifierUUID);
+        long[] data = new long[coreIdentifierAsBytes.length];
+        for (int i = 0; i < coreIdentifierAsBytes.length; ++i) {
+            data[i] = (coreIdentifierAsBytes[i] & 0xFF);
+        }
+        MinorCoreId_Uuid uuid = new MinorCoreId_Uuid(data);
+        values.put(MinorCoreIdMetadataKey.uuid, uuid);
+        MinorCoreId minorCoreId = new MinorCoreId(values);
+        return minorCoreId;
     }
 }

@@ -1,5 +1,6 @@
 package org.jmisb.api.klv.st1303;
 
+import org.jmisb.api.common.KlvParseException;
 import org.jmisb.api.klv.ArrayBuilder;
 
 /**
@@ -29,8 +30,12 @@ public class BooleanArrayEncoder {
      *
      * @param data the array of arrays of ({@code boolean}) values.
      * @return the encoded byte array including the MISB ST1303 header and array data.
+     * @throws KlvParseException if the encoding fails, such as for invalid array dimensions.
      */
-    public byte[] encode(boolean[][] data) {
+    public byte[] encode(boolean[][] data) throws KlvParseException {
+        if ((data.length < 1) || (data[0].length < 1)) {
+            throw new KlvParseException("MDAP encoding requires each dimension to be at least 1");
+        }
         ArrayBuilder builder =
                 new ArrayBuilder()
                         // Number of dimensions

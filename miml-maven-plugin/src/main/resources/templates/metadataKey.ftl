@@ -18,7 +18,7 @@ public enum ${name}MetadataKey implements IKlvKey {
 </#list>
 
     private int tag;
-    private boolean deprecated;
+    private final boolean deprecated;
 
     private static final Map<Integer, ${name}MetadataKey> tagTable = new HashMap<>();
 

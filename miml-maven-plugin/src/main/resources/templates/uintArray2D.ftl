@@ -5,6 +5,7 @@ package ${packageName};
 
 import org.jmisb.api.common.KlvParseException;
 import org.jmisb.api.klv.st1303.MDAPDecoder;
+import org.jmisb.api.klv.st1303.UnsignedIntegerEncodingEncoder;
 import org.jmisb.api.klv.st1902.IMimdMetadataValue;
 
 /**
@@ -34,6 +35,16 @@ public class ${namespacedName} implements IMimdMetadataValue {
      * @param value the unsigned integer values to initialise this ${nameSentenceCase} with.
      */
     public ${namespacedName}(long[][] value) throws IllegalArgumentException{
+<#if arrayDimensionSize(0)??>
+        if (value.length != ${arrayDimensionSize(0)}) {
+            throw new IllegalArgumentException("Required number of ${namespacedName} rows is ${arrayDimensionSize(0)}");
+        }
+</#if>
+<#if arrayDimensionSize(1)??>
+        if (value[0].length != ${arrayDimensionSize(1)}) {
+            throw new IllegalArgumentException("Required number of ${namespacedName} columns is ${arrayDimensionSize(1)}");
+        }
+</#if>
 <#if minValue??>
         for (int i = 0; i < value.length; ++i) {
             for (int j = 0; j < value[i].length; ++j) {
@@ -84,8 +95,12 @@ public class ${namespacedName} implements IMimdMetadataValue {
 
     @Override
     public byte[] getBytes(){
-        // TODO: encode using ST1303 rules
-        return null;
+        try {
+            UnsignedIntegerEncodingEncoder encoder = new UnsignedIntegerEncodingEncoder();
+            return encoder.encode(this.uintArray);
+        } catch (KlvParseException ex) {
+            return new byte[0];
+        }
     }
 
     @Override

@@ -60,8 +60,12 @@ public class ${namespacedName} implements IMimdMetadataValue {
 
     @Override
     public byte[] getBytes() {
-        BooleanArrayEncoder encoder = new BooleanArrayEncoder();
-        return encoder.encode(value);
+        try {
+            BooleanArrayEncoder encoder = new BooleanArrayEncoder();
+            return encoder.encode(value);
+        } catch (KlvParseException ex) {
+            return new byte[0];
+        }
     }
 
     @Override

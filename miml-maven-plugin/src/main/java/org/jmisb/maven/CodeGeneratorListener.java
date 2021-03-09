@@ -266,17 +266,18 @@ public class CodeGeneratorListener implements MIML_v3Listener {
             throws TemplateException, IOException {
         if (entry.isArray()) {
             if ((entry.getTypeName().equals("Boolean")) && (entry.isArray2D())) {
-                processClassTestTemplate(outputTestDirectory, entry, "booleanArrayTest2D.ftl");
+                processClassTestTemplate(outputTestDirectory, entry, "booleanArray2DTest.ftl");
             } else if ((entry.getTypeName().equals("Integer")) && (entry.isArray2D())) {
-                processClassTestTemplate(outputTestDirectory, entry, "intArrayTest2D.ftl");
+                // TODO: this isn't implemented yet
+                processClassTestTemplate(outputTestDirectory, entry, "intArray2DTest.ftl");
             } else if ((entry.getTypeName().equals("Real")) && (entry.isArray1D())) {
-                processClassTestTemplate(outputTestDirectory, entry, "realArrayTest1D.ftl");
+                processClassTestTemplate(outputTestDirectory, entry, "realArray1DTest.ftl");
             } else if ((entry.getTypeName().equals("Real")) && (entry.isArray2D())) {
-                processClassTestTemplate(outputTestDirectory, entry, "realArrayTest2D.ftl");
+                processClassTestTemplate(outputTestDirectory, entry, "realArray2DTest.ftl");
             } else if ((entry.getTypeName().equals("UInt")) && (entry.isArray1D())) {
-                processClassTestTemplate(outputTestDirectory, entry, "uintArrayTest1D.ftl");
+                processClassTestTemplate(outputTestDirectory, entry, "uintArray1DTest.ftl");
             } else if ((entry.getTypeName().equals("UInt")) && (entry.isArray2D())) {
-                processClassTestTemplate(outputTestDirectory, entry, "uintArrayTest2D.ftl");
+                processClassTestTemplate(outputTestDirectory, entry, "uintArray2DTest.ftl");
             } else if ((entry.isRef()) && (entry.isArray1D())) {
                 // TODO
                 // processClassTestTemplate(outputTestDirectory, entry, "refArrayTest.ftl");

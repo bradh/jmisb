@@ -2,6 +2,7 @@ package org.jmisb.api.klv.st1303;
 
 import static org.testng.Assert.*;
 
+import org.jmisb.api.common.KlvParseException;
 import org.testng.annotations.Test;
 
 /** Unit tests for BooleanArrayEncoder. */
@@ -10,7 +11,7 @@ public class BooleanArrayEncoderTest {
     public BooleanArrayEncoderTest() {}
 
     @Test
-    public void check2D() {
+    public void check2D() throws KlvParseException {
         BooleanArrayEncoder encoder = new BooleanArrayEncoder();
         byte[] encoded =
                 encoder.encode(
@@ -36,7 +37,7 @@ public class BooleanArrayEncoderTest {
     }
 
     @Test
-    public void checkSingleElement2D() {
+    public void checkSingleElement2D() throws KlvParseException {
         BooleanArrayEncoder encoder = new BooleanArrayEncoder();
         byte[] encoded = encoder.encode(new boolean[][] {{true}});
         assertEquals(

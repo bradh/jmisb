@@ -4,6 +4,11 @@
 package ${packageName};
 
 import org.jmisb.api.common.KlvParseException;
+<#if minValue?? && maxValue??>
+import org.jmisb.api.klv.st1303.ElementProcessedEncoder;
+<#else>
+import org.jmisb.api.klv.st1303.NaturalFormatEncoder;
+</#if>
 import org.jmisb.api.klv.st1303.MDAPDecoder;
 import org.jmisb.api.klv.st1902.IMimdMetadataValue;
 
@@ -34,6 +39,11 @@ public class ${namespacedName} implements IMimdMetadataValue {
      * @param value the floating point values to initialise this ${nameSentenceCase} with.
      */
     public ${namespacedName}(double[] value) throws IllegalArgumentException{
+<#if arrayDimensionSize(0)??>
+        if (value.length != ${arrayDimensionSize(0)}) {
+            throw new IllegalArgumentException("Required number of ${namespacedName} elements is ${arrayDimensionSize(0)}");
+        }
+</#if>
 <#if minValue??>
         for (int i = 0; i < value.length; ++i) {
             if (value[i] < ${minValue}) {
@@ -80,8 +90,18 @@ public class ${namespacedName} implements IMimdMetadataValue {
 
     @Override
     public byte[] getBytes(){
-        // TODO: encode using ST1303 rules
-        return null;
+        try {
+    <#if resolution??>
+            ElementProcessedEncoder encoder = new ElementProcessedEncoder(${minValue}, ${maxValue}, (double)${resolution});
+    <#elseif minValue?? && maxValue??>
+            ElementProcessedEncoder encoder = new ElementProcessedEncoder(${minValue}, ${maxValue}, Float.BYTES});
+    <#else>
+            NaturalFormatEncoder encoder = new NaturalFormatEncoder();
+    </#if>
+            return encoder.encode(this.doubleArray);
+        } catch (KlvParseException ex) {
+            return new byte[0];
+        }
     }
 
     @Override

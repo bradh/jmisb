@@ -22,7 +22,7 @@ public class MDAPDecoder {
         try {
             BerField ndim = BerDecoder.decode(bytes, i, true);
             if (ndim.getValue() != 1) {
-                throw new KlvParseException("TODO: wrong dimensions for this call");
+                throw new KlvParseException("Wrong dimensions for this call");
             }
             i += ndim.getLength();
             BerField dim1 = BerDecoder.decode(bytes, i, true);
@@ -132,7 +132,7 @@ public class MDAPDecoder {
         try {
             BerField ndim = BerDecoder.decode(bytes, i, true);
             if (ndim.getValue() != 2) {
-                throw new KlvParseException("TODO: wrong dimensions for this call");
+                throw new KlvParseException("Wrong dimensions for this call");
             }
             i += ndim.getLength();
             BerField dim1 = BerDecoder.decode(bytes, i, true);
@@ -377,7 +377,7 @@ public class MDAPDecoder {
         int i = offset;
         BerField ndim = BerDecoder.decode(bytes, i, true);
         if (ndim.getValue() != 1) {
-            throw new KlvParseException("TODO: wrong dimensions for this call");
+            throw new KlvParseException("Wrong dimensions for this call");
         }
         i += ndim.getLength();
         BerField dim1 = BerDecoder.decode(bytes, i, true);
@@ -448,7 +448,7 @@ public class MDAPDecoder {
         int i = offset;
         BerField ndim = BerDecoder.decode(bytes, i, true);
         if (ndim.getValue() != 2) {
-            throw new KlvParseException("TODO: wrong dimensions for this call");
+            throw new KlvParseException("Wrong dimensions for this call");
         }
         i += ndim.getLength();
         BerField dim1 = BerDecoder.decode(bytes, i, true);

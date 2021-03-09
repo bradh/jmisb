@@ -3,8 +3,16 @@
 // Template: ${.current_template_name}
 package ${packageName};
 
+import java.util.Set;
+import java.util.SortedSet;
+import java.util.TreeSet;
 import org.jmisb.api.common.KlvParseException;
+import org.jmisb.api.klv.IKlvKey;
+import org.jmisb.api.klv.IKlvValue;
+import org.jmisb.api.klv.INestedKlvValue;
 import org.jmisb.api.klv.st1303.MDAPDecoder;
+import org.jmisb.api.klv.st1303.UnsignedIntegerEncodingEncoder;
+import org.jmisb.api.klv.st1902.ArrayItemKey;
 import org.jmisb.api.klv.st1902.IMimdMetadataValue;
 
 /**
@@ -18,7 +26,7 @@ import org.jmisb.api.klv.st1902.IMimdMetadataValue;
  *
  * See ${document} for more information on this data type.
  */
-public class ${namespacedName} implements IMimdMetadataValue {
+public class ${namespacedName} implements IMimdMetadataValue, INestedKlvValue {
     private final long[] uintArray;
 
     /**
@@ -34,6 +42,11 @@ public class ${namespacedName} implements IMimdMetadataValue {
      * @param value the unsigned integer values to initialise this ${nameSentenceCase} with.
      */
     public ${namespacedName}(long[] value) throws IllegalArgumentException{
+<#if arrayDimensionSize(0)??>
+        if (value.length != ${arrayDimensionSize(0)}) {
+            throw new IllegalArgumentException("Required number of ${namespacedName} elements is ${arrayDimensionSize(0)}");
+        }
+</#if>
 <#if minValue??>
         for (int i = 0; i < value.length; ++i) {
             if (value[i] < ${minValue}) {
@@ -80,13 +93,16 @@ public class ${namespacedName} implements IMimdMetadataValue {
 
     @Override
     public byte[] getBytes(){
-        // TODO: encode using ST1303 rules
-        return null;
+        try {
+            UnsignedIntegerEncodingEncoder encoder = new UnsignedIntegerEncodingEncoder();
+            return encoder.encode(this.uintArray);
+        } catch (KlvParseException ex) {
+            return new byte[0];
+        }
     }
 
     @Override
     public String getDisplayableValue() {
-        // TODO: see if we can return something useful here
         return "[${nameSentenceCase} Array]";
     }
 
@@ -97,5 +113,32 @@ public class ${namespacedName} implements IMimdMetadataValue {
      */
     public long[] getValue() {
         return this.uintArray.clone();
+    }
+
+    @Override
+    public IKlvValue getField(IKlvKey tag) {
+        ArrayItemKey key = (ArrayItemKey) tag;
+        long value = this.uintArray[key.getIdentifier()];
+        IKlvValue field = new IKlvValue() {
+            @Override
+            public String getDisplayableValue() {
+                return String.format("0x%02x", value);
+            }
+
+            @Override
+            public String getDisplayName() {
+                return String.format("%d", key.getIdentifier());
+            }
+        };
+        return field;
+    }
+
+    @Override
+    public Set<? extends IKlvKey> getIdentifiers() {
+        SortedSet<ArrayItemKey> arrayIdentifiers = new TreeSet<>();
+        for (int i = 0; i < uintArray.length; ++i) {
+            arrayIdentifiers.add(new ArrayItemKey(i));
+        }
+        return arrayIdentifiers;
     }
 }
