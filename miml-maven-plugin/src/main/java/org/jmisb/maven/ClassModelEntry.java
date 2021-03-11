@@ -122,20 +122,12 @@ public class ClassModelEntry {
         return minValue;
     }
 
-    public boolean isPrimitiveType() {
-        return isPrimitive() && !isArray();
-    }
-
-    private boolean isPrimitive() {
+    public boolean isPrimitive() {
         return typeName.equals("Real")
                 || typeName.equals("String")
                 || typeName.equals("Integer")
                 || typeName.equals("UInt")
                 || typeName.equals("Boolean");
-    }
-
-    public boolean isPrimitiveTypeArray() {
-        return isPrimitive() && isArray();
     }
 
     public boolean isRef() {

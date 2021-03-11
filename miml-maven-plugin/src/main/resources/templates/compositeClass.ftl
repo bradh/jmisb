@@ -217,11 +217,7 @@ public class ${name} implements <#if topLevel>IMisbMessage, </#if>IMimdMetadataV
                 return MimdIdReference.fromBytes(data, "${entry.nameSentenceCase}", "${entry.typeName}");
 <#elseif entry.list>
                 return ${entry.qualifiedListTypeName}.fromBytes(data, "${entry.nameSentenceCase}");
-<#elseif entry.primitiveType>
-                // primitive type
-                return ${entry.namespacedQualifiedName}.fromBytes(data);
-<#elseif entry.primitiveTypeArray>
-                // TODO: primitive type array - this isn't even close
+<#elseif entry.primitive>
                 return ${entry.namespacedQualifiedName}.fromBytes(data);
 <#elseif entry.name == "mimdId">
                 return MimdId.fromBytes(data);

@@ -3,13 +3,20 @@
 // Template: ${.current_template_name}
 package ${packageName};
 
+import java.util.Set;
+import java.util.SortedSet;
+import java.util.TreeSet;
 import org.jmisb.api.common.KlvParseException;
+import org.jmisb.api.klv.IKlvKey;
+import org.jmisb.api.klv.IKlvValue;
+import org.jmisb.api.klv.INestedKlvValue;
 <#if minValue?? && maxValue??>
 import org.jmisb.api.klv.st1303.ElementProcessedEncoder;
 <#else>
 import org.jmisb.api.klv.st1303.NaturalFormatEncoder;
 </#if>
 import org.jmisb.api.klv.st1303.MDAPDecoder;
+import org.jmisb.api.klv.st1902.ArrayItemKey;
 import org.jmisb.api.klv.st1902.IMimdMetadataValue;
 
 /**
@@ -23,7 +30,7 @@ import org.jmisb.api.klv.st1902.IMimdMetadataValue;
  *
  * See ${document} for more information on this data type.
  */
-public class ${namespacedName} implements IMimdMetadataValue {
+public class ${namespacedName} implements IMimdMetadataValue, INestedKlvValue  {
     private final double[] doubleArray;
 
     /**
@@ -106,7 +113,6 @@ public class ${namespacedName} implements IMimdMetadataValue {
 
     @Override
     public String getDisplayableValue() {
-        // TODO: see if we can return something useful here
         return "[${nameSentenceCase} Array]";
     }
 
@@ -117,5 +123,32 @@ public class ${namespacedName} implements IMimdMetadataValue {
      */
     public double[] getValue() {
         return this.doubleArray.clone();
+    }
+
+   @Override
+    public IKlvValue getField(IKlvKey tag) {
+        ArrayItemKey key = (ArrayItemKey) tag;
+        double value = this.doubleArray[key.getIdentifier()];
+        IKlvValue field = new IKlvValue() {
+            @Override
+            public String getDisplayableValue() {
+                return String.format("%f", value);
+            }
+
+            @Override
+            public String getDisplayName() {
+                return String.format("%d", key.getIdentifier());
+            }
+        };
+        return field;
+    }
+
+    @Override
+    public Set<? extends IKlvKey> getIdentifiers() {
+        SortedSet<ArrayItemKey> arrayIdentifiers = new TreeSet<>();
+        for (int i = 0; i < doubleArray.length; ++i) {
+            arrayIdentifiers.add(new ArrayItemKey(i));
+        }
+        return arrayIdentifiers;
     }
 }
