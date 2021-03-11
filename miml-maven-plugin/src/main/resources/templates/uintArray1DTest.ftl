@@ -7,7 +7,10 @@
 // Template: ${.current_template_name}
 package ${packageName};
 
+import java.util.Set;
 import org.jmisb.api.common.KlvParseException;
+import org.jmisb.api.klv.IKlvKey;
+import org.jmisb.api.klv.IKlvValue;
 import static org.testng.Assert.*;
 
 import org.testng.annotations.Test;
@@ -100,6 +103,18 @@ public class ${namespacedName}Test {
                 (byte) ${minVal}, // APAS aka bias value
                 <#list 1..arrayDimension0 as x>(byte) 0x00<#sep>,
                 </#list>});
+    }
+
+    @Test
+    public void getNestedValues() {
+        ${namespacedName} uut = new ${namespacedName}(new long[] {<#list 1..arrayDimension0 as x>${minVal}<#sep>, </#list>});
+        Set<? extends IKlvKey> identifiers = uut.getIdentifiers();
+        assertEquals(identifiers.size(), ${arrayDimension0});
+        for (IKlvKey identifier: identifiers) {
+            IKlvValue field = uut.getField(identifier);
+            assertNotNull(field.getDisplayName());
+            assertEquals(field.getDisplayableValue(), String.format("0x%02x", ${minVal}));
+        }
     }
 <#if minValue??>
 
