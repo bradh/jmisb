@@ -7,7 +7,10 @@
 // Template: ${.current_template_name}
 package ${packageName};
 
+import java.util.Set;
 import org.jmisb.api.common.KlvParseException;
+import org.jmisb.api.klv.IKlvKey;
+import org.jmisb.api.klv.IKlvValue;
 import static org.testng.Assert.*;
 
 import org.testng.annotations.Test;
@@ -31,6 +34,31 @@ public class ${namespacedName}Test {
     public void getValue() {
         ${namespacedName} uut = new ${namespacedName}(new double[] {<#list 1..arrayDimension0 as x>${minVal}<#sep>, </#list>});
         assertEquals(uut.getValue(), new double[] {<#list 1..arrayDimension0 as x>${minVal}<#sep>, </#list>});
+    }
+
+    @Test
+    public void getBytes() {
+        ${namespacedName} uut = new ${namespacedName}(new double[] {<#list 1..arrayDimension0 as x>${minVal}<#sep>, </#list>});
+        assertNotNull(uut.getBytes());
+    }
+
+    @Test
+    public void fromBytes() throws KlvParseException {
+        ${namespacedName} uut = ${namespacedName}.fromBytes(new byte[]
+                { 0x01, ${arrayDimension0}, 0x04, 0x01, <#list 1..arrayDimension0 as i>0x00, 0x00, 0x00, 0x00<#sep>, </#list>});
+    }
+
+
+    @Test
+    public void getNestedValues() {
+        ${namespacedName} uut = new ${namespacedName}(new double[] {<#list 1..arrayDimension0 as x>${minVal}<#sep>, </#list>});
+        Set<? extends IKlvKey> identifiers = uut.getIdentifiers();
+        assertEquals(identifiers.size(), ${arrayDimension0});
+        for (IKlvKey identifier: identifiers) {
+            IKlvValue field = uut.getField(identifier);
+            assertNotNull(field.getDisplayName());
+            assertEquals(field.getDisplayableValue(), "0.000000");
+        }
     }
 <#if minValue??>
 

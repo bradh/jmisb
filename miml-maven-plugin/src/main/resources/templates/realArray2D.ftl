@@ -76,6 +76,16 @@ public class ${namespacedName} implements IMimdMetadataValue {
     public ${namespacedName}(byte[] bytes) throws KlvParseException {
         MDAPDecoder decoder = new MDAPDecoder();
         this.doubleArray = decoder.decodeFloatingPoint2D(bytes, 0);
+<#if arrayDimensionSize(0)??>
+        if (this.doubleArray.length != ${arrayDimensionSize(0)}) {
+            throw new IllegalArgumentException("Required number of ${namespacedName} rows is ${arrayDimensionSize(0)}");
+        }
+</#if>
+<#if arrayDimensionSize(1)??>
+        if (this.doubleArray[0].length != ${arrayDimensionSize(1)}) {
+            throw new IllegalArgumentException("Required number of ${namespacedName} columns is ${arrayDimensionSize(1)}");
+        }
+</#if>
     }
 
     /**

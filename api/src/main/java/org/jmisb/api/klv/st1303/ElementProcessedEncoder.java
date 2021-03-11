@@ -65,7 +65,7 @@ public class ElementProcessedEncoder {
      * a new instance if the parameters need to change.
      *
      * @param min the minimum value for the encoding (same as {@code a} parameter in IMAPB).
-     * @param max the maximum value for the encoding (same as {@code b} parameter in IMAPB)/
+     * @param max the maximum value for the encoding (same as {@code b} parameter in IMAPB).
      * @param ebytes the number of bytes to encode to (same as {@code L} parameter in IMAPB).
      */
     public ElementProcessedEncoder(float min, float max, int ebytes) {
