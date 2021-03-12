@@ -4,6 +4,8 @@
 package ${packageName};
 
 import org.jmisb.api.common.KlvParseException;
+import org.jmisb.api.klv.st1303.MDAPDecoder;
+import org.jmisb.api.klv.st1303.NaturalFormatEncoder;
 import org.jmisb.api.klv.st1902.IMimdMetadataValue;
 <#if !(minValue?? && maxValue??)>
 import org.jmisb.core.klv.PrimitiveConverter;
@@ -21,7 +23,7 @@ import org.jmisb.core.klv.PrimitiveConverter;
  * See ${document} for more information on this data type.
  */
 public class ${namespacedName} implements IMimdMetadataValue {
-    private final int[][] intArray;
+    private final long[][] intArray;
 
     /**
      * Construct from value.
@@ -35,7 +37,7 @@ public class ${namespacedName} implements IMimdMetadataValue {
 </#if>
      * @param value the signed integer values to initialise this ${nameSentenceCase} with.
      */
-    public ${namespacedName}(int[][] value) throws IllegalArgumentException{
+    public ${namespacedName}(long[][] value) throws IllegalArgumentException{
 <#if minValue??>
         for (int i = 0; i < value.length; ++i) {
             for (int j = 0; j < value[i].length; ++j) {
@@ -64,8 +66,8 @@ public class ${namespacedName} implements IMimdMetadataValue {
      * @throws KlvParseException if the array could not be parsed
      */
     public ${namespacedName}(byte[] bytes) throws KlvParseException {
-        // TODO: decode using ST1303 rules
-        this.intArray = new int[0][0];
+        MDAPDecoder decoder = new MDAPDecoder();
+        this.intArray = decoder.decodeInt2D(bytes, 0);
     }
 
     /**
@@ -86,8 +88,12 @@ public class ${namespacedName} implements IMimdMetadataValue {
 
     @Override
     public byte[] getBytes(){
-        // TODO: encode using ST1303 rules
-        return null;
+        try {
+            NaturalFormatEncoder encoder = new NaturalFormatEncoder();
+            return encoder.encode(this.intArray);
+        } catch (KlvParseException ex) {
+            return new byte[0];
+        }
     }
 
     @Override
@@ -101,7 +107,7 @@ public class ${namespacedName} implements IMimdMetadataValue {
      *
      * @return the value as a 2D signed integer array
      */
-    public int[][] getValue() {
+    public long[][] getValue() {
         return this.intArray.clone();
     }
 }

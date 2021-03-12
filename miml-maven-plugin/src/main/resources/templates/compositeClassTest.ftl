@@ -133,6 +133,7 @@ public class ${name}Test extends LoggerChecks {
     </#if>
 </#if>
 <#list entries as entry>
+
     @Test
     public void createValue${entry.nameSentenceCase}() throws KlvParseException {
     <#if entry.array>
@@ -146,6 +147,11 @@ public class ${name}Test extends LoggerChecks {
         assertTrue(uut instanceof ${entry.namespacedName});
         ${entry.namespacedName} value = (${entry.namespacedName})uut;
         <#elseif entry.typeName == "Real">
+        IMimdMetadataValue uut = ${name}.createValue(${name}MetadataKey.${entry.name},
+            ${entry.namespacedName}Test.getByteArrayForValidArrayData());
+        assertTrue(uut instanceof ${entry.namespacedName});
+        ${entry.namespacedName} value = (${entry.namespacedName})uut;
+        <#elseif entry.typeName == "Integer">
         IMimdMetadataValue uut = ${name}.createValue(${name}MetadataKey.${entry.name},
             ${entry.namespacedName}Test.getByteArrayForValidArrayData());
         assertTrue(uut instanceof ${entry.namespacedName});
@@ -212,8 +218,8 @@ public class ${name}Test extends LoggerChecks {
         assertTrue(uut instanceof ${entry.qualifiedTypeName});
     </#if>
     }
-
 </#list>
+
     @Test
     public void testBuildRef() throws KlvParseException {
         SortedMap<${name}MetadataKey, IMimdMetadataValue> values = new TreeMap<>();
@@ -273,4 +279,32 @@ public class ${name}Test extends LoggerChecks {
             assertEquals(parseResult.getIdentifiers().size(), values.keySet().size());
         }
     }    
+
+    @Test
+    public void testBuildRealArray() throws KlvParseException {
+        SortedMap<${name}MetadataKey, IMimdMetadataValue> values = new TreeMap<>();
+<#list entries as entry>
+    <#if (entry.typeName == "Real") && entry.array>
+        IMimdMetadataValue refValue${entry?index} = ${name}.createValue(
+            ${name}MetadataKey.${entry.name},
+            ${entry.namespacedName}Test.getByteArrayForValidArrayData());
+        values.put(${name}MetadataKey.${entry.name}, refValue${entry?index});
+    </#if>
+</#list>
+        ${name} uut = new ${name}(values);
+        assertEquals(uut.getIdentifiers().size(), values.keySet().size());
+        if (uut.getIdentifiers().size() > 0) {
+            uut.getIdentifiers().stream().forEach(id -> {
+                assertNotNull(uut.getField(id));
+            });
+        }
+        byte[] bytes = uut.getBytes();
+        assertTrue(bytes.length >= 0);
+<#if topLevel>
+        ${name} regenerated = new ${name}(bytes);
+<#else>
+        ${name} regenerated = new ${name}(bytes, 0, bytes.length);
+</#if>
+        assertEquals(uut.getIdentifiers().size(), regenerated.getIdentifiers().size());
+    }
 }

@@ -19,10 +19,10 @@ public class NaturalFormatEncoder {
     public NaturalFormatEncoder() {}
 
     /**
-     * Encode a two dimensional (unsigned) integer array to a Multi-Dimensional Array Pack using
-     * Unsigned Integer Encoding.
+     * Encode a two dimensional real array to a Multi-Dimensional Array Pack using Natural Format
+     * Encoding.
      *
-     * @param data the array of arrays of ({@code boolean}) values.
+     * @param data the array of arrays of ({@code double}) values.
      * @return the encoded byte array including the MISB ST1303 header and array data.
      * @throws KlvParseException if the encoding fails, such as for invalid array dimensions.
      */
@@ -44,6 +44,39 @@ public class NaturalFormatEncoder {
                         .appendAsOID(ArrayProcessingAlgorithm.NaturalFormat.getCode());
         for (int i = 0; i < data.length; i++) {
             builder.append(PrimitiveConverter.float64ToBytes(data[i]));
+        }
+        return builder.toBytes();
+    }
+
+    /**
+     * Encode a two dimensional (signed) integer array to a Multi-Dimensional Array Pack using
+     * Natural Format Encoding.
+     *
+     * @param data the array of arrays of ({@code int}) values.
+     * @return the encoded byte array including the MISB ST1303 header and array data.
+     * @throws KlvParseException if the encoding fails, such as for invalid array dimensions.
+     */
+    public byte[] encode(long[][] data) throws KlvParseException {
+        if ((data.length < 1) || (data[0].length < 1)) {
+            throw new KlvParseException("MDAP encoding requires each dimension to be at least 1");
+        }
+        ArrayBuilder builder =
+                new ArrayBuilder()
+                        // Number of dimensions
+                        .appendAsOID(2)
+                        // dim_1
+                        .appendAsOID(data.length)
+                        // dim_2
+                        .appendAsOID(data[0].length)
+                        // E_bytes value
+                        .appendAsOID(Long.BYTES)
+                        // array processing algorithm (APA)
+                        // note: no array processing algorithm support (APAS)
+                        .appendAsOID(ArrayProcessingAlgorithm.NaturalFormat.getCode());
+        for (long[] row : data) {
+            for (int c = 0; c < row.length; ++c) {
+                builder.append(PrimitiveConverter.int64ToBytes(row[c]));
+            }
         }
         return builder.toBytes();
     }

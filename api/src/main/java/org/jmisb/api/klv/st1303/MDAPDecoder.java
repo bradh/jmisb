@@ -366,6 +366,71 @@ public class MDAPDecoder {
     }
 
     /**
+     * Decode a two-dimensional signed integer array from a byte array.
+     *
+     * @param bytes the byte array to decode from
+     * @param offset the offset to start the decoding from
+     * @return (signed) 2D integer array containing the data decoded from the byte array.
+     * @throws KlvParseException if the parsing fails.
+     */
+    public long[][] decodeInt2D(byte[] bytes, final int offset) throws KlvParseException {
+        int i = offset;
+        BerField ndim = BerDecoder.decode(bytes, i, true);
+        if (ndim.getValue() != 2) {
+            throw new KlvParseException("Wrong dimensions for this call");
+        }
+        i += ndim.getLength();
+        BerField dim1 = BerDecoder.decode(bytes, i, true);
+        i += dim1.getLength();
+        BerField dim2 = BerDecoder.decode(bytes, i, true);
+        i += dim2.getLength();
+        BerField ebytes = BerDecoder.decode(bytes, i, true);
+        i += ebytes.getLength();
+        BerField apa = BerDecoder.decode(bytes, i, true);
+        i += apa.getLength();
+        switch (ArrayProcessingAlgorithm.getValue(apa.getValue())) {
+            case NaturalFormat:
+                return decodeInt2D_NaturalFormat(
+                        bytes, i, dim1.getValue(), dim2.getValue(), ebytes.getValue());
+            case ST1201:
+                throw new KlvParseException(
+                        "Invalid APA algorithm for signed integer 1D decode: ST1201");
+            case BooleanArray:
+                throw new KlvParseException(
+                        "Invalid APA algorithm for signed integer 1D decode: BooleanArray");
+            case UnsignedInteger:
+                throw new KlvParseException(
+                        "Invalid APA algorithm for signed integer 1D decode: UnsignedInteger");
+            case RunLengthEncoding:
+                throw new KlvParseException(
+                        "Unsupported APA algorithm for signed integer 1D decode: RunLengthEncoding");
+            default:
+                throw new KlvParseException(
+                        String.format(
+                                "Unknown APA algorithm for  signed integer 1D decode: %d",
+                                apa.getValue()));
+        }
+    }
+
+    private long[][] decodeInt2D_NaturalFormat(
+            byte[] bytes,
+            final int offset,
+            final int numRows,
+            final int numColumns,
+            final int eBytes)
+            throws KlvParseException {
+        int index = offset;
+        long[][] result = new long[numRows][numColumns];
+        for (int r = 0; r < numRows; ++r) {
+            for (int c = 0; c < numColumns; ++c) {
+                result[r][c] = PrimitiveConverter.variableBytesToInt64(bytes, index, eBytes);
+                index += eBytes;
+            }
+        }
+        return result;
+    }
+
+    /**
      * Decode a one-dimensional unsigned integer array from a byte array.
      *
      * @param bytes the byte array to decode from

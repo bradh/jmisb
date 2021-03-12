@@ -54,7 +54,7 @@ public class ${namespacedName}Test {
 
     static byte[] getByteArrayForValidArrayData() {
         return new byte[]
-                { 0x02, ${arrayDimension0}, ${arrayDimension1}, 0x04, 0x01, <#list 1..arrayDimension0*arrayDimension1 as i>0x00, 0x00, 0x00, 0x00<#sep>, </#list>};
+                { 0x02, ${arrayDimension0}, ${arrayDimension1}, 0x08, 0x01, <#list 1..arrayDimension0*arrayDimension1 as i>0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00<#sep>, </#list>};
     }
 <#if arrayDimensionSize(0)??>
 

@@ -41,6 +41,10 @@ public class PrimitiveConverter {
         return res;
     }
 
+    static long arrayToSignedLongInternal(byte[] bytes, int offset, int length) {
+        return new BigInteger(bytes, offset, length).longValue();
+    }
+
     /**
      * Convert an unsigned 32-bit unsigned integer (long with range of uint32) to a byte array.
      *
@@ -129,6 +133,20 @@ public class PrimitiveConverter {
         } else {
             throw new IllegalArgumentException("Invalid buffer length");
         }
+    }
+
+    /**
+     * Convert part of a byte array to a signed 32-bit integer
+     *
+     * @param bytes The array
+     * @param offset the offset into the array where the conversion should start
+     * @return The signed 32-bit integer
+     */
+    public static int toInt32(byte[] bytes, int offset) {
+        if (offset + Integer.BYTES <= bytes.length) {
+            return ByteBuffer.wrap(bytes, offset, Integer.BYTES).getInt();
+        }
+        throw new IllegalArgumentException("Invalid buffer length");
     }
 
     /**
@@ -421,6 +439,37 @@ public class PrimitiveConverter {
      */
     public static long variableBytesToInt64(byte[] bytes) {
         return new BigInteger(bytes).longValue();
+    }
+
+    /**
+     * Convert a variable length byte array to an signed 64-bit integer (long with range of int64)
+     *
+     * @param bytes The array
+     * @param offset the starting offset into the array to start extracting
+     * @param length the number of bytes to extract (1-8)
+     * @return The signed integer as a long
+     */
+    public static long variableBytesToInt64(byte[] bytes, int offset, int length) {
+        switch (length) {
+            case 8:
+                return PrimitiveConverter.toInt64(bytes, offset);
+            case 7:
+                return arrayToSignedLongInternal(bytes, offset, length);
+            case 6:
+                return arrayToSignedLongInternal(bytes, offset, length);
+            case 5:
+                return arrayToSignedLongInternal(bytes, offset, length);
+            case 4:
+                return PrimitiveConverter.toInt32(bytes, offset);
+            case 3:
+                return arrayToSignedLongInternal(bytes, offset, length);
+            case 2:
+                return PrimitiveConverter.toInt16(bytes, offset);
+            case 1:
+                return bytes[offset];
+            default:
+                throw new IllegalArgumentException("Invalid length");
+        }
     }
 
     /**

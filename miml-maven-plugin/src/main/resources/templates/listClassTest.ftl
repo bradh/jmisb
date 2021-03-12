@@ -34,5 +34,12 @@ public class ListOf${name}Test extends LoggerChecks {
         assertNotNull(uut);
         assertEquals(uut.getDisplayName(), "testDisplayName");
     }
+
+    @Test
+    public void fromBytesNoIdentifiers() throws KlvParseException {
+        ListOf${name} uut = new ListOf${name}(new byte[]{}, 0, 0, "testDisplayName");
+        assertNotNull(uut);
+        assertEquals(uut.getIdentifiers().size(), 0);
+    }
 }
 
