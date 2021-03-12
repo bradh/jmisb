@@ -142,27 +142,12 @@ public class ${name}Test extends LoggerChecks {
         >
         <#if entry.typeName == "UInt">
         IMimdMetadataValue uut = ${name}.createValue(${name}MetadataKey.${entry.name},
-            <#if entry.array1D>
-            new byte[] {
-                (byte) 0x01, // num Dimensions
-                (byte) ${arrayDimension0},
-                (byte) 0x01, // Ebytes
-                (byte) 0x04, // APA
-                (byte) ${minVal}, // APAS aka bias value
-                <#list 1..arrayDimension0 as x>(byte) 0x00<#sep>,
-                </#list>});
-            <#elseif entry.array2D>
-            <#assign arrayDimension1=entry.arrayDimensionSize(1)!1 >
-            new byte[] {
-                (byte) 0x02, // num Dimensions
-                (byte) ${arrayDimension0},
-                (byte) ${arrayDimension1},
-                (byte) 0x01, // Ebytes
-                (byte) 0x04, // APA
-                (byte) ${minVal}, // APAS aka bias value
-                <#list 1..(arrayDimension0*arrayDimension1) as x>(byte) 0x00<#sep>,
-                </#list>});
-            </#if>
+            ${entry.namespacedName}Test.getByteArrayForValidArrayData());
+        assertTrue(uut instanceof ${entry.namespacedName});
+        ${entry.namespacedName} value = (${entry.namespacedName})uut;
+        <#elseif entry.typeName == "Real">
+        IMimdMetadataValue uut = ${name}.createValue(${name}MetadataKey.${entry.name},
+            ${entry.namespacedName}Test.getByteArrayForValidArrayData());
         assertTrue(uut instanceof ${entry.namespacedName});
         ${entry.namespacedName} value = (${entry.namespacedName})uut;
         <#else>

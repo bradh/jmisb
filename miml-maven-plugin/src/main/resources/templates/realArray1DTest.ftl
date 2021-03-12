@@ -44,10 +44,13 @@ public class ${namespacedName}Test {
 
     @Test
     public void fromBytes() throws KlvParseException {
-        ${namespacedName} uut = ${namespacedName}.fromBytes(new byte[]
-                { 0x01, ${arrayDimension0}, 0x04, 0x01, <#list 1..arrayDimension0 as i>0x00, 0x00, 0x00, 0x00<#sep>, </#list>});
+        ${namespacedName} uut = ${namespacedName}.fromBytes(getByteArrayForValidArrayData());
     }
 
+    static byte[] getByteArrayForValidArrayData() {
+        return new byte[]
+                { 0x01, ${arrayDimension0}, 0x04, 0x01, <#list 1..arrayDimension0 as i>0x00, 0x00, 0x00, 0x00<#sep>, </#list>};
+    }
 
     @Test
     public void getNestedValues() {

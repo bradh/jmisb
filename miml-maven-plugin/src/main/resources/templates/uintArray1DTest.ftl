@@ -47,25 +47,20 @@ public class ${namespacedName}Test {
 
     @Test
     public void bytesConstructor() throws KlvParseException {
-        ${namespacedName} uut = new ${namespacedName}(
-            new byte[] {
-                (byte) 0x01, // num Dimensions
-                (byte) ${arrayDimension0},
-                (byte) 0x01, // Ebytes
-                (byte) 0x04, // APA
-                (byte) ${minVal}, // APAS aka bias value
-                <#list 1..arrayDimension0 as x>(byte) 0x00<#sep>,
-                </#list>});
+        ${namespacedName} uut = new ${namespacedName}(getByteArrayForValidArrayData());
         assertEquals(uut.getValue(), new long[] {<#list 1..arrayDimension0 as x>${minVal}<#sep>, </#list>});
-        assertEquals(uut.getBytes(),
-            new byte[] {
+        assertEquals(uut.getBytes(),getByteArrayForValidArrayData());
+    }
+
+    static byte[] getByteArrayForValidArrayData() {
+        return new byte[] {
                 (byte) 0x01, // num Dimensions
                 (byte) ${arrayDimension0},
                 (byte) 0x01, // Ebytes
                 (byte) 0x04, // APA
                 (byte) ${minVal}, // APAS aka bias value
                 <#list 1..arrayDimension0 as x>(byte) 0x00<#sep>,
-                </#list>});
+                </#list>};
     }
 
     @Test
