@@ -46,4 +46,25 @@ public class BooleanArrayEncoderTest {
                     (byte) 0x02, (byte) 0x01, (byte) 0x01, (byte) 0x01, (byte) 0x03, (byte) 0x80
                 });
     }
+
+    @Test(expectedExceptions = KlvParseException.class)
+    public void check2DIntBadColumns() throws KlvParseException {
+        BooleanArrayEncoder encoder = new BooleanArrayEncoder();
+        assertNotNull(encoder);
+        encoder.encode(new boolean[1][0]);
+    }
+
+    @Test(expectedExceptions = KlvParseException.class)
+    public void check2DIntBadRows() throws KlvParseException {
+        BooleanArrayEncoder encoder = new BooleanArrayEncoder();
+        assertNotNull(encoder);
+        encoder.encode(new boolean[0][1]);
+    }
+
+    @Test(expectedExceptions = KlvParseException.class)
+    public void check2DIntBadRowsAndColumns() throws KlvParseException {
+        BooleanArrayEncoder encoder = new BooleanArrayEncoder();
+        assertNotNull(encoder);
+        encoder.encode(new boolean[0][0]);
+    }
 }

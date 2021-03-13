@@ -22,6 +22,32 @@ import org.testng.annotations.Test;
 /** Unit tests for ${name} */
 public class ${name}Test extends LoggerChecks {
 
+    static ${name} makeValue() throws KlvParseException {
+        SortedMap<${name}MetadataKey, IMimdMetadataValue> values = new TreeMap<>();
+<#list entries as entry>
+    <#if entry.typeName == "String">
+        IMimdMetadataValue ${entry.name}Value = ${name}.createValue(${name}MetadataKey.${entry.name}, new byte[]{0x74});
+        assertTrue(${entry.name}Value instanceof ${entry.namespacedName});
+        ${entry.namespacedName} ${entry.name} = (${entry.namespacedName})${entry.name}Value;
+        values.put(${name}MetadataKey.${entry.name}, ${entry.name});
+
+   <#elseif entry.name == "mimdId">
+        // mimdId
+        IMimdMetadataValue id = ${name}.createValue(${name}MetadataKey.${entry.name}, new byte[]{(byte) 0x01});
+        assertTrue(id instanceof MimdId);
+        values.put(${name}MetadataKey.${entry.name}, id);
+
+    <#elseif entry.ref>
+        // Ref
+        IMimdMetadataValue ${entry.name}Value = ${name}.createValue(${name}MetadataKey.${entry.name}, new byte[]{(byte) 0x00});
+        assertTrue(${entry.name}Value instanceof MimdIdReference);
+        values.put(${name}MetadataKey.${entry.name}, ${entry.name}Value);
+
+    </#if>
+</#list>
+        return new ${name}(values);
+    }
+
     public ${name}Test () {
         super(${name}.class);
     }
@@ -135,7 +161,7 @@ public class ${name}Test extends LoggerChecks {
 <#list entries as entry>
 
     @Test
-    public void createValue${entry.nameSentenceCase}() throws KlvParseException {
+    public void checkCreateValue${entry.nameSentenceCase}() throws KlvParseException {
     <#if entry.array>
         <#assign
             minVal=entry.minValue!0

@@ -85,7 +85,22 @@ public class ${namespacedName}Test {
                 <#list 1..arrayDimension0 as x>(byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00<#sep>,
                 </#list>});
     }
+<#if minValue??>
 
+    @Test(expectedExceptions = IllegalArgumentException.class)
+    public void minValueBad() {
+        new ${namespacedName}(new long[][]
+            {<#list 1..arrayDimension0 as r>{<#list 1..arrayDimension1 as c>${minValue - 1}<#sep>, </#list>}<#sep>, </#list>});
+    }
+</#if>
+<#if maxValue??>
+
+    @Test(expectedExceptions = IllegalArgumentException.class)
+    public void maxValueBad() {
+        new ${namespacedName}(new long[][]
+            {<#list 1..arrayDimension0 as r>{<#list 1..arrayDimension1 as c>${maxValue + 1}<#sep>, </#list>}<#sep>, </#list>});
+    }
+</#if>
 <#if arrayDimensionSize(0)??>
 
     @Test(expectedExceptions = IllegalArgumentException.class)

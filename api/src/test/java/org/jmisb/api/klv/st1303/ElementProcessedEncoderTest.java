@@ -292,4 +292,60 @@ public class ElementProcessedEncoderTest {
                     (byte) 0x00
                 });
     }
+
+    @Test(expectedExceptions = KlvParseException.class)
+    public void check1DDoubleBadLength() throws KlvParseException {
+        ElementProcessedEncoder encoder = new ElementProcessedEncoder(-900.0, 19000.0, 3);
+        assertNotNull(encoder);
+        encoder.encode(new double[0]);
+    }
+
+    @Test(expectedExceptions = KlvParseException.class)
+    public void check1DFloatBadLength() throws KlvParseException {
+        ElementProcessedEncoder encoder = new ElementProcessedEncoder(-900.0, 19000.0, 3);
+        assertNotNull(encoder);
+        encoder.encode(new float[0]);
+    }
+
+    @Test(expectedExceptions = KlvParseException.class)
+    public void check2DFloatBadColumns() throws KlvParseException {
+        ElementProcessedEncoder encoder = new ElementProcessedEncoder(-900.0, 19000.0, 3);
+        assertNotNull(encoder);
+        encoder.encode(new float[1][0]);
+    }
+
+    @Test(expectedExceptions = KlvParseException.class)
+    public void check2DFloatBadRows() throws KlvParseException {
+        ElementProcessedEncoder encoder = new ElementProcessedEncoder(-900.0, 19000.0, 3);
+        assertNotNull(encoder);
+        encoder.encode(new float[0][1]);
+    }
+
+    @Test(expectedExceptions = KlvParseException.class)
+    public void check2DFloatBadRowsAndColumns() throws KlvParseException {
+        ElementProcessedEncoder encoder = new ElementProcessedEncoder(-900.0, 19000.0, 3);
+        assertNotNull(encoder);
+        encoder.encode(new float[0][0]);
+    }
+
+    @Test(expectedExceptions = KlvParseException.class)
+    public void check2DDoubleBadColumns() throws KlvParseException {
+        ElementProcessedEncoder encoder = new ElementProcessedEncoder(-900.0, 19000.0, 3);
+        assertNotNull(encoder);
+        encoder.encode(new double[1][0]);
+    }
+
+    @Test(expectedExceptions = KlvParseException.class)
+    public void check2DDoubleBadRows() throws KlvParseException {
+        ElementProcessedEncoder encoder = new ElementProcessedEncoder(-900.0, 19000.0, 3);
+        assertNotNull(encoder);
+        encoder.encode(new double[0][1]);
+    }
+
+    @Test(expectedExceptions = KlvParseException.class)
+    public void check2DDoubleBadRowsAndColumns() throws KlvParseException {
+        ElementProcessedEncoder encoder = new ElementProcessedEncoder(-900.0, 19000.0, 3);
+        assertNotNull(encoder);
+        encoder.encode(new double[0][0]);
+    }
 }

@@ -993,6 +993,169 @@ public class MDAPDecoderTest {
     }
 
     @Test
+    public void testInt2DimNaturalEncoding() throws KlvParseException {
+        MDAPDecoder decoder = new MDAPDecoder();
+        long[][] decoded =
+                decoder.decodeInt2D(
+                        new byte[] {
+                            (byte) 0x02,
+                            (byte) 0x01,
+                            (byte) 0x01,
+                            (byte) 0x01,
+                            (byte) 0x01,
+                            (byte) 0x02
+                        },
+                        0);
+        assertEquals(decoded, new long[][] {{0x2}});
+    }
+
+    @Test(expectedExceptions = KlvParseException.class)
+    public void testInt2Dim_BadAPA_Unused() throws KlvParseException {
+        MDAPDecoder decoder = new MDAPDecoder();
+        decoder.decodeInt2D(
+                new byte[] {
+                    (byte) 0x02,
+                    (byte) 0x01,
+                    (byte) 0x05,
+                    (byte) 0x01,
+                    (byte) 0x00,
+                    (byte) 0x81,
+                    (byte) 0x02,
+                    (byte) 0x00,
+                    (byte) 0x28,
+                    (byte) 0x19,
+                    (byte) 0x0D,
+                    (byte) 0x3C
+                },
+                0);
+    }
+
+    @Test(expectedExceptions = KlvParseException.class)
+    public void testInt2Dim_BadAPA_ST1201Encoding() throws KlvParseException {
+        MDAPDecoder decoder = new MDAPDecoder();
+        decoder.decodeInt2D(
+                new byte[] {
+                    (byte) 0x02,
+                    (byte) 0x01,
+                    (byte) 0x05,
+                    (byte) 0x01,
+                    (byte) 0x02,
+                    (byte) 0x81,
+                    (byte) 0x02,
+                    (byte) 0x00,
+                    (byte) 0x28,
+                    (byte) 0x19,
+                    (byte) 0x0D,
+                    (byte) 0x3C
+                },
+                0);
+    }
+
+    @Test(expectedExceptions = KlvParseException.class)
+    public void testInt2Dim_BadAPA_BooleanEncoding() throws KlvParseException {
+        MDAPDecoder decoder = new MDAPDecoder();
+        decoder.decodeInt2D(
+                new byte[] {
+                    (byte) 0x02,
+                    (byte) 0x05,
+                    (byte) 0x01,
+                    (byte) 0x01,
+                    (byte) 0x03,
+                    (byte) 0x81,
+                    (byte) 0x02,
+                    (byte) 0x00,
+                    (byte) 0x28,
+                    (byte) 0x19,
+                    (byte) 0x0D,
+                    (byte) 0x3C
+                },
+                0);
+    }
+
+    @Test(expectedExceptions = KlvParseException.class)
+    public void testInt2Dim_BadAPA_UnsignedIntegerEncoding() throws KlvParseException {
+        MDAPDecoder decoder = new MDAPDecoder();
+        decoder.decodeInt2D(
+                new byte[] {
+                    (byte) 0x02,
+                    (byte) 0x05,
+                    (byte) 0x01,
+                    (byte) 0x01,
+                    (byte) 0x04,
+                    (byte) 0x81,
+                    (byte) 0x02,
+                    (byte) 0x00,
+                    (byte) 0x28,
+                    (byte) 0x19,
+                    (byte) 0x0D,
+                    (byte) 0x3C
+                },
+                0);
+    }
+
+    @Test(expectedExceptions = KlvParseException.class)
+    public void testInt2Dim_BadAPA_RunLengthEncoding() throws KlvParseException {
+        MDAPDecoder decoder = new MDAPDecoder();
+        decoder.decodeInt2D(
+                new byte[] {
+                    (byte) 0x02,
+                    (byte) 0x01,
+                    (byte) 0x05,
+                    (byte) 0x01,
+                    (byte) 0x05,
+                    (byte) 0x81,
+                    (byte) 0x02,
+                    (byte) 0x00,
+                    (byte) 0x28,
+                    (byte) 0x19,
+                    (byte) 0x0D,
+                    (byte) 0x3C
+                },
+                0);
+    }
+
+    @Test(expectedExceptions = KlvParseException.class)
+    public void testInt2Dim_BadAPA_NoSuchValue() throws KlvParseException {
+        MDAPDecoder decoder = new MDAPDecoder();
+        decoder.decodeInt2D(
+                new byte[] {
+                    (byte) 0x02,
+                    (byte) 0x01,
+                    (byte) 0x05,
+                    (byte) 0x01,
+                    (byte) 0x55,
+                    (byte) 0x81,
+                    (byte) 0x02,
+                    (byte) 0x00,
+                    (byte) 0x28,
+                    (byte) 0x19,
+                    (byte) 0x0D,
+                    (byte) 0x3C
+                },
+                0);
+    }
+
+    @Test(expectedExceptions = KlvParseException.class)
+    public void testInt2Dim_BadDimension() throws KlvParseException {
+        MDAPDecoder decoder = new MDAPDecoder();
+        decoder.decodeUInt2D(
+                new byte[] {
+                    (byte) 0x01,
+                    (byte) 0x05,
+                    (byte) 0x01,
+                    (byte) 0x01,
+                    (byte) 0x81,
+                    (byte) 0x02,
+                    (byte) 0x00,
+                    (byte) 0x28,
+                    (byte) 0x19,
+                    (byte) 0x0D,
+                    (byte) 0x3C
+                },
+                0);
+    }
+
+    @Test
     public void testUint1DimNaturalEncoding() throws KlvParseException {
         MDAPDecoder decoder = new MDAPDecoder();
         long[] decoded =
