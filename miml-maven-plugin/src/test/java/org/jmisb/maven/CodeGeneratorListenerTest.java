@@ -5,6 +5,7 @@
  */
 package org.jmisb.maven;
 
+import freemarker.template.TemplateException;
 import java.io.File;
 import java.io.IOException;
 import org.antlr.v4.runtime.CharStreams;
@@ -19,7 +20,7 @@ public class CodeGeneratorListenerTest {
     public CodeGeneratorListenerTest() {}
 
     @Test
-    public void parserTest() throws IOException {
+    public void parserTest() throws IOException, TemplateException {
         String filename = "src/test/miml/mimd1/mimd-1.miml";
         MIMLLexerRules_v3 lexer = new MIMLLexerRules_v3(CharStreams.fromFileName(filename));
         CommonTokenStream tokens = new CommonTokenStream(lexer);

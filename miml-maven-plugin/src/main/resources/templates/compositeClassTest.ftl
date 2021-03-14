@@ -162,11 +162,11 @@ public class ${name}Test extends LoggerChecks {
 
     @Test
     public void checkCreateValue${entry.nameSentenceCase}() throws KlvParseException {
-    <#if entry.array>
-        <#assign
-            minVal=entry.minValue!0
-            arrayDimension0=entry.arrayDimensionSize(0)!1
-        >
+    <#if entry.ref>
+        // Ref
+        IMimdMetadataValue uut = ${name}.createValue(${name}MetadataKey.${entry.name}, new byte[]{(byte) 0x00});
+        assertTrue(uut instanceof MimdIdReference);
+    <#elseif entry.array>
         <#if entry.typeName == "UInt">
         IMimdMetadataValue uut = ${name}.createValue(${name}MetadataKey.${entry.name},
             ${entry.namespacedName}Test.getByteArrayForValidArrayData());
@@ -182,25 +182,34 @@ public class ${name}Test extends LoggerChecks {
             ${entry.namespacedName}Test.getByteArrayForValidArrayData());
         assertTrue(uut instanceof ${entry.namespacedName});
         ${entry.namespacedName} value = (${entry.namespacedName})uut;
+        <#elseif entry.typeName == "Boolean">
+        IMimdMetadataValue uut = ${name}.createValue(${name}MetadataKey.${entry.name},
+            ${entry.namespacedName}Test.getByteArrayForValidArrayData());
+        assertTrue(uut instanceof ${entry.namespacedName});
+        ${entry.namespacedName} value = (${entry.namespacedName})uut;
         <#else>
         // TODO: other array types
         </#if>
     <#elseif entry.typeName == "String">
+        // ${entry.namespacedName}, ${entry.typeName}
         IMimdMetadataValue uut = ${name}.createValue(${name}MetadataKey.${entry.name}, new byte[]{0x74});
         assertTrue(uut instanceof ${entry.namespacedName});
         ${entry.namespacedName} value = (${entry.namespacedName})uut;
         assertEquals(value.getValue(), "t");
     <#elseif entry.typeName == "UInt">
+        // ${entry.namespacedName}, ${entry.typeName}
         IMimdMetadataValue uut = ${name}.createValue(${name}MetadataKey.${entry.name}, new byte[]{(byte)0xFF});
         assertTrue(uut instanceof ${entry.namespacedName});
         ${entry.namespacedName} value = (${entry.namespacedName})uut;
         assertEquals(value.getValue(), 255);
     <#elseif entry.typeName == "Integer">
+        // ${entry.namespacedName}, ${entry.typeName}
         IMimdMetadataValue uut = ${name}.createValue(${name}MetadataKey.${entry.name}, new byte[]{(byte)0xFF});
         assertTrue(uut instanceof ${entry.namespacedQualifiedName});
         ${entry.namespacedQualifiedName} value = (${entry.namespacedQualifiedName})uut;
         assertEquals(value.getValue(), -1);
     <#elseif entry.typeName == "Real">
+        // ${entry.namespacedName}, ${entry.typeName}
         <#if entry.minValue?? && entry.maxValue??>
         IMimdMetadataValue uut = ${name}.createValue(
             ${name}MetadataKey.${entry.name},
@@ -224,10 +233,6 @@ public class ${name}Test extends LoggerChecks {
         ${entry.namespacedName} value = (${entry.namespacedName})uut;
         assertEquals(value.getValue(), 2.000);
         </#if>
-    <#elseif entry.ref>
-        // Ref
-        IMimdMetadataValue uut = ${name}.createValue(${name}MetadataKey.${entry.name}, new byte[]{(byte) 0x00});
-        assertTrue(uut instanceof MimdIdReference);
     <#elseif entry.list>
         // List
         IMimdMetadataValue uut = ${name}.createValue(${name}MetadataKey.${entry.name}, new byte[]{(byte) 0x00});
@@ -238,6 +243,7 @@ public class ${name}Test extends LoggerChecks {
         assertTrue(uut instanceof MimdId);
     <#elseif entry.typeName == "Boolean">
         // TODO - Boolean
+        throw new RuntimeException("Unhandled primitive type: Boolean");
     <#else>
         // Fallback
         IMimdMetadataValue uut = ${name}.createValue(${name}MetadataKey.${entry.name}, new byte[]{(byte) 0x01, (byte)0x01, (byte)0x06});

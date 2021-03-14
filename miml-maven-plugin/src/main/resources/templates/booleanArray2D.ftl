@@ -34,12 +34,8 @@ public class ${namespacedName} implements IMimdMetadataValue {
      * @throws KlvParseException if the byte array could not be parsed.
      */
     public ${namespacedName}(byte[] bytes) throws KlvParseException {
-        try {
-            MDAPDecoder decoder = new MDAPDecoder();
-            this.value = decoder.decodeBoolean2D(bytes, 0);
-        } catch (IllegalArgumentException ex) {
-            throw new KlvParseException(ex.getMessage());
-        }
+        MDAPDecoder decoder = new MDAPDecoder();
+        this.value = decoder.decodeBoolean2D(bytes, 0);
     }
 
     /**
@@ -70,7 +66,7 @@ public class ${namespacedName} implements IMimdMetadataValue {
 
     @Override
     public String getDisplayableValue() {
-        return "[Boolean 2D array]";
+        return "[${nameSentenceCase} Array]";
     }
 
     /**

@@ -44,12 +44,14 @@ public class CodeGeneratorListener implements MIML_v3Listener {
         generatedTestDirectory.mkdirs();
     }
 
-    private void generateJava(EnumerationModel enumerationModel) {
+    private void generateJava(EnumerationModel enumerationModel)
+            throws TemplateException, IOException {
         generateEnumeration(enumerationModel);
         generateEnumerationTests(enumerationModel);
     }
 
-    private void generateEnumeration(EnumerationModel enumeration) {
+    private void generateEnumeration(EnumerationModel enumeration)
+            throws TemplateException, IOException {
         try {
             String packagePart = enumeration.getDirectoryPackagePart();
             File targetDirectory = new File(generatedSourceDirectory, packagePart);
@@ -60,10 +62,12 @@ public class CodeGeneratorListener implements MIML_v3Listener {
             temp.process(enumeration, out);
         } catch (TemplateException | IOException ex) {
             log("Failed to generate enumeration for " + enumeration.getName());
+            throw ex;
         }
     }
 
-    private void generateEnumerationTests(EnumerationModel enumeration) {
+    private void generateEnumerationTests(EnumerationModel enumeration)
+            throws TemplateException, IOException {
         try {
             Template temp = templateConfiguration.getTemplate("enumerationTest.ftl");
             File targetDirectory = makeOutputTestDirectory(enumeration);
@@ -73,16 +77,22 @@ public class CodeGeneratorListener implements MIML_v3Listener {
             temp.process(enumeration, out);
         } catch (TemplateException | IOException ex) {
             log("Failed to generate enumeration tests: " + ex.getMessage());
+            throw ex;
         }
     }
 
-    public void generateJavaClasses() {
+    public void generateJavaClasses() throws IOException, TemplateException {
+        for (EnumerationModel model : models.getEnumerationModels()) {
+            generateJava(model);
+        }
         models.getClassModels().forEach(model -> addListFlags(model));
-        models.getClassModels().forEach(model -> generateJava(model));
+        for (ClassModel model : models.getClassModels()) {
+            generateJava(model);
+        }
         generatePrimitiveClassesForBase();
     }
 
-    private void generateJava(ClassModel classModel) {
+    private void generateJava(ClassModel classModel) throws TemplateException, IOException {
         try {
             // log("Generating classes for " + classModel.getName());
             String packagePart = classModel.getDirectoryPackagePart();
@@ -105,6 +115,7 @@ public class CodeGeneratorListener implements MIML_v3Listener {
         } catch (TemplateException | IOException ex) {
             log("Failed to generate classes for " + classModel.getName());
             log(ex.getMessage());
+            throw ex;
         }
     }
 
@@ -126,6 +137,7 @@ public class CodeGeneratorListener implements MIML_v3Listener {
             temp.process(classModel, out);
         } catch (TemplateException | IOException ex) {
             log("Failed to generate metadata key tests: " + ex.getMessage());
+            throw ex;
         }
     }
 
@@ -268,7 +280,6 @@ public class CodeGeneratorListener implements MIML_v3Listener {
             if ((entry.getTypeName().equals("Boolean")) && (entry.isArray2D())) {
                 processClassTestTemplate(outputTestDirectory, entry, "booleanArray2DTest.ftl");
             } else if ((entry.getTypeName().equals("Integer")) && (entry.isArray2D())) {
-                // TODO: this isn't implemented yet
                 processClassTestTemplate(outputTestDirectory, entry, "intArray2DTest.ftl");
             } else if ((entry.getTypeName().equals("Real")) && (entry.isArray1D())) {
                 processClassTestTemplate(outputTestDirectory, entry, "realArray1DTest.ftl");
@@ -784,7 +795,6 @@ public class CodeGeneratorListener implements MIML_v3Listener {
 
     @Override
     public void exitEnumeration(MIML_v3Parser.EnumerationContext ctx) {
-        generateJava(this.currentEnumerationModel);
         models.addEnumerationModel(this.currentEnumerationModel);
         this.currentEnumerationModel = null;
     }
@@ -904,7 +914,7 @@ public class CodeGeneratorListener implements MIML_v3Listener {
         return models.isClassName(typeName);
     }
 
-    private void generatePrimitiveClassesForBase() {
+    private void generatePrimitiveClassesForBase() throws TemplateException, IOException {
         // TODO: this use of "Base" is a hack
         ClassModel base = findClassByName("Base");
         try {
@@ -919,6 +929,7 @@ public class CodeGeneratorListener implements MIML_v3Listener {
         } catch (TemplateException | IOException ex) {
             log("Failed to generate classes for " + base.getName());
             log(ex.getMessage());
+            throw ex;
         }
     }
 

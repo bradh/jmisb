@@ -1,5 +1,6 @@
 package org.jmisb.maven;
 
+import freemarker.template.TemplateException;
 import java.io.File;
 import java.io.IOException;
 import java.util.logging.Level;
@@ -47,15 +48,6 @@ public class MimlToJava extends AbstractMojo {
     @Override
     public void execute() throws MojoExecutionException {
         try {
-            /*
-            OriginalParserConfiguration parserConfiguration = new OriginalParserConfiguration();
-            parserConfiguration.setPackageNameBase(packageNameBase);
-            parserConfiguration.setTopLevelClassName(topLevelClassName);
-            OriginalParser parser = new OriginalParser(parserConfiguration);
-            Models models = parser.processFiles(new File(inputDirectory, "src/main/miml"));
-            CodeGeneratorListener codeGenerator = new CodeGeneratorListener(codeGeneratorConf);
-            codeGenerator.generateCode();
-             */
             File sourceDirectory = new File(inputDirectory, "src/main/miml");
             File[] files = sourceDirectory.listFiles();
             for (File inFile : files) {
@@ -65,12 +57,14 @@ public class MimlToJava extends AbstractMojo {
             }
             project.addCompileSourceRoot(outputDirectory.getPath());
             project.addTestCompileSourceRoot(outputTestDirectory.getPath());
-        } catch (IOException ex) {
+        } catch (IOException | RecognitionException | TemplateException ex) {
             Logger.getLogger(MimlToJava.class.getName()).log(Level.SEVERE, null, ex);
+            throw new MojoExecutionException(ex.toString());
         }
     }
 
-    private void processFile(String filename) throws RecognitionException, IOException {
+    private void processFile(String filename)
+            throws RecognitionException, IOException, TemplateException {
         MIMLLexerRules_v3 lexer = new MIMLLexerRules_v3(CharStreams.fromFileName(filename));
         CommonTokenStream tokens = new CommonTokenStream(lexer);
         MIML_v3Parser parser = new MIML_v3Parser(tokens);
