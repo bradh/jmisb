@@ -214,7 +214,7 @@ public class ${name} implements <#if topLevel>IMisbMessage, </#if>IMimdMetadataV
 <#list entries as entry>
             case ${entry.name}:
 <#if entry.ref>
-                return MimdIdReference.fromBytes(data, "${entry.nameSentenceCase}", "${entry.typeName}");
+                return ${entry.qualifiedTypeName}.fromBytes(data);
 <#elseif entry.list>
                 return ${entry.qualifiedListTypeName}.fromBytes(data, "${entry.nameSentenceCase}");
 <#elseif entry.primitive>

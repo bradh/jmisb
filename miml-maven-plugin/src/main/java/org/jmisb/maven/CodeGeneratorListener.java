@@ -226,8 +226,7 @@ public class CodeGeneratorListener implements MIML_v3Listener {
             } else if ((entry.getTypeName().equals("UInt")) && (entry.isArray2D())) {
                 processClassTemplate(targetDirectory, entry, "uintArray2D.ftl");
             } else if ((entry.isRef()) && (entry.isArray1D())) {
-                // TODO
-                // processClassTemplate(targetDirectory, entry, "refArray.ftl");
+                processClassTemplate(targetDirectory, entry, "refArray.ftl");
             } else {
                 log(
                         "Need to implement array class for "
@@ -290,8 +289,7 @@ public class CodeGeneratorListener implements MIML_v3Listener {
             } else if ((entry.getTypeName().equals("UInt")) && (entry.isArray2D())) {
                 processClassTestTemplate(outputTestDirectory, entry, "uintArray2DTest.ftl");
             } else if ((entry.isRef()) && (entry.isArray1D())) {
-                // TODO
-                // processClassTestTemplate(outputTestDirectory, entry, "refArrayTest.ftl");
+                processClassTestTemplate(outputTestDirectory, entry, "refArrayTest.ftl");
             } else {
                 log(
                         "Need to implement array class test for "

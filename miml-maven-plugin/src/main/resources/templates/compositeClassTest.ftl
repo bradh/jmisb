@@ -162,34 +162,16 @@ public class ${name}Test extends LoggerChecks {
 
     @Test
     public void checkCreateValue${entry.nameSentenceCase}() throws KlvParseException {
-    <#if entry.ref>
-        // Ref
+    <#if entry.array>
+        // Array - ${entry.typeName}
+        IMimdMetadataValue uut = ${name}.createValue(${name}MetadataKey.${entry.name},
+            ${entry.namespacedName}Test.getByteArrayForValidArrayData());
+        assertTrue(uut instanceof ${entry.namespacedName});
+        ${entry.namespacedName} value = (${entry.namespacedName})uut;
+    <#elseif entry.ref>
+        // Ref - ${entry.typeName}
         IMimdMetadataValue uut = ${name}.createValue(${name}MetadataKey.${entry.name}, new byte[]{(byte) 0x00});
         assertTrue(uut instanceof MimdIdReference);
-    <#elseif entry.array>
-        <#if entry.typeName == "UInt">
-        IMimdMetadataValue uut = ${name}.createValue(${name}MetadataKey.${entry.name},
-            ${entry.namespacedName}Test.getByteArrayForValidArrayData());
-        assertTrue(uut instanceof ${entry.namespacedName});
-        ${entry.namespacedName} value = (${entry.namespacedName})uut;
-        <#elseif entry.typeName == "Real">
-        IMimdMetadataValue uut = ${name}.createValue(${name}MetadataKey.${entry.name},
-            ${entry.namespacedName}Test.getByteArrayForValidArrayData());
-        assertTrue(uut instanceof ${entry.namespacedName});
-        ${entry.namespacedName} value = (${entry.namespacedName})uut;
-        <#elseif entry.typeName == "Integer">
-        IMimdMetadataValue uut = ${name}.createValue(${name}MetadataKey.${entry.name},
-            ${entry.namespacedName}Test.getByteArrayForValidArrayData());
-        assertTrue(uut instanceof ${entry.namespacedName});
-        ${entry.namespacedName} value = (${entry.namespacedName})uut;
-        <#elseif entry.typeName == "Boolean">
-        IMimdMetadataValue uut = ${name}.createValue(${name}MetadataKey.${entry.name},
-            ${entry.namespacedName}Test.getByteArrayForValidArrayData());
-        assertTrue(uut instanceof ${entry.namespacedName});
-        ${entry.namespacedName} value = (${entry.namespacedName})uut;
-        <#else>
-        // TODO: other array types
-        </#if>
     <#elseif entry.typeName == "String">
         // ${entry.namespacedName}, ${entry.typeName}
         IMimdMetadataValue uut = ${name}.createValue(${name}MetadataKey.${entry.name}, new byte[]{0x74});

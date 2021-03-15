@@ -136,4 +136,33 @@ public class MimdId implements IMimdMetadataValue {
                 + groupIdentifier
                 + '}';
     }
+
+    @Override
+    public int hashCode() {
+        int hash = 7;
+        hash = 29 * hash + this.serialNumber;
+        hash = 29 * hash + this.groupIdentifier;
+        return hash;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (obj == null) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        final MimdId other = (MimdId) obj;
+        if (this.serialNumber != other.serialNumber) {
+            return false;
+        }
+        if (this.groupIdentifier != other.groupIdentifier) {
+            return false;
+        }
+        return true;
+    }
 }
