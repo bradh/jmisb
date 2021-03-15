@@ -213,8 +213,10 @@ public class ${name} implements <#if topLevel>IMisbMessage, </#if>IMimdMetadataV
         switch (key) {
 <#list entries as entry>
             case ${entry.name}:
-<#if entry.ref>
-                return ${entry.qualifiedTypeName}.fromBytes(data);
+<#if entry.ref && entry.array>
+                return ${entry.namespacedQualifiedName}.fromBytes(data);
+<#elseif entry.ref>
+                return MimdIdReference.fromBytes(data, "${entry.nameSentenceCase}", "${entry.typeName}");
 <#elseif entry.list>
                 return ${entry.qualifiedListTypeName}.fromBytes(data, "${entry.nameSentenceCase}");
 <#elseif entry.primitive>

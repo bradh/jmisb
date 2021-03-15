@@ -37,7 +37,7 @@ public class ${name}Test extends LoggerChecks {
         assertTrue(id instanceof MimdId);
         values.put(${name}MetadataKey.${entry.name}, id);
 
-    <#elseif entry.ref>
+    <#elseif entry.ref && ! entry.array>
         // Ref
         IMimdMetadataValue ${entry.name}Value = ${name}.createValue(${name}MetadataKey.${entry.name}, new byte[]{(byte) 0x00});
         assertTrue(${entry.name}Value instanceof MimdIdReference);
@@ -238,7 +238,7 @@ public class ${name}Test extends LoggerChecks {
     public void testBuildRef() throws KlvParseException {
         SortedMap<${name}MetadataKey, IMimdMetadataValue> values = new TreeMap<>();
 <#list entries as entry>
-    <#if entry.ref>
+    <#if entry.ref && !entry.array>
         // Ref
         IMimdMetadataValue refValue${entry?index} = ${name}.createValue(${name}MetadataKey.${entry.name}, new byte[]{(byte) 0x00});
         values.put(${name}MetadataKey.${entry.name}, refValue${entry?index});
