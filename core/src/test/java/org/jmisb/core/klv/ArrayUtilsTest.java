@@ -1,9 +1,9 @@
 package org.jmisb.core.klv;
 
-import java.util.ArrayList;
-import java.util.Collection;
 import static org.testng.Assert.*;
 
+import java.util.ArrayList;
+import java.util.Collection;
 import org.testng.annotations.Test;
 
 /** Tests for the ArrayUtils. */
@@ -145,7 +145,7 @@ public class ArrayUtilsTest {
                         + System.lineSeparator()
                         + "0x10, 0xff, ");
     }
-    
+
     @Test
     public void checkBytesToArray() {
         Collection<byte[]> chunks = new ArrayList<>();
@@ -159,6 +159,6 @@ public class ArrayUtilsTest {
         len += chunk2.length;
         chunks.add(chunk2);
         byte[] a = ArrayUtils.arrayFromChunks(chunks, len);
-        assertEquals(a, new byte[]{0x0a, 0x0b, 0x01, 0x02, 0x09, 0x08, 0x07});
+        assertEquals(a, new byte[] {0x0a, 0x0b, 0x01, 0x02, 0x09, 0x08, 0x07});
     }
 }
