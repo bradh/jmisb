@@ -193,6 +193,7 @@ public class ElementProcessedEncoder {
      *
      * @param data the array of arrays of floating point ({@code float}) values.
      * @return the encoded byte array including the MISB ST1303 header and array data.
+     * @throws KlvParseException if the encoding fails, such as for invalid array dimensions.
      */
     public byte[] encode(float[][] data) throws KlvParseException {
         if ((data.length < 1) || (data[0].length < 1)) {

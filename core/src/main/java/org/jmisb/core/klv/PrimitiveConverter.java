@@ -42,7 +42,9 @@ public class PrimitiveConverter {
     }
 
     static long arrayToSignedLongInternal(byte[] bytes, int offset, int length) {
-        return new BigInteger(bytes, offset, length).longValue();
+        // There is a BigItneger constructor to do this without copying, but only in JDK 9+
+        byte[] slice = Arrays.copyOfRange(bytes, offset, length);
+        return new BigInteger(slice).longValue();
     }
 
     /**

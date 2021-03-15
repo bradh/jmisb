@@ -11,6 +11,11 @@ import org.jmisb.api.klv.IKlvKey;
 public class ArrayItemKey implements IKlvKey, Comparable<ArrayItemKey> {
     private final int identifier;
 
+    /**
+     * Constructor.
+     *
+     * @param identifier the unique identifier for this key.
+     */
     public ArrayItemKey(int identifier) {
         this.identifier = identifier;
     }
