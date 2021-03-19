@@ -242,6 +242,11 @@ public class CodeGeneratorListener implements MIML_v3Listener {
             processClassTemplate(targetDirectory, entry, "intClass.ftl");
         } else if (entry.getTypeName().equals("Real")) {
             processClassTemplate(targetDirectory, entry, "realClass.ftl");
+        } else if (entry.getTypeName().equals("Tuple")) {
+            if (!entry.getName().equals("mimdId")) {
+                // Special case for mimdId
+                processClassTemplate(targetDirectory, entry, "tupleClass.ftl");
+            }
         } else if (entry.isList()) {
             // Nothing - we've got this already
         } else if (isEnumerationName(entry.getTypeName())) {
@@ -250,14 +255,13 @@ public class CodeGeneratorListener implements MIML_v3Listener {
             // Nothing - we've got this already
         } else if (entry.isRef()) {
             // special case for this
-        } else if (entry.getName().equals("mimdId")) {
-            // Nothing - special case
         } else {
             log(
                     "Need to implement component class for "
                             + entry.getName()
                             + " - "
                             + entry.getTypeName());
+            throw new RuntimeException("Not enough code");
         }
     }
 
@@ -305,6 +309,11 @@ public class CodeGeneratorListener implements MIML_v3Listener {
             processClassTestTemplate(outputTestDirectory, entry, "intClassTest.ftl");
         } else if (entry.getTypeName().equals("Real")) {
             processClassTestTemplate(outputTestDirectory, entry, "realClassTest.ftl");
+        } else if (entry.getTypeName().equals("Tuple")) {
+            if (!entry.getName().equals("mimdId")) {
+                // Special case for mimdId
+                processClassTestTemplate(outputTestDirectory, entry, "tupleClassTest.ftl");
+            }
         } else if (isEnumerationName(entry.getTypeName())) {
             // Nothing - we've got this already
         } else if (entry.isList()) {

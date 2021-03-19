@@ -144,6 +144,7 @@ public class ${name}Test extends LoggerChecks {
         verifySingleLoggerMessage("Unknown MIMD ${name} Metadata tag: 127");
         assertEquals(uut.getBytes(), new byte[]{0x01, 0x02, 0x04, 0x03});
     }
+
     @Test
     public void parseFromBytesBadTagNoOffset() throws KlvParseException {
         verifyNoLoggerMessages();
@@ -215,14 +216,20 @@ public class ${name}Test extends LoggerChecks {
         ${entry.namespacedName} value = (${entry.namespacedName})uut;
         assertEquals(value.getValue(), 2.000);
         </#if>
-    <#elseif entry.list>
-        // List
-        IMimdMetadataValue uut = ${name}.createValue(${name}MetadataKey.${entry.name}, new byte[]{(byte) 0x00});
-        assertTrue(uut instanceof  ${entry.qualifiedListTypeName});
     <#elseif entry.name == "mimdId">
         // mimdId
         IMimdMetadataValue uut = ${name}.createValue(${name}MetadataKey.${entry.name}, new byte[]{(byte) 0x01});
         assertTrue(uut instanceof MimdId);
+    <#elseif entry.typeName == "Tuple">
+        // ${entry.namespacedName}, ${entry.typeName}
+        IMimdMetadataValue uut = ${name}.createValue(${name}MetadataKey.${entry.name}, new byte[]{(byte)0x40});
+        assertTrue(uut instanceof ${entry.namespacedName});
+        ${entry.namespacedName} value = (${entry.namespacedName})uut;
+        assertEquals(value.getValues(), new int[] {64});
+    <#elseif entry.list>
+        // List
+        IMimdMetadataValue uut = ${name}.createValue(${name}MetadataKey.${entry.name}, new byte[]{(byte) 0x00});
+        assertTrue(uut instanceof  ${entry.qualifiedListTypeName});
     <#elseif entry.typeName == "Boolean">
         // TODO - Boolean
         throw new RuntimeException("Unhandled primitive type: Boolean");
@@ -299,6 +306,34 @@ public class ${name}Test extends LoggerChecks {
         SortedMap<${name}MetadataKey, IMimdMetadataValue> values = new TreeMap<>();
 <#list entries as entry>
     <#if (entry.typeName == "Real") && entry.array>
+        IMimdMetadataValue refValue${entry?index} = ${name}.createValue(
+            ${name}MetadataKey.${entry.name},
+            ${entry.namespacedName}Test.getByteArrayForValidArrayData());
+        values.put(${name}MetadataKey.${entry.name}, refValue${entry?index});
+    </#if>
+</#list>
+        ${name} uut = new ${name}(values);
+        assertEquals(uut.getIdentifiers().size(), values.keySet().size());
+        if (uut.getIdentifiers().size() > 0) {
+            uut.getIdentifiers().stream().forEach(id -> {
+                assertNotNull(uut.getField(id));
+            });
+        }
+        byte[] bytes = uut.getBytes();
+        assertTrue(bytes.length >= 0);
+<#if topLevel>
+        ${name} regenerated = new ${name}(bytes);
+<#else>
+        ${name} regenerated = new ${name}(bytes, 0, bytes.length);
+</#if>
+        assertEquals(uut.getIdentifiers().size(), regenerated.getIdentifiers().size());
+    }
+
+    @Test
+    public void testBuildUintArray() throws KlvParseException {
+        SortedMap<${name}MetadataKey, IMimdMetadataValue> values = new TreeMap<>();
+<#list entries as entry>
+    <#if (entry.typeName == "UInt") && entry.array>
         IMimdMetadataValue refValue${entry?index} = ${name}.createValue(
             ${name}MetadataKey.${entry.name},
             ${entry.namespacedName}Test.getByteArrayForValidArrayData());

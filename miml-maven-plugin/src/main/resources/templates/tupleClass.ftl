@@ -1,4 +1,6 @@
-package org.jmisb.api.klv.st1902;
+// Generated file - changes will be lost on rebuild
+// Template: ${.current_template_name}
+package ${packageName};
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -8,34 +10,39 @@ import org.jmisb.api.common.KlvParseException;
 import org.jmisb.api.klv.ArrayBuilder;
 import org.jmisb.api.klv.BerDecoder;
 import org.jmisb.api.klv.BerField;
+import org.jmisb.api.klv.st1902.IMimdMetadataValue;
 
 /**
- * MIMD Tuple.
+ * MIMD {@link ${parentName}} ${name} attribute.
+ *
+ * <p>This is a specialisation of a Tuple.
  *
  * <p>The Tuple Type is typically a short sequence of Unsigned Integers (UInts) for use within the
  * MIMD Model’s addressing method (for Directed Association) along with other uses. The Tuple Type
  * is the same as a one-dimensional array of UInt, but because of its short length and the
  * restriction to one dimension, it is a separate type to enable more efficient transmutations.
+ *
+ * <p>See ${document} for more information on this data type.
  */
-public class Tuple implements IMimdMetadataValue {
+public class ${namespacedName} implements IMimdMetadataValue {
 
     private final List<Integer> values = new ArrayList<>();
     /**
-     * Create a Tuple from value.
+     * Construct from value.
      *
-     * @param value the array of (unsigned) integer values for the tuple
+     * @param value the array of (unsigned) integer values to initialise this ${namespacedName} with
      */
-    public Tuple(int[] value) {
+    public ${namespacedName}(int[] value) {
         this.values.addAll(Arrays.stream(value).boxed().collect(Collectors.toList()));
     }
 
     /**
-     * Create a Tuple from encoded bytes.
+     * Create a ${namespacedName} from encoded bytes.
      *
-     * @param data the byte array to parse the Tuple from.
+     * @param data the byte array to parse the ${namespacedName} from.
      * @throws KlvParseException if the parsing fails
      */
-    public Tuple(byte[] data) throws KlvParseException {
+    public ${namespacedName}(byte[] data) throws KlvParseException {
         for (int offset = 0; offset < data.length; ) {
             BerField tupleField = BerDecoder.decode(data, offset, true);
             offset += tupleField.getLength();
@@ -44,14 +51,14 @@ public class Tuple implements IMimdMetadataValue {
     }
 
     /**
-     * Parse a Tuple out of a byte array.
+     * Parse a ${namespacedName} out of a byte array.
      *
-     * @param data the byte array to parse the Tuple from.
-     * @return Tuple equivalent to the byte array
+     * @param data the byte array to parse the ${namespacedName} from.
+     * @return ${namespacedName} equivalent to the byte array
      * @throws KlvParseException if the parsing fails
      */
-    public static Tuple fromBytes(byte[] data) throws KlvParseException {
-        return new Tuple(data);
+    public static ${namespacedName} fromBytes(byte[] data) throws KlvParseException {
+        return new ${namespacedName}(data);
     }
 
     @Override
@@ -65,7 +72,7 @@ public class Tuple implements IMimdMetadataValue {
     }
 
     /**
-     * Get the values for this Tuple.
+     * Get the values for this ${namespacedName}.
      *
      * @return the values as an (unsigned) integer array.
      */
@@ -75,7 +82,7 @@ public class Tuple implements IMimdMetadataValue {
 
     @Override
     public String getDisplayName() {
-        return "Tuple";
+        return "${nameSentenceCase}";
     }
 
     @Override

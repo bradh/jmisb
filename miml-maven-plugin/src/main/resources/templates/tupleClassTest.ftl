@@ -1,19 +1,21 @@
-package org.jmisb.api.klv.st1902;
+// Generated file - changes will be lost on rebuild
+// Template: ${.current_template_name}
+package ${packageName};
 
 import static org.testng.Assert.*;
 
 import org.jmisb.api.common.KlvParseException;
 import org.testng.annotations.Test;
 
-/** Unit tests for Tuple. */
-public class TupleTest {
+/** Unit tests for ${namespacedName}. */
+public class ${namespacedName}Test {
 
-    public TupleTest() {}
+    public ${namespacedName}Test() {}
 
     @Test
     public void fromListSingle() throws KlvParseException {
-        Tuple uut = new Tuple(new int[] {64});
-        assertEquals(uut.getDisplayName(), "Tuple");
+        ${namespacedName} uut = new ${namespacedName}(new int[] {64});
+        assertEquals(uut.getDisplayName(), "${nameSentenceCase}");
         assertEquals(uut.getDisplayableValue(), "(64)");
         assertEquals(uut.getBytes(), new byte[] {0x40});
         assertEquals(uut.getValues(), new int[] {64});
@@ -21,16 +23,16 @@ public class TupleTest {
 
     @Test
     public void fromListMultiple() throws KlvParseException {
-        Tuple uut = new Tuple(new int[] {64, 3, 8});
-        assertEquals(uut.getDisplayName(), "Tuple");
+        ${namespacedName} uut = new ${namespacedName}(new int[] {64, 3, 8});
+        assertEquals(uut.getDisplayName(), "${nameSentenceCase}");
         assertEquals(uut.getDisplayableValue(), "(64, 3, 8)");
         assertEquals(uut.getBytes(), new byte[] {0x40, 0x03, 0x08});
     }
 
     @Test
     public void fromBytesSingle() throws KlvParseException {
-        Tuple uut = new Tuple(new byte[] {0x40});
-        assertEquals(uut.getDisplayName(), "Tuple");
+        ${namespacedName} uut = new ${namespacedName}(new byte[] {0x40});
+        assertEquals(uut.getDisplayName(), "${nameSentenceCase}");
         assertEquals(uut.getDisplayableValue(), "(64)");
         assertEquals(uut.getBytes(), new byte[] {0x40});
         assertEquals(uut.getValues(), new int[] {64});
@@ -38,8 +40,8 @@ public class TupleTest {
 
     @Test
     public void fromBytesMultiple() throws KlvParseException {
-        Tuple uut = new Tuple(new byte[] {0x40, 0x03, 0x08});
-        assertEquals(uut.getDisplayName(), "Tuple");
+        ${namespacedName} uut = new ${namespacedName}(new byte[] {0x40, 0x03, 0x08});
+        assertEquals(uut.getDisplayName(), "${nameSentenceCase}");
         assertEquals(uut.getDisplayableValue(), "(64, 3, 8)");
         assertEquals(uut.getBytes(), new byte[] {0x40, 0x03, 0x08});
     }

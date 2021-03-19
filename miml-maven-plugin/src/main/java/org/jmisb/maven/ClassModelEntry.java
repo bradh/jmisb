@@ -127,7 +127,8 @@ public class ClassModelEntry {
                 || typeName.equals("String")
                 || typeName.equals("Integer")
                 || typeName.equals("UInt")
-                || typeName.equals("Boolean");
+                || typeName.equals("Boolean")
+                || typeName.equals("Tuple");
     }
 
     public boolean isRef() {

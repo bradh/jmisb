@@ -219,10 +219,10 @@ public class ${name} implements <#if topLevel>IMisbMessage, </#if>IMimdMetadataV
                 return MimdIdReference.fromBytes(data, "${entry.nameSentenceCase}", "${entry.typeName}");
 <#elseif entry.list>
                 return ${entry.qualifiedListTypeName}.fromBytes(data, "${entry.nameSentenceCase}");
-<#elseif entry.primitive>
-                return ${entry.namespacedQualifiedName}.fromBytes(data);
 <#elseif entry.name == "mimdId">
                 return MimdId.fromBytes(data);
+<#elseif entry.primitive>
+                return ${entry.namespacedQualifiedName}.fromBytes(data);
 <#else>
                 return ${entry.qualifiedTypeName}.fromBytes(data);
 </#if>
