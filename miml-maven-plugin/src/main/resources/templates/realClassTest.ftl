@@ -12,13 +12,13 @@ import org.testng.annotations.Test;
 public class ${namespacedName}Test {
 
     @Test
-    public void displayName() {
+    public void displayName() throws KlvParseException {
         ${namespacedName} uut = new ${namespacedName}(0.0);
         assertEquals(uut.getDisplayName(), "${nameSentenceCase}");
     }
 
     @Test
-    public void displayableValue() {
+    public void displayableValue() throws KlvParseException {
         ${namespacedName} uut = new ${namespacedName}(0.0);
 <#if units?has_content>
         assertEquals(uut.getDisplayableValue(), "0.000 ${units}");
@@ -234,7 +234,7 @@ public class ${namespacedName}Test {
 <#if minValue?? && maxValue??>
 <#if resolution??>
     @Test
-    public void getBytes() {
+    public void getBytes() throws KlvParseException {
         ${namespacedName} uut = new ${namespacedName}(${minValue});
         byte[] bytes = uut.getBytes();
         // Attempt to handle variation based on resolution (IMAPA).
@@ -245,7 +245,7 @@ public class ${namespacedName}Test {
     }
 <#else>
     @Test
-    public void getBytes() {
+    public void getBytes() throws KlvParseException {
         ${namespacedName} uut = new ${namespacedName}(${minValue});
         assertEquals(uut.getBytes(), new byte[] {
                     (byte) 0x00,
@@ -256,7 +256,7 @@ public class ${namespacedName}Test {
 </#if>
 <#else>
     @Test
-    public void getBytes() {
+    public void getBytes() throws KlvParseException {
         ${namespacedName} uut = new ${namespacedName}(2.0);
         assertEquals(uut.getBytes(), new byte[] {
                     (byte) 0x40,
@@ -272,28 +272,28 @@ public class ${namespacedName}Test {
 
 <#if minValue??>
     @Test
-    public void fromValueMin() {
+    public void fromValueMin() throws KlvParseException  {
         ${namespacedName} uut = new ${namespacedName}(${minValue});
         assertNotNull(uut);
         assertEquals(uut.getValue(), ${minValue}, 0.000001);
     }
 
-    @Test(expectedExceptions = IllegalArgumentException.class)
-    public void fromValueMinOutOfRange() {
+    @Test(expectedExceptions = KlvParseException.class)
+    public void fromValueMinOutOfRange() throws KlvParseException {
         new ${namespacedName}(${minValue} - 0.5);
     }
 </#if>
 
 <#if maxValue??>
     @Test
-    public void fromValueMax() {
+    public void fromValueMax() throws KlvParseException {
         ${namespacedName} uut = new ${namespacedName}(${maxValue});
         assertNotNull(uut);
         assertEquals(uut.getValue(), ${maxValue}, 0.000001);
     }
 
-    @Test(expectedExceptions = IllegalArgumentException.class)
-    public void fromValueMaxOutOfRange() {
+    @Test(expectedExceptions = KlvParseException.class)
+    public void fromValueMaxOutOfRange() throws KlvParseException {
         new ${namespacedName}(${maxValue} + 0.5);
     }
 </#if>

@@ -50,6 +50,9 @@ public class MimlToJava extends AbstractMojo {
         try {
             File sourceDirectory = new File(inputDirectory, "src/main/miml");
             File[] files = sourceDirectory.listFiles();
+            if (files == null) {
+                throw new IOException("No files to process");
+            }
             for (File inFile : files) {
                 if (inFile.getName().endsWith(".miml")) {
                     processFile(inFile.getAbsolutePath());

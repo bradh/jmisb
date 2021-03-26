@@ -7,7 +7,6 @@ import freemarker.template.TemplateExceptionHandler;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.io.Writer;
@@ -30,18 +29,25 @@ public class CodeGeneratorListener implements MIML_v3Listener {
     private ClassModelEntry currentClassModelEntry = null;
     private EnumerationModel currentEnumerationModel = null;
 
-    CodeGeneratorListener(CodeGeneratorConfiguration configuration) {
+    CodeGeneratorListener(CodeGeneratorConfiguration configuration) throws IOException {
         this.generatorConf = configuration;
         createOutputDirectories();
         setupTemplateEngine();
     }
 
-    private void createOutputDirectories() {
+    private void createOutputDirectories() throws IOException {
         String packagePath = generatorConf.getPackageNameBase().replace('.', '/');
         generatedSourceDirectory = new File(generatorConf.getOutputFile(), packagePath);
-        generatedSourceDirectory.mkdirs();
+        if (!generatedSourceDirectory.exists() && !generatedSourceDirectory.mkdirs()) {
+            throw new IOException(
+                    "Failed to create directories for "
+                            + generatedSourceDirectory.getAbsolutePath());
+        }
         generatedTestDirectory = new File(generatorConf.getOutputTestDirectory(), packagePath);
-        generatedTestDirectory.mkdirs();
+        if (!generatedTestDirectory.exists() && !generatedTestDirectory.mkdirs()) {
+            throw new IOException(
+                    "Failed to create directories for " + generatedTestDirectory.getAbsolutePath());
+        }
     }
 
     private void generateJava(EnumerationModel enumerationModel)
@@ -55,11 +61,17 @@ public class CodeGeneratorListener implements MIML_v3Listener {
         try {
             String packagePart = enumeration.getDirectoryPackagePart();
             File targetDirectory = new File(generatedSourceDirectory, packagePart);
-            targetDirectory.mkdirs();
+            if ((!targetDirectory.exists()) && (!targetDirectory.mkdirs())) {
+                throw new IOException(
+                        "Failed to create directories for " + targetDirectory.getAbsolutePath());
+            }
             Template temp = templateConfiguration.getTemplate("enumeration.ftl");
             File enumerationFile = new File(targetDirectory, enumeration.getName() + ".java");
-            Writer out = new FileWriter(enumerationFile);
-            temp.process(enumeration, out);
+            try (Writer out =
+                    new OutputStreamWriter(
+                            new FileOutputStream(enumerationFile), StandardCharsets.UTF_8)) {
+                temp.process(enumeration, out);
+            }
         } catch (TemplateException | IOException ex) {
             log("Failed to generate enumeration for " + enumeration.getName());
             throw ex;
@@ -73,8 +85,11 @@ public class CodeGeneratorListener implements MIML_v3Listener {
             File targetDirectory = makeOutputTestDirectory(enumeration);
             File enumerationTestFile =
                     new File(targetDirectory, enumeration.getName() + "Test.java");
-            Writer out = new FileWriter(enumerationTestFile);
-            temp.process(enumeration, out);
+            try (Writer out =
+                    new OutputStreamWriter(
+                            new FileOutputStream(enumerationTestFile), StandardCharsets.UTF_8)) {
+                temp.process(enumeration, out);
+            }
         } catch (TemplateException | IOException ex) {
             log("Failed to generate enumeration tests: " + ex.getMessage());
             throw ex;
@@ -97,7 +112,11 @@ public class CodeGeneratorListener implements MIML_v3Listener {
             // log("Generating classes for " + classModel.getName());
             String packagePart = classModel.getDirectoryPackagePart();
             File outputSourceDirectory = new File(generatedSourceDirectory, packagePart);
-            outputSourceDirectory.mkdirs();
+            if ((!outputSourceDirectory.exists()) && (!outputSourceDirectory.mkdirs())) {
+                throw new IOException(
+                        "Failed to create directories for "
+                                + outputSourceDirectory.getAbsolutePath());
+            }
             File outputTestDirectory = makeOutputTestDirectory(classModel);
             incorporateIncludes(classModel);
             if (!classModel.getName().equals("Base")) {
@@ -133,18 +152,24 @@ public class CodeGeneratorListener implements MIML_v3Listener {
             Template temp = templateConfiguration.getTemplate("metadataKeyTest.ftl");
             File metadataKeyTestFile =
                     new File(outputTestDirectory, classModel.getName() + "MetadataKeyTest.java");
-            Writer out = new FileWriter(metadataKeyTestFile);
-            temp.process(classModel, out);
+            try (Writer out =
+                    new OutputStreamWriter(
+                            new FileOutputStream(metadataKeyTestFile), StandardCharsets.UTF_8)) {
+                temp.process(classModel, out);
+            }
         } catch (TemplateException | IOException ex) {
             log("Failed to generate metadata key tests: " + ex.getMessage());
             throw ex;
         }
     }
 
-    private File makeOutputTestDirectory(AbstractModel model) {
+    private File makeOutputTestDirectory(AbstractModel model) throws IOException {
         String packagePart = model.getDirectoryPackagePart();
         File targetDirectory = new File(generatedTestDirectory, packagePart);
-        targetDirectory.mkdirs();
+        if ((!targetDirectory.exists()) && (!targetDirectory.mkdirs())) {
+            throw new IOException(
+                    "Failed to create directories for " + targetDirectory.getAbsolutePath());
+        }
         return targetDirectory;
     }
 
@@ -152,37 +177,48 @@ public class CodeGeneratorListener implements MIML_v3Listener {
             throws TemplateException, IOException {
         Template temp = templateConfiguration.getTemplate("metadataKey.ftl");
         File metadataKeyFile = new File(targetDirectory, classModel.getName() + "MetadataKey.java");
-        Writer out = new FileWriter(metadataKeyFile);
-        temp.process(classModel, out);
+        try (Writer out =
+                new OutputStreamWriter(
+                        new FileOutputStream(metadataKeyFile), StandardCharsets.UTF_8)) {
+            temp.process(classModel, out);
+        }
     }
 
     private void generateLocalSet(File targetDirectory, ClassModel classModel)
             throws TemplateException, IOException {
         File outputFile = new File(targetDirectory, classModel.getName() + ".java");
         Template temp = templateConfiguration.getTemplate("compositeClass.ftl");
-        Writer out = new FileWriter(outputFile);
-        temp.process(classModel, out);
+        try (Writer out =
+                new OutputStreamWriter(new FileOutputStream(outputFile), StandardCharsets.UTF_8)) {
+            temp.process(classModel, out);
+        }
     }
 
     private void generateListFormOfClass(File targetDirectory, ClassModel classModel)
             throws TemplateException, IOException {
         File outputFile = new File(targetDirectory, "ListOf" + classModel.getName() + ".java");
         Template temp = templateConfiguration.getTemplate("listClass.ftl");
-        Writer out = new FileWriter(outputFile);
-        temp.process(classModel, out);
+        try (Writer out =
+                new OutputStreamWriter(new FileOutputStream(outputFile), StandardCharsets.UTF_8)) {
+            temp.process(classModel, out);
+        }
 
         outputFile = new File(targetDirectory, classModel.getName() + "Identifier.java");
         temp = templateConfiguration.getTemplate("listItemIdentifier.ftl");
-        out = new FileWriter(outputFile);
-        temp.process(classModel, out);
+        try (Writer out =
+                new OutputStreamWriter(new FileOutputStream(outputFile), StandardCharsets.UTF_8)) {
+            temp.process(classModel, out);
+        }
     }
 
     private void generateLocalSetTests(File outputTestDirectory, ClassModel classModel)
             throws TemplateException, IOException {
         File testFile = new File(outputTestDirectory, classModel.getName() + "Test.java");
         Template temp = templateConfiguration.getTemplate("compositeClassTest.ftl");
-        Writer out = new OutputStreamWriter(new FileOutputStream(testFile), StandardCharsets.UTF_8);
-        temp.process(classModel, out);
+        try (Writer out =
+                new OutputStreamWriter(new FileOutputStream(testFile), StandardCharsets.UTF_8)) {
+            temp.process(classModel, out);
+        }
     }
 
     private void generateListFormOfClassTests(File outputTestDirectory, ClassModel classModel)
@@ -190,13 +226,17 @@ public class CodeGeneratorListener implements MIML_v3Listener {
         File outputFile =
                 new File(outputTestDirectory, "ListOf" + classModel.getName() + "Test.java");
         Template temp = templateConfiguration.getTemplate("listClassTest.ftl");
-        Writer out = new FileWriter(outputFile);
-        temp.process(classModel, out);
+        try (Writer listClassOutput =
+                new OutputStreamWriter(new FileOutputStream(outputFile), StandardCharsets.UTF_8)) {
+            temp.process(classModel, listClassOutput);
+        }
 
         outputFile = new File(outputTestDirectory, classModel.getName() + "IdentifierTest.java");
         temp = templateConfiguration.getTemplate("listItemIdentifierTest.ftl");
-        out = new FileWriter(outputFile);
-        temp.process(classModel, out);
+        try (Writer listIdentifierOutput =
+                new OutputStreamWriter(new FileOutputStream(outputFile), StandardCharsets.UTF_8)) {
+            temp.process(classModel, listIdentifierOutput);
+        }
     }
 
     private void generateComponentClasses(File targetDirectory, ClassModel classModel)
@@ -751,7 +791,6 @@ public class CodeGeneratorListener implements MIML_v3Listener {
     @Override
     public void enterUnitVal(MIML_v3Parser.UnitValContext ctx) {
         TerminalNode noUnits = ctx.NOUNITS();
-        TerminalNode see = ctx.SEEDESCRIPTIONSTR();
         if (noUnits != null) {
             this.currentClassModelEntry.addUnitWord("None");
         }
@@ -928,7 +967,11 @@ public class CodeGeneratorListener implements MIML_v3Listener {
             String packagePart = base.getDirectoryPackagePart();
             File outputSourceDirectory = new File(generatedSourceDirectory, packagePart);
             File outputTestDirectory = makeOutputTestDirectory(base);
-            outputSourceDirectory.mkdirs();
+            if ((!outputSourceDirectory.exists()) && (!outputSourceDirectory.mkdirs())) {
+                throw new IOException(
+                        "Failed to create directories for "
+                                + outputSourceDirectory.getAbsolutePath());
+            }
             for (ClassModelEntry entry : base.getEntries()) {
                 processEntry(entry, outputSourceDirectory);
                 processEntryTest(entry, outputTestDirectory);

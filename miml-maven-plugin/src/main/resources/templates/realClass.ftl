@@ -4,16 +4,14 @@
 package ${packageName};
 
 import org.jmisb.api.common.KlvParseException;
-<#if minValue?? && maxValue??>
-import org.jmisb.api.klv.st1201.FpEncoder;
-</#if>
 import org.jmisb.api.klv.st1902.IMimdMetadataValue;
-<#if !(minValue?? && maxValue??)>
-import org.jmisb.core.klv.PrimitiveConverter;
-</#if>
 
 /**
+<#if parentName == "Base">
+ * MIMD ${parentName} ${name} attribute.
+<#else>
  * MIMD {@link ${parentName}} ${name} attribute.
+</#if>
  *
  * <p>This is a specialisation of a floating point value.
  *
@@ -25,7 +23,7 @@ public class ${namespacedName} implements IMimdMetadataValue {
     /**
      * Construct from value.
      *
-<#if maxValue??>
+<#if minValue?? && maxValue??>
      * <p>The value must be in the range [${minValue}, ${maxValue}].
      *
 <#elseif minValue??>
@@ -38,15 +36,15 @@ public class ${namespacedName} implements IMimdMetadataValue {
 </#if>
      * @param value the floating point value to initialise this ${namespacedName} with.
      */
-    public ${namespacedName}(double value) throws IllegalArgumentException{
+    public ${namespacedName}(double value) throws KlvParseException{
 <#if minValue??>
         if (value < ${minValue}) {
-            throw new IllegalArgumentException("Minimum value for ${namespacedName} is ${minValue}");
+            throw new KlvParseException("Minimum value for ${namespacedName} is ${minValue}");
         }
 </#if>
 <#if maxValue??>
         if (value > ${maxValue}) {
-            throw new IllegalArgumentException("Maximum value for ${namespacedName} is ${maxValue}");
+            throw new KlvParseException("Maximum value for ${namespacedName} is ${maxValue}");
         }
 </#if>
         this.doubleValue = value;
@@ -65,10 +63,10 @@ public class ${namespacedName} implements IMimdMetadataValue {
     public ${namespacedName}(byte[] bytes) throws KlvParseException {
         try {
 <#if minValue?? && maxValue??>
-            FpEncoder decoder = new FpEncoder(${minValue}, ${maxValue}, bytes.length);
+            org.jmisb.api.klv.st1201.FpEncoder decoder = new org.jmisb.api.klv.st1201.FpEncoder(${minValue}, ${maxValue}, bytes.length);
             this.doubleValue = decoder.decode(bytes);
 <#else>
-            this.doubleValue = PrimitiveConverter.toFloat64(bytes);
+            this.doubleValue = org.jmisb.core.klv.PrimitiveConverter.toFloat64(bytes);
 </#if>
         } catch (IllegalArgumentException ex) {
             throw new KlvParseException(ex.getMessage());
@@ -92,10 +90,10 @@ public class ${namespacedName} implements IMimdMetadataValue {
     public ${namespacedName}(byte[] bytes, int offset, int length) throws KlvParseException {
         try {
 <#if minValue?? && maxValue??>
-            FpEncoder decoder = new FpEncoder(${minValue}, ${maxValue}, length);
+            org.jmisb.api.klv.st1201.FpEncoder decoder = new org.jmisb.api.klv.st1201.FpEncoder(${minValue}, ${maxValue}, length);
             this.doubleValue = decoder.decode(bytes, offset);
 <#else>
-            this.doubleValue = PrimitiveConverter.toFloat64(bytes, offset, length);
+            this.doubleValue = org.jmisb.core.klv.PrimitiveConverter.toFloat64(bytes, offset, length);
 </#if>
         } catch (IllegalArgumentException ex) {
             throw new KlvParseException(ex.getMessage());
@@ -122,14 +120,14 @@ public class ${namespacedName} implements IMimdMetadataValue {
     public byte[] getBytes(){
 <#if minValue?? && maxValue??>
     <#if resolution??>
-        FpEncoder encoder = new FpEncoder(${minValue}, ${maxValue}, (double)${resolution});
+        org.jmisb.api.klv.st1201.FpEncoder encoder = new org.jmisb.api.klv.st1201.FpEncoder(${minValue}, ${maxValue}, (double)${resolution});
     <#else>
-        FpEncoder encoder = new FpEncoder(${minValue}, ${maxValue}, Float.BYTES);
+        org.jmisb.api.klv.st1201.FpEncoder encoder = new org.jmisb.api.klv.st1201.FpEncoder(${minValue}, ${maxValue}, Float.BYTES);
     </#if>
         return encoder.encode(doubleValue);
 <#else>
         // TODO: consider a version that allows selection of length 4 or 8 bytes.
-        return PrimitiveConverter.float64ToBytes(doubleValue);
+        return org.jmisb.core.klv.PrimitiveConverter.float64ToBytes(doubleValue);
 </#if>
     }
 
