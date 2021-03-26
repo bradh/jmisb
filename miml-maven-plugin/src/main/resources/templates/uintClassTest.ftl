@@ -13,13 +13,13 @@ public class ${namespacedName}Test {
 
 <#if minValue??>
     @Test
-    public void displayName() {
+    public void displayName() throws KlvParseException {
         ${namespacedName} uut = new ${namespacedName}(${minValue});
         assertEquals(uut.getDisplayName(), "${nameSentenceCase}");
     }
 
     @Test
-    public void displayableValue() {
+    public void displayableValue() throws KlvParseException {
         ${namespacedName} uut = new ${namespacedName}(${minValue});
         <#if units?has_content>
         assertEquals(uut.getDisplayableValue(), "${minValue} ${units}");
@@ -29,19 +29,19 @@ public class ${namespacedName}Test {
     }
 
     @Test
-    public void testGetValue() {
+    public void testGetValue() throws KlvParseException {
         ${namespacedName} uut = new ${namespacedName}(${minValue});
         assertEquals(uut.getValue(), ${minValue?c});
     }
 <#else>
     @Test
-    public void displayName() {
+    public void displayName() throws KlvParseException {
         ${namespacedName} uut = new ${namespacedName}(0);
         assertEquals(uut.getDisplayName(), "${nameSentenceCase}");
     }
 
     @Test
-    public void displayableValue() {
+    public void displayableValue() throws KlvParseException {
         ${namespacedName} uut = new ${namespacedName}(0);
         <#if units?has_content>
         assertEquals(uut.getDisplayableValue(), "0 ${units}");
@@ -74,7 +74,7 @@ public class ${namespacedName}Test {
     }
 
     @Test
-    public void getBytes1() {
+    public void getBytes1() throws KlvParseException {
         ${namespacedName} uut = new ${namespacedName}(1);
         assertEquals(uut.getBytes(), new byte[]{0x01});
     }
@@ -87,7 +87,7 @@ public class ${namespacedName}Test {
     }
 <#else>
     @Test
-    public void getBytes255() {
+    public void getBytes255() throws KlvParseException {
         ${namespacedName} uut = new ${namespacedName}(255);
         assertEquals(uut.getBytes(), new byte[]{(byte)0xFF});
     }
@@ -109,12 +109,12 @@ public class ${namespacedName}Test {
     }
 
 <#if minValue??>
-    @Test (expectedExceptions = IllegalArgumentException.class)
+    @Test (expectedExceptions = KlvParseException.class)
     public void minValueTooSmall() throws KlvParseException {
         new ${namespacedName}(${minValue} - 1);
     }
 <#else>
-    @Test (expectedExceptions = IllegalArgumentException.class)
+    @Test (expectedExceptions = KlvParseException.class)
     public void tooSmall() throws KlvParseException {
         new ${namespacedName}(-1);
     }
@@ -127,7 +127,7 @@ public class ${namespacedName}Test {
         assertEquals(uut.getValue(), ${maxValue});
     }
 
-    @Test (expectedExceptions = IllegalArgumentException.class)
+    @Test (expectedExceptions = KlvParseException.class)
     public void maxValueTooLarge() throws KlvParseException {
         new ${namespacedName}(${maxValue} + 1);
     }

@@ -70,6 +70,43 @@ public class ClassModelEntry {
         return typeName;
     }
 
+    /**
+     * Get the corresponding primitive type for this entry.
+     *
+     * <p>This might be "double" for a Real type or "long" for UInt or Integer types.
+     *
+     * @return a String containing the name of a primitive Java type
+     */
+    public String getPrimitiveType() {
+        switch (getTypeName()) {
+            case "Integer":
+                return "long";
+            case "UInt":
+                return "long";
+            default:
+                throw new UnsupportedOperationException("Not yet implemented:" + getTypeName());
+        }
+    }
+
+    /**
+     * Get as description for the corresponding primitive type for this entry.
+     *
+     * <p>This might be "a floating point value" for a Real type or "an unsigned integer" for a UInt
+     * type.
+     *
+     * @return a String containing the description of the type
+     */
+    public String getTypeDescription() {
+        switch (getTypeName()) {
+            case "Integer":
+                return "a signed integer";
+            case "UInt":
+                return "an unsigned integer";
+            default:
+                throw new UnsupportedOperationException("Not yet implemented:" + getTypeName());
+        }
+    }
+
     public String getQualifiedTypeName() {
         return parent.getTypePackage(typeName) + "." + typeName;
     }

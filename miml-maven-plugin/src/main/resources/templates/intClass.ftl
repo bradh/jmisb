@@ -13,12 +13,12 @@ import org.jmisb.api.klv.st1902.IMimdMetadataValue;
  * MIMD {@link ${parentName}} ${name} attribute.
 </#if>
  *
- * <p>This is a specialisation of a signed integer.
+ * <p>This is a specialisation of ${typeDescription}.
  *
  * <p>See ${document} for more information on this data type.
  */
 public class ${namespacedName} implements IMimdMetadataValue {
-    private final long intValue;
+    private final ${primitiveType} implementingValue;
 
     /**
      * Construct from value.
@@ -34,10 +34,10 @@ public class ${namespacedName} implements IMimdMetadataValue {
      * <p>The value is in units of ${units}.
      * 
 </#if>
-     * @param value the signed integer value to initialise this ${namespacedName} with.
+     * @param value ${typeDescription} value to initialise this ${namespacedName} with.
      * @throws KlvParseException if the value is not valid (e.g. out of range).
      */
-    public ${namespacedName}(long value) throws KlvParseException {
+    public ${namespacedName}(${primitiveType} value) throws KlvParseException {
 <#if minValue??>
         if (value < ${minValue}) {
             throw new KlvParseException("Minimum value for ${namespacedName} is ${minValue}");
@@ -48,18 +48,18 @@ public class ${namespacedName} implements IMimdMetadataValue {
             throw new KlvParseException("Maximum value for ${namespacedName} is ${maxValue}");
         }
 </#if>
-        this.intValue = value;
+        this.implementingValue = value;
     }
 
     /**
      * Create ${namespacedName} from encoded bytes.
      *
-     * @param bytes Encoded byte array
-     * @throws KlvParseException if the byte array could not be parsed
+     * @param bytes Encoded byte array.
+     * @throws KlvParseException if the byte array could not be parsed.
      */
     public ${namespacedName}(byte[] bytes) throws KlvParseException {
         try {
-            this.intValue = org.jmisb.core.klv.PrimitiveConverter.variableBytesToInt64(bytes);
+            this.implementingValue = org.jmisb.core.klv.PrimitiveConverter.variableBytesToInt64(bytes);
         } catch (IllegalArgumentException ex) {
             throw new KlvParseException(ex.getMessage());
         }
@@ -68,9 +68,9 @@ public class ${namespacedName} implements IMimdMetadataValue {
     /**
      * Create ${namespacedName} from encoded bytes.
      *
-     * @param bytes Encoded byte array
+     * @param bytes Encoded byte array.
      * @return new ${namespacedName} corresponding to the encoded byte array.
-     * @throws KlvParseException if the byte array could not be parsed
+     * @throws KlvParseException if the byte array could not be parsed.
      */
     public static ${namespacedName} fromBytes(byte[] bytes) throws KlvParseException {
         return new ${namespacedName}(bytes);
@@ -83,15 +83,15 @@ public class ${namespacedName} implements IMimdMetadataValue {
 
     @Override
     public byte[] getBytes(){
-        return org.jmisb.core.klv.PrimitiveConverter.int64ToVariableBytes(intValue);
+        return org.jmisb.core.klv.PrimitiveConverter.int64ToVariableBytes(implementingValue);
     }
 
     @Override
     public String getDisplayableValue() {
 <#if units?has_content>
-        return String.format("%d ${escapedUnits}", this.intValue);
+        return String.format("%d ${escapedUnits}", this.implementingValue);
 <#else>
-        return String.format("%d", this.intValue);
+        return String.format("%d", this.implementingValue);
 </#if>
     }
 
@@ -99,12 +99,12 @@ public class ${namespacedName} implements IMimdMetadataValue {
      * Get the value of this ${namespacedName}.
      *
 <#if units?has_content>
-     * @return The value as a signed long, in units of ${units}.
+     * @return The value as ${typeDescription}, in units of ${units}.
 <#else>
-     * @return The value as a signed long.
+     * @return The value as ${typeDescription}.
 </#if>
      */
-    public long getValue() {
-        return this.intValue;
+    public ${primitiveType} getValue() {
+        return this.implementingValue;
     }
 }
