@@ -35,22 +35,22 @@ public class ${namespacedName} implements IMimdMetadataValue {
 </#if>
      * @param value the floating point values to initialise this ${nameSentenceCase} with.
      */
-    public ${namespacedName}(double[][] value) throws IllegalArgumentException{
+    public ${namespacedName}(double[][] value) throws KlvParseException {
 <#if arrayDimensionSize(0)??>
         if (value.length != ${arrayDimensionSize(0)}) {
-            throw new IllegalArgumentException("Required number of ${namespacedName} rows is ${arrayDimensionSize(0)}");
+            throw new KlvParseException("Required number of ${namespacedName} rows is ${arrayDimensionSize(0)}");
         }
 </#if>
 <#if arrayDimensionSize(1)??>
         if (value[0].length != ${arrayDimensionSize(1)}) {
-            throw new IllegalArgumentException("Required number of ${namespacedName} columns is ${arrayDimensionSize(1)}");
+            throw new KlvParseException("Required number of ${namespacedName} columns is ${arrayDimensionSize(1)}");
         }
 </#if>
 <#if minValue??>
         for (int i = 0; i < value.length; ++i) {
             for (int j = 0; j < value[i].length; ++j) {
                 if (value[i][j] < ${minValue?string["0.000"]}) {
-                    throw new IllegalArgumentException("Minimum value for ${namespacedName} elements is ${minValue}");
+                    throw new KlvParseException("Minimum value for ${namespacedName} elements is ${minValue}");
                 }
             }
         }
@@ -59,7 +59,7 @@ public class ${namespacedName} implements IMimdMetadataValue {
         for (int i = 0; i < value.length; ++i) {
             for (int j = 0; j < value[i].length; ++j) {
                 if (value[i][j] > ${maxValue?string["0.000"]}) {
-                    throw new IllegalArgumentException("Maximum value for ${namespacedName} elements is ${maxValue}");
+                    throw new KlvParseException("Maximum value for ${namespacedName} elements is ${maxValue}");
                 }
             }
         }
@@ -78,12 +78,12 @@ public class ${namespacedName} implements IMimdMetadataValue {
         this.doubleArray = decoder.decodeFloatingPoint2D(bytes, 0);
 <#if arrayDimensionSize(0)??>
         if (this.doubleArray.length != ${arrayDimensionSize(0)}) {
-            throw new IllegalArgumentException("Required number of ${namespacedName} rows is ${arrayDimensionSize(0)}");
+            throw new KlvParseException("Required number of ${namespacedName} rows is ${arrayDimensionSize(0)}");
         }
 </#if>
 <#if arrayDimensionSize(1)??>
         if (this.doubleArray[0].length != ${arrayDimensionSize(1)}) {
-            throw new IllegalArgumentException("Required number of ${namespacedName} columns is ${arrayDimensionSize(1)}");
+            throw new KlvParseException("Required number of ${namespacedName} columns is ${arrayDimensionSize(1)}");
         }
 </#if>
     }

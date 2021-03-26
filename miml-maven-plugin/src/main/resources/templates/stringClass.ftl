@@ -2,51 +2,56 @@
 // Template: ${.current_template_name}
 package ${packageName};
 
-import java.nio.charset.StandardCharsets;
+import org.jmisb.api.common.KlvParseException;
 import org.jmisb.api.klv.st1902.IMimdMetadataValue;
 
 /**
+<#if parentName == "Base">
+ * MIMD ${parentName} ${name} attribute.
+<#else>
  * MIMD {@link ${parentName}} ${name} attribute.
+</#if>
  *
- * <p>This is a specialisation of a string, using UTF-8 encoding.
+ * <p>This is a specialisation of ${typeDescription}.
  *
  * <p>See ${document} for more information on this data type.
  */
 public class ${namespacedName} implements IMimdMetadataValue {
-    private final String stringValue;
+    private final ${primitiveType} implementingValue;
 
     /**
      * Construct from value.
      *
-     * @param value the string value to initialise this ${namespacedName} with.
+     * @param value ${typeDescription} to initialise this ${namespacedName} with.
+     * @throws KlvParseException if the value is not valid (e.g. too long).
      */
-    public ${namespacedName}(String value) {
-        <#if maxLength??>
+    public ${namespacedName}(${primitiveType} value) throws KlvParseException {
+<#if maxLength??>
         if (value.length() > ${maxLength}) {
-            throw new IllegalArgumentException("${namespacedName} maximum length is ${maxLength} characters");
+            throw new KlvParseException("${namespacedName} maximum length is ${maxLength} characters");
         }
-        </#if>
-        this.stringValue = value;
+</#if>
+        this.implementingValue = value;
     }
 
     /**
      * Create ${namespacedName} from encoded bytes.
      *
-     * @param bytes Encoded byte array
+     * @param bytes Encoded byte array.
      */
     public ${namespacedName}(byte[] bytes) {
-        this.stringValue = new String(bytes, StandardCharsets.UTF_8);
+        this.implementingValue = new String(bytes, java.nio.charset.StandardCharsets.UTF_8);
     }
 
     /**
      * Create ${namespacedName} from encoded bytes with offset.
      *
-     * @param bytes Encoded byte array
+     * @param bytes Encoded byte array.
      * @param offset the offset into the byte array to start extracting the value
      * @param length the number of bytes to read from the array (starting with the offset)
      */
     public ${namespacedName}(byte[] bytes, int offset, int length) {
-        this.stringValue = new String(bytes, offset, length, StandardCharsets.UTF_8);
+        this.implementingValue = new String(bytes, offset, length, java.nio.charset.StandardCharsets.UTF_8);
     }
 
     /**
@@ -66,20 +71,28 @@ public class ${namespacedName} implements IMimdMetadataValue {
 
     @Override
     public byte[] getBytes(){
-        return this.stringValue.getBytes(StandardCharsets.UTF_8);
+        return this.implementingValue.getBytes(java.nio.charset.StandardCharsets.UTF_8);
     }
 
     @Override
     public String getDisplayableValue() {
-        return this.stringValue;
+<#if units?has_content>
+        return String.format("%s ${escapedUnits}", this.implementingValue);
+<#else>
+        return this.implementingValue;
+</#if>
     }
 
     /**
      * Get the value of this ${namespacedName}.
      *
-     * @return the value as a String
+<#if units?has_content>
+     * @return The value as ${typeDescription}, in units of ${units}.
+<#else>
+     * @return The value as ${typeDescription}.
+</#if>
      */
-    public String getValue() {
-        return this.stringValue;
+    public ${primitiveType} getValue() {
+        return this.implementingValue;
     }
 }

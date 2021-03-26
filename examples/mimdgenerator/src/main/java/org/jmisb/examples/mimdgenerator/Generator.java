@@ -9,6 +9,7 @@ import java.util.SortedMap;
 import java.util.TreeMap;
 import java.util.UUID;
 import javax.imageio.ImageIO;
+import org.jmisb.api.common.KlvParseException;
 import org.jmisb.api.klv.st1204.CoreIdentifier;
 import org.jmisb.api.klv.st1902.IMimdMetadataValue;
 import org.jmisb.api.klv.st1902.MimdId;
@@ -95,7 +96,7 @@ public class Generator {
         coreIdentifierUUID = UUID.randomUUID();
     }
 
-    public void generate() {
+    public void generate() throws KlvParseException {
 
         CoreIdentifier coreIdentifier = new CoreIdentifier();
         coreIdentifier.setMinorUUID(UUID.randomUUID());
@@ -137,14 +138,14 @@ public class Generator {
         }
     }
 
-    private ListOfTimer getTimers(long nanos) {
+    private ListOfTimer getTimers(long nanos) throws KlvParseException {
         List<Timer> timerList = new ArrayList<>();
         timerList.add(this.getTimer(nanos));
         ListOfTimer timers = new ListOfTimer(timerList, "Timers");
         return timers;
     }
 
-    private Timer getTimer(long nanos) {
+    private Timer getTimer(long nanos) throws KlvParseException {
         SortedMap<TimerMetadataKey, IMimdMetadataValue> values = new TreeMap<>();
         values.put(
                 TimerMetadataKey.nanoPrecisionTimestamp, new Timer_NanoPrecisionTimestamp(nanos));
@@ -154,7 +155,7 @@ public class Generator {
         return timer;
     }
 
-    private ListOfSecurity getSecurityOptions() {
+    private ListOfSecurity getSecurityOptions() throws KlvParseException {
         List<Security> securityList = new ArrayList<>();
         securityList.add(this.getSecurityUnclas());
         securityList.add(this.getSecurityFOUO());
@@ -162,7 +163,7 @@ public class Generator {
         return securityOptions;
     }
 
-    private Security getSecurityUnclas() {
+    private Security getSecurityUnclas() throws KlvParseException {
         SortedMap<SecurityMetadataKey, IMimdMetadataValue> values = new TreeMap<>();
         values.put(SecurityMetadataKey.mimdId, new MimdId(0, 1));
         values.put(SecurityMetadataKey.classifyingMethod, new Security_ClassifyingMethod("US-1"));
@@ -173,7 +174,7 @@ public class Generator {
         return security;
     }
 
-    private Security getSecurityFOUO() {
+    private Security getSecurityFOUO() throws KlvParseException {
         SortedMap<SecurityMetadataKey, IMimdMetadataValue> values = new TreeMap<>();
         values.put(SecurityMetadataKey.mimdId, new MimdId(1, 1));
         values.put(SecurityMetadataKey.classifyingMethod, new Security_ClassifyingMethod("US-1"));
@@ -185,14 +186,14 @@ public class Generator {
         return security;
     }
 
-    private ListOfPlatform getPlatforms() {
+    private ListOfPlatform getPlatforms() throws KlvParseException {
         List<Platform> platformList = new ArrayList<>();
         platformList.add(this.getPlatform());
         ListOfPlatform platforms = new ListOfPlatform(platformList, "Platforms");
         return platforms;
     }
 
-    private Platform getPlatform() {
+    private Platform getPlatform() throws KlvParseException {
         SortedMap<PlatformMetadataKey, IMimdMetadataValue> values = new TreeMap<>();
         values.put(PlatformMetadataKey.name, new Platform_Name("Test System"));
         values.put(PlatformMetadataKey.identity, new Platform_Identity("jMISB Test 1"));
@@ -203,14 +204,14 @@ public class Generator {
         return platform;
     }
 
-    private ListOfStage getStages() {
+    private ListOfStage getStages() throws KlvParseException {
         List<Stage> stageList = new ArrayList<>();
         stageList.add(this.getStage());
         ListOfStage stages = new ListOfStage(stageList, "Stages");
         return stages;
     }
 
-    private Stage getStage() {
+    private Stage getStage() throws KlvParseException {
         SortedMap<StageMetadataKey, IMimdMetadataValue> values = new TreeMap<>();
         values.put(StageMetadataKey.position, this.getPosition());
         values.put(StageMetadataKey.orientation, this.getOrientation());
@@ -218,7 +219,7 @@ public class Generator {
         return stage;
     }
 
-    private Position getPosition() {
+    private Position getPosition() throws KlvParseException {
         SortedMap<PositionMetadataKey, IMimdMetadataValue> values = new TreeMap<>();
         values.put(PositionMetadataKey.absGeodetic, this.getGeodeticPosition());
         values.put(PositionMetadataKey.country, new Position_Country("ge:ISO1:3:VII-13:AUS"));
@@ -226,14 +227,14 @@ public class Generator {
         return position;
     }
 
-    private Orientation getOrientation() {
+    private Orientation getOrientation() throws KlvParseException {
         SortedMap<OrientationMetadataKey, IMimdMetadataValue> values = new TreeMap<>();
         values.put(OrientationMetadataKey.absEnu, this.getAbsEnu());
         Orientation orientation = new Orientation(values);
         return orientation;
     }
 
-    private AbsEnu getAbsEnu() {
+    private AbsEnu getAbsEnu() throws KlvParseException {
         SortedMap<AbsEnuMetadataKey, IMimdMetadataValue> values = new TreeMap<>();
         values.put(AbsEnuMetadataKey.rotAboutEast, new AbsEnu_RotAboutEast(0.0));
         values.put(AbsEnuMetadataKey.rotAboutNorth, new AbsEnu_RotAboutNorth(0.0));
@@ -242,7 +243,7 @@ public class Generator {
         return absEnu;
     }
 
-    private AbsGeodetic getGeodeticPosition() {
+    private AbsGeodetic getGeodeticPosition() throws KlvParseException {
         SortedMap<AbsGeodeticMetadataKey, IMimdMetadataValue> values = new TreeMap<>();
         values.put(AbsGeodeticMetadataKey.lat, new AbsGeodetic_Lat(-35.35349 * Math.PI / 180.0));
         values.put(AbsGeodeticMetadataKey.lon, new AbsGeodetic_Lon(149.08932 * Math.PI / 180.0));
@@ -251,21 +252,21 @@ public class Generator {
         return geodeticPosition;
     }
 
-    private ListOfPayload getPayloads() {
+    private ListOfPayload getPayloads() throws KlvParseException {
         List<Payload> payloadList = new ArrayList<>();
         payloadList.add(this.getPayload());
         ListOfPayload payloads = new ListOfPayload(payloadList, "Payloads");
         return payloads;
     }
 
-    private Payload getPayload() {
+    private Payload getPayload() throws KlvParseException {
         SortedMap<PayloadMetadataKey, IMimdMetadataValue> values = new TreeMap<>();
         values.put(PayloadMetadataKey.geoIntelligenceSensors, getGeoIntelligenceSensors());
         Payload payload = new Payload(values);
         return payload;
     }
 
-    private ListOfGeoIntelligenceSensor getGeoIntelligenceSensors() {
+    private ListOfGeoIntelligenceSensor getGeoIntelligenceSensors() throws KlvParseException {
         List<GeoIntelligenceSensor> sensorList = new ArrayList<>();
         sensorList.add(this.getGeoIntelligenceSensor());
         ListOfGeoIntelligenceSensor sensors =
@@ -273,14 +274,14 @@ public class Generator {
         return sensors;
     }
 
-    private GeoIntelligenceSensor getGeoIntelligenceSensor() {
+    private GeoIntelligenceSensor getGeoIntelligenceSensor() throws KlvParseException {
         SortedMap<GeoIntelligenceSensorMetadataKey, IMimdMetadataValue> values = new TreeMap<>();
         values.put(GeoIntelligenceSensorMetadataKey.imagerSystem, getImagerSystem());
         GeoIntelligenceSensor sensor = new GeoIntelligenceSensor(values);
         return sensor;
     }
 
-    private ImagerSystem getImagerSystem() {
+    private ImagerSystem getImagerSystem() throws KlvParseException {
         SortedMap<ImagerSystemMetadataKey, IMimdMetadataValue> values = new TreeMap<>();
         values.put(ImagerSystemMetadataKey.name, new ImagerSystem_Name("EO Fixed"));
         values.put(ImagerSystemMetadataKey.fieldOfView, getFieldOfView());
@@ -289,7 +290,7 @@ public class Generator {
         return imagerSystem;
     }
 
-    private FieldOfView getFieldOfView() {
+    private FieldOfView getFieldOfView() throws KlvParseException {
         SortedMap<FieldOfViewMetadataKey, IMimdMetadataValue> values = new TreeMap<>();
         values.put(
                 FieldOfViewMetadataKey.horizontal,
@@ -301,14 +302,14 @@ public class Generator {
         return fieldOfView;
     }
 
-    private MIIS getMiis() {
+    private MIIS getMiis() throws KlvParseException {
         SortedMap<MIISMetadataKey, IMimdMetadataValue> values = new TreeMap<>();
         values.put(MIISMetadataKey.minorCoreId, getMinorCoreId());
         MIIS miis = new MIIS(values);
         return miis;
     }
 
-    private MinorCoreId getMinorCoreId() {
+    private MinorCoreId getMinorCoreId() throws KlvParseException {
         SortedMap<MinorCoreIdMetadataKey, IMimdMetadataValue> values = new TreeMap<>();
         byte[] coreIdentifierAsBytes = UuidUtils.uuidToArray(coreIdentifierUUID);
         long[] data = new long[coreIdentifierAsBytes.length];

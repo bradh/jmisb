@@ -17,7 +17,7 @@ import org.testng.annotations.Test;
 public class ${namespacedName}Test {
 
     @Test
-    public void displayName() {
+    public void displayName() throws KlvParseException {
         ${namespacedName} uut = new ${namespacedName}(
             new double[][]
                 {<#list 1..arrayDimension0 as r>{<#list 1..arrayDimension1 as c>${minVal}<#sep>, </#list>}<#sep>, </#list>});
@@ -25,14 +25,14 @@ public class ${namespacedName}Test {
     }
 
     @Test
-    public void getDisplayName() {
+    public void getDisplayName() throws KlvParseException {
         ${namespacedName} uut = new ${namespacedName}(new double[][]
                 {<#list 1..arrayDimension0 as r>{<#list 1..arrayDimension1 as c>${minVal}<#sep>, </#list>}<#sep>, </#list>});
         assertEquals(uut.getDisplayableValue(), "[${nameSentenceCase} Array]");
     }
 
     @Test
-    public void getValue() {
+    public void getValue() throws KlvParseException {
         ${namespacedName} uut = new ${namespacedName}(new double[][]
                 {<#list 1..arrayDimension0 as r>{<#list 1..arrayDimension1 as c>${minVal}<#sep>, </#list>}<#sep>, </#list>});
         assertEquals(uut.getValue(), new double[][]
@@ -40,7 +40,7 @@ public class ${namespacedName}Test {
     }
 
     @Test
-    public void getBytes() {
+    public void getBytes() throws KlvParseException {
         ${namespacedName} uut = new ${namespacedName}(new double[][]
                 {<#list 1..arrayDimension0 as r>{<#list 1..arrayDimension1 as c>${minVal}<#sep>, </#list>}<#sep>, </#list>});
         // TODO: check values - may be messy given IMAPA.
@@ -58,7 +58,7 @@ public class ${namespacedName}Test {
     }
 <#if arrayDimensionSize(0)??>
 
-    @Test(expectedExceptions = IllegalArgumentException.class)
+    @Test(expectedExceptions = KlvParseException.class)
     public void fromBytesBadDim0() throws KlvParseException {
         ${namespacedName} uut = ${namespacedName}.fromBytes(new byte[]
                 { 0x02, ${arrayDimension0 + 1}, ${arrayDimension1}, 0x04, 0x01, <#list 1..((arrayDimension0+1)*arrayDimension1) as i>0x00, 0x00, 0x00, 0x00<#sep>, </#list>});
@@ -66,7 +66,7 @@ public class ${namespacedName}Test {
 </#if>
 <#if arrayDimensionSize(1)??>
 
-    @Test(expectedExceptions = IllegalArgumentException.class)
+    @Test(expectedExceptions = KlvParseException.class)
     public void fromBytesBadDim1() throws KlvParseException {
         ${namespacedName} uut = ${namespacedName}.fromBytes(new byte[]
                 { 0x02, ${arrayDimension0}, ${arrayDimension1+1}, 0x04, 0x01, <#list 1..(arrayDimension0*(arrayDimension1+1)) as i>0x00, 0x00, 0x00, 0x00<#sep>, </#list>});
@@ -74,44 +74,44 @@ public class ${namespacedName}Test {
 </#if>
 <#if minValue??>
 
-    @Test(expectedExceptions = IllegalArgumentException.class)
-    public void minValueBad() {
+    @Test(expectedExceptions = KlvParseException.class)
+    public void minValueBad() throws KlvParseException {
         new ${namespacedName}(new double[][]
             {<#list 1..arrayDimension0 as r>{<#list 1..arrayDimension1 as c>${minValue - 0.1}<#sep>, </#list>}<#sep>, </#list>});
     }
 </#if>
 <#if maxValue??>
 
-    @Test(expectedExceptions = IllegalArgumentException.class)
-    public void maxValueBad() {
+    @Test(expectedExceptions = KlvParseException.class)
+    public void maxValueBad() throws KlvParseException {
         new ${namespacedName}(new double[][]
             {<#list 1..arrayDimension0 as r>{<#list 1..arrayDimension1 as c>${maxValue + 0.1}<#sep>, </#list>}<#sep>, </#list>});
     }
 </#if>
 <#if arrayDimensionSize(0)??>
 
-    @Test(expectedExceptions = IllegalArgumentException.class)
-    public void BadNumberOfElementsLowRow() {
+    @Test(expectedExceptions = KlvParseException.class)
+    public void BadNumberOfElementsLowRow() throws KlvParseException {
         new ${namespacedName}(new double[][]
             {<#list 2..arrayDimension0 as r>{<#list 1..arrayDimension1 as c>${minVal}<#sep>, </#list>}<#sep>, </#list>});
     }
 
-    @Test(expectedExceptions = IllegalArgumentException.class)
-    public void BadNumberOfElementsRowHigh() {
+    @Test(expectedExceptions = KlvParseException.class)
+    public void BadNumberOfElementsRowHigh() throws KlvParseException {
         new ${namespacedName}(new double[][]
             {<#list 0..arrayDimension0 as r>{<#list 1..arrayDimension1 as c>${minVal}<#sep>, </#list>}<#sep>, </#list>});
     }
 </#if>
 <#if arrayDimensionSize(1)??>
 
-    @Test(expectedExceptions = IllegalArgumentException.class)
-    public void BadNumberOfElementsLowColumns() {
+    @Test(expectedExceptions = KlvParseException.class)
+    public void BadNumberOfElementsLowColumns() throws KlvParseException {
         new ${namespacedName}(new double[][]
             {<#list 1..arrayDimension0 as r>{<#list 2..arrayDimension1 as c>${minVal}<#sep>, </#list>}<#sep>, </#list>});
     }
 
-    @Test(expectedExceptions = IllegalArgumentException.class)
-    public void BadNumberOfElementsHighColumns() {
+    @Test(expectedExceptions = KlvParseException.class)
+    public void BadNumberOfElementsHighColumns() throws KlvParseException {
         new ${namespacedName}(new double[][]
             {<#list 1..arrayDimension0 as r>{<#list 0..arrayDimension1 as c>${minVal}<#sep>, </#list>}<#sep>, </#list>});
     }

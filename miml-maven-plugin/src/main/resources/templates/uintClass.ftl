@@ -42,10 +42,6 @@ public class ${namespacedName} implements IMimdMetadataValue {
         if (value < ${minValue}) {
             throw new KlvParseException("Minimum value for ${namespacedName} is ${minValue}");
         }
-<#else>
-        if (value < 0) {
-            throw new KlvParseException("Minimum value for ${namespacedName} is 0");
-        }
 </#if>
 <#if maxValue??>
         if (value > ${maxValue}) {
@@ -64,6 +60,24 @@ public class ${namespacedName} implements IMimdMetadataValue {
     public ${namespacedName}(byte[] bytes) throws KlvParseException {
         try {
             this.implementingValue = org.jmisb.core.klv.PrimitiveConverter.variableBytesToUint64(bytes);
+        } catch (IllegalArgumentException ex) {
+            throw new KlvParseException(ex.getMessage());
+        }
+    }
+
+    /**
+     * Create ${namespacedName} from encoded bytes.
+     *
+     * This version allows parsing of a specific number of bytes from a given offset.
+     *
+     * @param bytes Encoded byte array
+     * @param offset the offset into the byte array to start decoding
+     * @param length the number of bytes to decode (1 to 8)
+     * @throws KlvParseException if the byte array could not be parsed
+     */
+    public ${namespacedName}(byte[] bytes, int offset, int length) throws KlvParseException {
+        try {
+            this.implementingValue = org.jmisb.core.klv.PrimitiveConverter.variableBytesToUint64(bytes, offset, length);
         } catch (IllegalArgumentException ex) {
             throw new KlvParseException(ex.getMessage());
         }

@@ -34,22 +34,22 @@ public class ${namespacedName} implements IMimdMetadataValue {
 </#if>
      * @param value the unsigned integer values to initialise this ${nameSentenceCase} with.
      */
-    public ${namespacedName}(long[][] value) throws IllegalArgumentException{
+    public ${namespacedName}(long[][] value) throws KlvParseException{
 <#if arrayDimensionSize(0)??>
         if (value.length != ${arrayDimensionSize(0)}) {
-            throw new IllegalArgumentException("Required number of ${namespacedName} rows is ${arrayDimensionSize(0)}");
+            throw new KlvParseException("Required number of ${namespacedName} rows is ${arrayDimensionSize(0)}");
         }
 </#if>
 <#if arrayDimensionSize(1)??>
         if (value[0].length != ${arrayDimensionSize(1)}) {
-            throw new IllegalArgumentException("Required number of ${namespacedName} columns is ${arrayDimensionSize(1)}");
+            throw new KlvParseException("Required number of ${namespacedName} columns is ${arrayDimensionSize(1)}");
         }
 </#if>
 <#if minValue??>
         for (int i = 0; i < value.length; ++i) {
             for (int j = 0; j < value[i].length; ++j) {
                 if (value[i][j] < ${minValue}) {
-                    throw new IllegalArgumentException("Minimum value for ${namespacedName} elements is ${minValue}");
+                    throw new KlvParseException("Minimum value for ${namespacedName} elements is ${minValue}");
                 }
             }
         }
@@ -58,7 +58,7 @@ public class ${namespacedName} implements IMimdMetadataValue {
         for (int i = 0; i < value.length; ++i) {
             for (int j = 0; j < value[i].length; ++j) {
                 if (value[i][j] > ${maxValue}) {
-                    throw new IllegalArgumentException("Maximum value for ${namespacedName} elements is ${maxValue}");
+                    throw new KlvParseException("Maximum value for ${namespacedName} elements is ${maxValue}");
                 }
             }
         }

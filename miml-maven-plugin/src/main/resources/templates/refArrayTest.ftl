@@ -20,19 +20,19 @@ import org.testng.annotations.Test;
 public class ${namespacedName}Test {
 
     @Test
-    public void displayName() {
+    public void displayName() throws KlvParseException {
         ${namespacedName} uut = new ${namespacedName}(new MimdId[] {<#list 1..arrayDimension0 as x>new MimdId(${x})<#sep>, </#list>});
         assertEquals(uut.getDisplayName(), "${nameSentenceCase}");
     }
 
     @Test
-    public void getDisplayName() {
+    public void getDisplayName() throws KlvParseException {
         ${namespacedName} uut = new ${namespacedName}(new MimdId[] {<#list 1..arrayDimension0 as x>new MimdId(${x})<#sep>, </#list>});
         assertEquals(uut.getDisplayableValue(), "[${nameSentenceCase} Array]");
     }
 
     @Test
-    public void getValue() {
+    public void getValue() throws KlvParseException {
         ${namespacedName} uut = new ${namespacedName}(new MimdId[] {<#list 1..arrayDimension0 as x>new MimdId(${x})<#sep>, </#list>});
         assertEquals(uut.getValue(), new MimdId[] {<#list 1..arrayDimension0 as x>new MimdId(${x})<#sep>, </#list>});
         assertEquals(uut.getBytes(), getByteArrayForValidArrayData());
@@ -56,13 +56,13 @@ public class ${namespacedName}Test {
         assertEquals(uut.getBytes(), getByteArrayForValidArrayData());
     }
 
-    @Test(expectedExceptions = IllegalArgumentException.class)
+    @Test(expectedExceptions = KlvParseException.class)
     public void fromBytesBad() throws KlvParseException {
         ${namespacedName}.fromBytes(new byte[]{1});
     }
 
     @Test
-    public void getNestedValues() {
+    public void getNestedValues() throws KlvParseException {
         ${namespacedName} uut = new ${namespacedName}(new MimdId[] {<#list 1..arrayDimension0 as x>new MimdId(${x})<#sep>, </#list>});
         Set<? extends IKlvKey> identifiers = uut.getIdentifiers();
         assertEquals(identifiers.size(), ${arrayDimension0});
@@ -74,13 +74,13 @@ public class ${namespacedName}Test {
     }
 <#if arrayDimensionSize(0)??>
 
-    @Test(expectedExceptions = IllegalArgumentException.class)
-    public void BadNumberOfElementsLow() {
+    @Test(expectedExceptions = KlvParseException.class)
+    public void BadNumberOfElementsLow() throws KlvParseException {
         new ${namespacedName}(new MimdId[] {<#list 2..arrayDimension0 as x>${minVal}<#sep>, </#list>});
     }
 
-    @Test(expectedExceptions = IllegalArgumentException.class)
-    public void BadNumberOfElementsHigh() {
+    @Test(expectedExceptions = KlvParseException.class)
+    public void BadNumberOfElementsHigh() throws KlvParseException {
         new ${namespacedName}(new MimdId[] {<#list 0..arrayDimension0 as x>${minVal}<#sep>, </#list>});
     }
 </#if>

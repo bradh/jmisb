@@ -18,7 +18,7 @@ import org.jmisb.api.klv.st1902.IMimdMetadataValue;
  * <p>See ${document} for more information on this data type.
  */
 public class ${namespacedName} implements IMimdMetadataValue {
-    private final double doubleValue;
+    private final double implementingValue;
 
     /**
      * Construct from value.
@@ -48,7 +48,7 @@ public class ${namespacedName} implements IMimdMetadataValue {
             throw new KlvParseException("Maximum value for ${namespacedName} is ${maxValue}");
         }
 </#if>
-        this.doubleValue = value;
+        this.implementingValue = value;
     }
 
     /**
@@ -65,9 +65,9 @@ public class ${namespacedName} implements IMimdMetadataValue {
         try {
 <#if minValue?? && maxValue??>
             org.jmisb.api.klv.st1201.FpEncoder decoder = new org.jmisb.api.klv.st1201.FpEncoder(${minValue}, ${maxValue}, bytes.length);
-            this.doubleValue = decoder.decode(bytes);
+            this.implementingValue = decoder.decode(bytes);
 <#else>
-            this.doubleValue = org.jmisb.core.klv.PrimitiveConverter.toFloat64(bytes);
+            this.implementingValue = org.jmisb.core.klv.PrimitiveConverter.toFloat64(bytes);
 </#if>
         } catch (IllegalArgumentException ex) {
             throw new KlvParseException(ex.getMessage());
@@ -92,9 +92,9 @@ public class ${namespacedName} implements IMimdMetadataValue {
         try {
 <#if minValue?? && maxValue??>
             org.jmisb.api.klv.st1201.FpEncoder decoder = new org.jmisb.api.klv.st1201.FpEncoder(${minValue}, ${maxValue}, length);
-            this.doubleValue = decoder.decode(bytes, offset);
+            this.implementingValue = decoder.decode(bytes, offset);
 <#else>
-            this.doubleValue = org.jmisb.core.klv.PrimitiveConverter.toFloat64(bytes, offset, length);
+            this.implementingValue = org.jmisb.core.klv.PrimitiveConverter.toFloat64(bytes, offset, length);
 </#if>
         } catch (IllegalArgumentException ex) {
             throw new KlvParseException(ex.getMessage());
@@ -125,19 +125,19 @@ public class ${namespacedName} implements IMimdMetadataValue {
     <#else>
         org.jmisb.api.klv.st1201.FpEncoder encoder = new org.jmisb.api.klv.st1201.FpEncoder(${minValue}, ${maxValue}, Float.BYTES);
     </#if>
-        return encoder.encode(doubleValue);
+        return encoder.encode(implementingValue);
 <#else>
         // TODO: consider a version that allows selection of length 4 or 8 bytes.
-        return org.jmisb.core.klv.PrimitiveConverter.float64ToBytes(doubleValue);
+        return org.jmisb.core.klv.PrimitiveConverter.float64ToBytes(implementingValue);
 </#if>
     }
 
     @Override
     public String getDisplayableValue() {
 <#if units?has_content>
-        return String.format("%.3f ${escapedUnits}", this.doubleValue);
+        return String.format("%.3f ${escapedUnits}", this.implementingValue);
 <#else>
-        return String.format("%.3f", this.doubleValue);
+        return String.format("%.3f", this.implementingValue);
 </#if>
     }
 
@@ -151,6 +151,6 @@ public class ${namespacedName} implements IMimdMetadataValue {
 </#if>
      */
     public double getValue() {
-        return this.doubleValue;
+        return this.implementingValue;
     }
 }

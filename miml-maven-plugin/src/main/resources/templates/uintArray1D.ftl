@@ -41,23 +41,23 @@ public class ${namespacedName} implements IMimdMetadataValue, INestedKlvValue {
 </#if>
      * @param value the unsigned integer values to initialise this ${nameSentenceCase} with.
      */
-    public ${namespacedName}(long[] value) throws IllegalArgumentException{
+    public ${namespacedName}(long[] value) throws KlvParseException{
 <#if arrayDimensionSize(0)??>
         if (value.length != ${arrayDimensionSize(0)}) {
-            throw new IllegalArgumentException("Required number of ${namespacedName} elements is ${arrayDimensionSize(0)}");
+            throw new KlvParseException("Required number of ${namespacedName} elements is ${arrayDimensionSize(0)}");
         }
 </#if>
 <#if minValue??>
         for (int i = 0; i < value.length; ++i) {
             if (value[i] < ${minValue}) {
-                throw new IllegalArgumentException("Minimum value for ${namespacedName} elements is ${minValue}");
+                throw new KlvParseException("Minimum value for ${namespacedName} elements is ${minValue}");
             }
         }
 </#if>
 <#if maxValue??>
         for (int i = 0; i < value.length; ++i) {
             if (value[i] > ${maxValue}) {
-                throw new IllegalArgumentException("Maximum value for ${namespacedName} elements is ${maxValue}");
+                throw new KlvParseException("Maximum value for ${namespacedName} elements is ${maxValue}");
             }
         }
 </#if>

@@ -37,12 +37,12 @@ public class ${namespacedName} implements IMimdMetadataValue {
 </#if>
      * @param value the signed integer values to initialise this ${nameSentenceCase} with.
      */
-    public ${namespacedName}(long[][] value) throws IllegalArgumentException{
+    public ${namespacedName}(long[][] value) throws KlvParseException{
 <#if minValue??>
         for (int i = 0; i < value.length; ++i) {
             for (int j = 0; j < value[i].length; ++j) {
                 if (value[i][j] < ${minValue}) {
-                    throw new IllegalArgumentException("Minimum value for ${namespacedName} elements is ${minValue}");
+                    throw new KlvParseException("Minimum value for ${namespacedName} elements is ${minValue}");
                 }
             }
         }
@@ -51,7 +51,7 @@ public class ${namespacedName} implements IMimdMetadataValue {
         for (int i = 0; i < value.length; ++i) {
             for (int j = 0; j < value[i].length; ++j) {
                 if (value[i][j] > ${maxValue}) {
-                    throw new IllegalArgumentException("Maximum value for ${namespacedName} elements is ${maxValue}");
+                    throw new KlvParseException("Maximum value for ${namespacedName} elements is ${maxValue}");
                 }
             }
         }

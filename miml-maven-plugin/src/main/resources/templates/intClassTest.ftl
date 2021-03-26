@@ -8,7 +8,7 @@ import static org.testng.Assert.*;
 
 import org.testng.annotations.Test;
 
-/** Unit tests for ${namespacedName} */
+/** Unit tests for ${namespacedName}. */
 public class ${namespacedName}Test {
 
     @Test

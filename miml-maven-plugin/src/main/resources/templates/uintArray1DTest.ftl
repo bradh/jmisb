@@ -19,19 +19,19 @@ import org.testng.annotations.Test;
 public class ${namespacedName}Test {
 
     @Test
-    public void displayName() {
+    public void displayName() throws KlvParseException {
         ${namespacedName} uut = new ${namespacedName}(new long[] {<#list 1..arrayDimension0 as x>${minVal}<#sep>, </#list>});
         assertEquals(uut.getDisplayName(), "${nameSentenceCase}");
     }
 
     @Test
-    public void getDisplayName() {
+    public void getDisplayName() throws KlvParseException {
         ${namespacedName} uut = new ${namespacedName}(new long[] {<#list 1..arrayDimension0 as x>${minVal}<#sep>, </#list>});
         assertEquals(uut.getDisplayableValue(), "[${nameSentenceCase} Array]");
     }
 
     @Test
-    public void getValue() {
+    public void getValue() throws KlvParseException {
         ${namespacedName} uut = new ${namespacedName}(new long[] {<#list 1..arrayDimension0 as x>${minVal}<#sep>, </#list>});
         assertEquals(uut.getValue(), new long[] {<#list 1..arrayDimension0 as x>${minVal}<#sep>, </#list>});
         assertEquals(uut.getBytes(),
@@ -101,7 +101,7 @@ public class ${namespacedName}Test {
     }
 
     @Test
-    public void getNestedValues() {
+    public void getNestedValues() throws KlvParseException {
         ${namespacedName} uut = new ${namespacedName}(new long[] {<#list 1..arrayDimension0 as x>${minVal}<#sep>, </#list>});
         Set<? extends IKlvKey> identifiers = uut.getIdentifiers();
         assertEquals(identifiers.size(), ${arrayDimension0});
@@ -113,27 +113,27 @@ public class ${namespacedName}Test {
     }
 <#if minValue??>
 
-    @Test(expectedExceptions = IllegalArgumentException.class)
-    public void minValueBad() {
+    @Test(expectedExceptions = KlvParseException.class)
+    public void minValueBad() throws KlvParseException {
         new ${namespacedName}(new long[] {<#list 1..arrayDimension0 as x>${minValue - 1}<#sep>, </#list>});
     }
 </#if>
 <#if maxValue??>
 
-    @Test(expectedExceptions = IllegalArgumentException.class)
-    public void maxValueBad() {
+    @Test(expectedExceptions = KlvParseException.class)
+    public void maxValueBad() throws KlvParseException {
         new ${namespacedName}(new long[] {<#list 1..arrayDimension0 as x>${maxValue + 1}<#sep>, </#list>});
     }
 </#if>
 <#if arrayDimensionSize(0)??>
 
-    @Test(expectedExceptions = IllegalArgumentException.class)
-    public void BadNumberOfElementsLow() {
+    @Test(expectedExceptions = KlvParseException.class)
+    public void BadNumberOfElementsLow() throws KlvParseException {
         new ${namespacedName}(new long[] {<#list 2..arrayDimension0 as x>${minVal}<#sep>, </#list>});
     }
 
-    @Test(expectedExceptions = IllegalArgumentException.class)
-    public void BadNumberOfElementsHigh() {
+    @Test(expectedExceptions = KlvParseException.class)
+    public void BadNumberOfElementsHigh() throws KlvParseException {
         new ${namespacedName}(new long[] {<#list 0..arrayDimension0 as x>${minVal}<#sep>, </#list>});
     }
 </#if>

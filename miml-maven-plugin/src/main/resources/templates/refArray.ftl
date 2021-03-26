@@ -34,7 +34,7 @@ public class ${namespacedName} implements IMimdMetadataValue, INestedKlvValue {
      *
      * @param value the MimdId values to initialise this ${nameSentenceCase} with.
      */
-    public ${namespacedName}(MimdId[] value) throws IllegalArgumentException{
+    public ${namespacedName}(MimdId[] value) throws KlvParseException {
         this.refArray = value.clone();
     }
 
@@ -45,16 +45,20 @@ public class ${namespacedName} implements IMimdMetadataValue, INestedKlvValue {
      * @throws KlvParseException if the array could not be parsed
      */
     public ${namespacedName}(byte[] bytes) throws KlvParseException {
-        List<MimdId> values = new ArrayList<>();
-        for (int i = 0; i < bytes.length; ++i) {
-            BerField serialField = BerDecoder.decode(bytes, i, true);
-            i += serialField.getLength();
-            BerField groupField = BerDecoder.decode(bytes, i, true);
-            i += groupField.getLength();
-            MimdId value = new MimdId(serialField.getValue(), groupField.getValue());
-            values.add(value);
+        try {
+            List<MimdId> values = new ArrayList<>();
+            for (int i = 0; i < bytes.length; ++i) {
+                BerField serialField = BerDecoder.decode(bytes, i, true);
+                i += serialField.getLength();
+                BerField groupField = BerDecoder.decode(bytes, i, true);
+                i += groupField.getLength();
+                MimdId value = new MimdId(serialField.getValue(), groupField.getValue());
+                values.add(value);
+            }
+            this.refArray = values.toArray(new MimdId[0]);
+        } catch (IllegalArgumentException ex) {
+            throw new KlvParseException(ex.getMessage());
         }
-        this.refArray = values.toArray(new MimdId[0]);
     }
 
     /**

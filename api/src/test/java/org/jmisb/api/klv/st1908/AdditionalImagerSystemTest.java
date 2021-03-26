@@ -16,7 +16,7 @@ public class AdditionalImagerSystemTest {
     public AdditionalImagerSystemTest() {}
 
     @Test
-    public void fromValues() {
+    public void fromValues() throws KlvParseException {
         SortedMap<ImagerSystemMetadataKey, IMimdMetadataValue> values = new TreeMap<>();
         values.put(ImagerSystemMetadataKey.name, new ImagerSystem_Name("Test Name"));
         ImagerSystem uut = new ImagerSystem(values);

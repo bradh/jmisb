@@ -81,6 +81,8 @@ public class ClassModelEntry {
         switch (getTypeName()) {
             case "Integer":
                 return "long";
+            case "String":
+                return "String";
             case "UInt":
                 return "long";
             default:
@@ -100,6 +102,8 @@ public class ClassModelEntry {
         switch (getTypeName()) {
             case "Integer":
                 return "a signed integer";
+            case "String":
+                return "a String";
             case "UInt":
                 return "an unsigned integer";
             default:
@@ -151,11 +155,14 @@ public class ClassModelEntry {
         return list;
     }
 
-    public void setIsList(boolean list) {
-        this.list = list;
+    public void setIsList(boolean l) {
+        list = l;
     }
 
     public Double getMinValue() {
+        if (typeName.equals("UInt") && (minValue == null)) {
+            return 0.0;
+        }
         return minValue;
     }
 
