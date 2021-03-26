@@ -35,6 +35,7 @@ public class ${namespacedName} implements IMimdMetadataValue {
      * 
 </#if>
      * @param value the floating point value to initialise this ${namespacedName} with.
+     * @throws KlvParseException if the value is not valid (e.g. out of range).
      */
     public ${namespacedName}(double value) throws KlvParseException{
 <#if minValue??>

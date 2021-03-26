@@ -88,11 +88,11 @@ public class ${namespacedName} implements IMimdMetadataValue {
 
     @Override
     public String getDisplayableValue() {
-        <#if units??>
-        return String.format("%d ${units}", this.intValue);
-        <#else>
+<#if units?has_content>
+        return String.format("%d ${escapedUnits}", this.intValue);
+<#else>
         return String.format("%d", this.intValue);
-        </#if>
+</#if>
     }
 
     /**
