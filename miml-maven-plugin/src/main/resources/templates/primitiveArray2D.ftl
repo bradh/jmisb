@@ -4,10 +4,7 @@
 package ${packageName};
 
 import org.jmisb.api.common.KlvParseException;
-import org.jmisb.api.klv.st1303.ElementProcessedEncoder;
-import org.jmisb.api.klv.st1303.MDAPDecoder;
 import org.jmisb.api.klv.st1902.IMimdMetadataValue;
-
 
 /**
 <#if parentName == "Base">
@@ -16,12 +13,12 @@ import org.jmisb.api.klv.st1902.IMimdMetadataValue;
  * MIMD {@link ${parentName}} ${name} attribute.
 </#if>
  *
- * <p>This is a specialisation of a 2D array of floating point values.
+ * <p>This is a specialisation of ${typeDescription} 2D array.
  *
  * See ${document} for more information on this data type.
  */
 public class ${namespacedName} implements IMimdMetadataValue {
-    private final double[][] doubleArray;
+    private final ${primitiveType}[][] implementingType;
 
     /**
      * Construct from value.
@@ -33,9 +30,9 @@ public class ${namespacedName} implements IMimdMetadataValue {
      * The minimum value for each element in the array is ${minValue}.
      *
 </#if>
-     * @param value the floating point values to initialise this ${nameSentenceCase} with.
+     * @param value ${typeDescription} 2D array to initialise this ${nameSentenceCase} with.
      */
-    public ${namespacedName}(double[][] value) throws KlvParseException {
+    public ${namespacedName}(${primitiveType}[][] value) throws KlvParseException {
 <#if arrayDimensionSize(0)??>
         if (value.length != ${arrayDimensionSize(0)}) {
             throw new KlvParseException("Required number of ${namespacedName} rows is ${arrayDimensionSize(0)}");
@@ -64,7 +61,7 @@ public class ${namespacedName} implements IMimdMetadataValue {
             }
         }
 </#if>
-        this.doubleArray = value.clone();
+        this.implementingType = value.clone();
     }
 
     /**
@@ -74,15 +71,21 @@ public class ${namespacedName} implements IMimdMetadataValue {
      * @throws KlvParseException if the array could not be parsed
      */
     public ${namespacedName}(byte[] bytes) throws KlvParseException {
-        MDAPDecoder decoder = new MDAPDecoder();
-        this.doubleArray = decoder.decodeFloatingPoint2D(bytes, 0);
+        org.jmisb.api.klv.st1303.MDAPDecoder decoder = new org.jmisb.api.klv.st1303.MDAPDecoder();
+<#if typeName=="Integer">
+        this.implementingType = decoder.decodeInt2D(bytes, 0);
+<#elseif typeName=="Real">
+        this.implementingType = decoder.decodeFloatingPoint2D(bytes, 0);
+<#elseif typeName=="UInt">
+        this.implementingType = decoder.decodeUInt2D(bytes, 0);
+</#if>
 <#if arrayDimensionSize(0)??>
-        if (this.doubleArray.length != ${arrayDimensionSize(0)}) {
+        if (this.implementingType.length != ${arrayDimensionSize(0)}) {
             throw new KlvParseException("Required number of ${namespacedName} rows is ${arrayDimensionSize(0)}");
         }
 </#if>
 <#if arrayDimensionSize(1)??>
-        if (this.doubleArray[0].length != ${arrayDimensionSize(1)}) {
+        if (this.implementingType[0].length != ${arrayDimensionSize(1)}) {
             throw new KlvParseException("Required number of ${namespacedName} columns is ${arrayDimensionSize(1)}");
         }
 </#if>
@@ -107,12 +110,18 @@ public class ${namespacedName} implements IMimdMetadataValue {
     @Override
     public byte[] getBytes(){
         try {
+<#if typeName=="Integer">
+            org.jmisb.api.klv.st1303.NaturalFormatEncoder encoder = new org.jmisb.api.klv.st1303.NaturalFormatEncoder();
+<#elseif typeName=="Real">
     <#if resolution??>
-            ElementProcessedEncoder encoder = new ElementProcessedEncoder(${minValue}, ${maxValue}, (double)${resolution});
+            org.jmisb.api.klv.st1303.ElementProcessedEncoder encoder = new org.jmisb.api.klv.st1303.ElementProcessedEncoder(${minValue}, ${maxValue}, (double)${resolution});
     <#else>
-            ElementProcessedEncoder encoder = new ElementProcessedEncoder(${minValue}, ${maxValue}, Float.BYTES);
+            org.jmisb.api.klv.st1303.ElementProcessedEncoder encoder = new org.jmisb.api.klv.st1303.ElementProcessedEncoder(${minValue}, ${maxValue}, Float.BYTES);
     </#if>
-            return encoder.encode(this.doubleArray);
+<#elseif typeName=="UInt">
+            org.jmisb.api.klv.st1303.UnsignedIntegerEncodingEncoder encoder = new org.jmisb.api.klv.st1303.UnsignedIntegerEncodingEncoder();
+</#if>
+            return encoder.encode(this.implementingType);
         } catch (KlvParseException ex) {
             return new byte[0];
         }
@@ -127,9 +136,9 @@ public class ${namespacedName} implements IMimdMetadataValue {
     /**
      * Get the value of this ${namespacedName}.
      *
-     * @return the value as a 2D double array
+     * @return the value as ${typeDescription} 2D array.
      */
-    public double[][] getValue() {
-        return this.doubleArray.clone();
+    public ${primitiveType}[][] getValue() {
+        return this.implementingType.clone();
     }
 }

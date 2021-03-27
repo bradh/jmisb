@@ -70,6 +70,7 @@ import org.jmisb.api.klv.st1908.MinorCoreId;
 import org.jmisb.api.klv.st1908.MinorCoreIdMetadataKey;
 import org.jmisb.api.klv.st1908.MinorCoreId_Uuid;
 import org.jmisb.api.video.IVideoFileOutput;
+import org.jmisb.api.video.KlvFormat;
 import org.jmisb.api.video.MetadataFrame;
 import org.jmisb.api.video.VideoFileOutput;
 import org.jmisb.api.video.VideoFrame;
@@ -103,7 +104,8 @@ public class Generator {
         coreIdentifier.setVersion(1);
 
         VideoOutputOptions options =
-                new VideoOutputOptions(width, height, bitRate, frameRate, gopSize, true);
+                new VideoOutputOptions(
+                        width, height, bitRate, frameRate, gopSize, KlvFormat.Asynchronous);
         try (IVideoFileOutput output = new VideoFileOutput(options)) {
             output.open(filename);
 

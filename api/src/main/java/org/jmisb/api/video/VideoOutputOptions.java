@@ -58,7 +58,7 @@ public class VideoOutputOptions {
      * @param bitRate Target stream bit rate in bits/second
      * @param frameRate Stream frame rate in frames/second
      * @param gopSize Group of Picture size, i.e., the I-frame interval
-     * @param multiplexingMethod the multiplexing method to use for KLV metadat (NoKlv to disable
+     * @param multiplexingMethod the multiplexing method to use for KLV metadata (NoKlv to disable
      *     KLV)
      */
     public VideoOutputOptions(
