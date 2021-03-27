@@ -39,7 +39,7 @@ public class ${namespacedName} implements IMimdMetadataValue {
      * 
 </#if>
      * @param value ${typeDescription} value to initialise this ${namespacedName} with.
-     * @throws KlvParseException if the value is not valid (e.g. out of range).
+     * @throws KlvParseException if the value is not valid (e.g. outside of the valid range).
      */
     public ${namespacedName}(${primitiveType} value) throws KlvParseException {
 <#if minValue??>
@@ -50,6 +50,11 @@ public class ${namespacedName} implements IMimdMetadataValue {
 <#if maxValue??>
         if (value > ${maxValue}) {
             throw new KlvParseException("Maximum value for ${namespacedName} is ${maxValue}");
+        }
+</#if>
+<#if maxLength??>
+        if (value.length() > ${maxLength}) {
+            throw new KlvParseException("${namespacedName} maximum length is ${maxLength}");
         }
 </#if>
         this.implementingValue = value;
@@ -96,7 +101,7 @@ public class ${namespacedName} implements IMimdMetadataValue {
     /**
      * Create ${namespacedName} from encoded bytes.
      *
-     * This version allows parsing of a specific number of bytes from a given offset.
+     * <p>This version allows parsing of a specific number of bytes from a given offset.
      *
      * @param bytes Encoded byte array.
      * @param offset the offset into the byte array to start decoding.
@@ -114,6 +119,8 @@ public class ${namespacedName} implements IMimdMetadataValue {
     </#if>
 <#elseif typeName=="Integer">
             this.implementingValue = org.jmisb.core.klv.PrimitiveConverter.variableBytesToInt64(bytes, offset, length);
+<#elseif typeName=="String">
+            this.implementingValue = new String(bytes, offset, length, java.nio.charset.StandardCharsets.UTF_8);
 <#elseif typeName=="UInt">
             this.implementingValue = org.jmisb.core.klv.PrimitiveConverter.variableBytesToUint64(bytes, offset, length);
 </#if>

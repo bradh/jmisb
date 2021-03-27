@@ -274,9 +274,8 @@ public class CodeGeneratorListener implements MIML_v3Listener {
                                 + " - "
                                 + entry.getTypeName());
             }
-        } else if (entry.getTypeName().equals("String")) {
-            processClassTemplate(targetDirectory, entry, "stringClass.ftl");
-        } else if (entry.getTypeName().equals("UInt")
+        } else if (entry.getTypeName().equals("String")
+                || entry.getTypeName().equals("UInt")
                 || entry.getTypeName().equals("Integer")
                 || entry.getTypeName().equals("Real")) {
             processClassTemplate(targetDirectory, entry, "primitiveClass.ftl");
