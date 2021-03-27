@@ -79,6 +79,8 @@ public class ClassModelEntry {
      */
     public String getPrimitiveType() {
         switch (getTypeName()) {
+            case "Boolean":
+                return "boolean";
             case "Integer":
                 return "long";
             case "Real":
@@ -124,6 +126,8 @@ public class ClassModelEntry {
      */
     public String getTypeDescription() {
         switch (getTypeName()) {
+            case "Boolean":
+                return "a boolean";
             case "Integer":
                 return "a signed integer";
             case "Real":

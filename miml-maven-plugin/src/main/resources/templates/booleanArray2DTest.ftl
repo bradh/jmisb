@@ -16,7 +16,7 @@ import org.testng.annotations.Test;
 public class ${namespacedName}Test {
 
     @Test
-    public void displayName() {
+    public void displayName() throws KlvParseException {
         ${namespacedName} uut = new ${namespacedName}(
             new boolean[][]
                 {<#list 1..arrayDimension0 as r>{<#list 1..arrayDimension1 as c>false<#sep>, </#list>}<#sep>, </#list>});
@@ -24,14 +24,14 @@ public class ${namespacedName}Test {
     }
 
     @Test
-    public void getDisplayName() {
+    public void getDisplayName() throws KlvParseException {
         ${namespacedName} uut = new ${namespacedName}(new boolean[][]
                 {<#list 1..arrayDimension0 as r>{<#list 1..arrayDimension1 as c>false<#sep>, </#list>}<#sep>, </#list>});
         assertEquals(uut.getDisplayableValue(), "[${nameSentenceCase} Array]");
     }
 
     @Test
-    public void getValueFalse() {
+    public void getValueFalse() throws KlvParseException {
         ${namespacedName} uut = new ${namespacedName}(new boolean[][]
                 {<#list 1..arrayDimension0 as r>{<#list 1..arrayDimension1 as c>false<#sep>, </#list>}<#sep>, </#list>});
         assertEquals(uut.getValue(), new boolean[][]
@@ -39,7 +39,7 @@ public class ${namespacedName}Test {
     }
 
     @Test
-    public void getValueTrue() {
+    public void getValueTrue() throws KlvParseException {
         ${namespacedName} uut = new ${namespacedName}(new boolean[][]
                 {<#list 1..arrayDimension0 as r>{<#list 1..arrayDimension1 as c>true<#sep>, </#list>}<#sep>, </#list>});
         assertEquals(uut.getValue(), new boolean[][]
@@ -64,7 +64,7 @@ public class ${namespacedName}Test {
     }
 
     @Test
-    public void getBytesFalseEncoded() {
+    public void getBytesFalseEncoded() throws KlvParseException {
         ${namespacedName} uut = new ${namespacedName}(new boolean[][]
                 {<#list 1..arrayDimension0 as r>{<#list 1..arrayDimension1 as c>false<#sep>, </#list>}<#sep>, </#list>});
         assertEquals(uut.getBytes(), new byte[]
@@ -78,7 +78,7 @@ public class ${namespacedName}Test {
     }
 
     @Test
-    public void getBytesBad() {
+    public void getBytesBad() throws KlvParseException {
         ${namespacedName} uut = new ${namespacedName}(new boolean[0][0]);
         assertEquals(uut.getBytes().length, 0);
     }

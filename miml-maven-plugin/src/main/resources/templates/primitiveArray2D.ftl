@@ -15,7 +15,7 @@ import org.jmisb.api.klv.st1902.IMimdMetadataValue;
  *
  * <p>This is a specialisation of ${typeDescription} 2D array.
  *
- * See ${document} for more information on this data type.
+ * <p>See ${document} for more information on this data type.
  */
 public class ${namespacedName} implements IMimdMetadataValue {
     private final ${primitiveType}[][] implementingType;
@@ -31,6 +31,7 @@ public class ${namespacedName} implements IMimdMetadataValue {
      *
 </#if>
      * @param value ${typeDescription} 2D array to initialise this ${nameSentenceCase} with.
+     * @throws KlvParseException if the value is not valid.
      */
     public ${namespacedName}(${primitiveType}[][] value) throws KlvParseException {
 <#if arrayDimensionSize(0)??>
@@ -67,12 +68,14 @@ public class ${namespacedName} implements IMimdMetadataValue {
     /**
      * Create ${namespacedName} from encoded bytes.
      *
-     * @param bytes Encoded byte array
-     * @throws KlvParseException if the array could not be parsed
+     * @param bytes Encoded byte array.
+     * @throws KlvParseException if the byte array could not be parsed.
      */
     public ${namespacedName}(byte[] bytes) throws KlvParseException {
         org.jmisb.api.klv.st1303.MDAPDecoder decoder = new org.jmisb.api.klv.st1303.MDAPDecoder();
-<#if typeName=="Integer">
+<#if typeName=="Boolean">
+        this.implementingType = decoder.decodeBoolean2D(bytes, 0);
+<#elseif typeName=="Integer">
         this.implementingType = decoder.decodeInt2D(bytes, 0);
 <#elseif typeName=="Real">
         this.implementingType = decoder.decodeFloatingPoint2D(bytes, 0);
@@ -94,9 +97,9 @@ public class ${namespacedName} implements IMimdMetadataValue {
     /**
      * Create ${namespacedName} from encoded bytes.
      *
-     * @param bytes Encoded byte array
-     * @return new ${nameSentenceCase} corresponding to the encoded byte array.
-     * @throws KlvParseException if the array could not be parsed
+     * @param bytes Encoded byte array.
+     * @return new ${namespacedName} corresponding to the encoded byte array.
+     * @throws KlvParseException if the byte array could not be parsed.
      */
     public static ${namespacedName} fromBytes(byte[] bytes) throws KlvParseException {
         return new ${namespacedName}(bytes);
@@ -110,7 +113,9 @@ public class ${namespacedName} implements IMimdMetadataValue {
     @Override
     public byte[] getBytes(){
         try {
-<#if typeName=="Integer">
+<#if typeName=="Boolean">
+            org.jmisb.api.klv.st1303.BooleanArrayEncoder encoder = new org.jmisb.api.klv.st1303.BooleanArrayEncoder();
+<#elseif typeName=="Integer">
             org.jmisb.api.klv.st1303.NaturalFormatEncoder encoder = new org.jmisb.api.klv.st1303.NaturalFormatEncoder();
 <#elseif typeName=="Real">
     <#if resolution??>
