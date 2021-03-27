@@ -106,11 +106,19 @@ public class ClassModelEntry {
             case "Integer":
                 return "%d";
             case "Real":
-                return "%.3f";
+                if (isArray()) {
+                    return "%f";
+                } else {
+                    return "%.3f";
+                }
             case "String":
                 return "%s";
             case "UInt":
-                return "%d";
+                if (isArray()) {
+                    return "0x%02x";
+                } else {
+                    return "%d";
+                }
             default:
                 throw new UnsupportedOperationException("Not yet implemented:" + getTypeName());
         }

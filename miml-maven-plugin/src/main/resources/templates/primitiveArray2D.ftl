@@ -30,7 +30,7 @@ public class ${namespacedName} implements IMimdMetadataValue {
      * The minimum value for each element in the array is ${minValue}.
      *
 </#if>
-     * @param value ${typeDescription} 2D array to initialise this ${nameSentenceCase} with.
+     * @param value ${typeDescription} 2D array to initialise this ${namespacedName} with.
      * @throws KlvParseException if the value is not valid.
      */
     public ${namespacedName}(${primitiveType}[][] value) throws KlvParseException {

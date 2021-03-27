@@ -10,11 +10,6 @@ import org.jmisb.api.common.KlvParseException;
 import org.jmisb.api.klv.IKlvKey;
 import org.jmisb.api.klv.IKlvValue;
 import org.jmisb.api.klv.INestedKlvValue;
-<#if minValue?? && maxValue??>
-import org.jmisb.api.klv.st1303.ElementProcessedEncoder;
-<#else>
-import org.jmisb.api.klv.st1303.NaturalFormatEncoder;
-</#if>
 import org.jmisb.api.klv.st1303.MDAPDecoder;
 import org.jmisb.api.klv.st1902.ArrayItemKey;
 import org.jmisb.api.klv.st1902.IMimdMetadataValue;
@@ -26,12 +21,12 @@ import org.jmisb.api.klv.st1902.IMimdMetadataValue;
  * MIMD {@link ${parentName}} ${name} attribute.
 </#if>
  *
- * <p>This is a specialisation of an array of floating point values.
+ * <p>This is a specialisation of ${typeDescription} 1D array.
  *
  * See ${document} for more information on this data type.
  */
-public class ${namespacedName} implements IMimdMetadataValue, INestedKlvValue  {
-    private final double[] doubleArray;
+public class ${namespacedName} implements IMimdMetadataValue, INestedKlvValue {
+    private final ${primitiveType}[] implementingType;
 
     /**
      * Construct from value.
@@ -43,9 +38,9 @@ public class ${namespacedName} implements IMimdMetadataValue, INestedKlvValue  {
      * The minimum value for each element in the array is ${minValue}.
      *
 </#if>
-     * @param value the floating point values to initialise this ${nameSentenceCase} with.
+     * @param value ${typeDescription} array to initialise this ${namespacedName} with.
      */
-    public ${namespacedName}(double[] value) throws KlvParseException{
+    public ${namespacedName}(${primitiveType}[] value) throws KlvParseException{
 <#if arrayDimensionSize(0)??>
         if (value.length != ${arrayDimensionSize(0)}) {
             throw new KlvParseException("Required number of ${namespacedName} elements is ${arrayDimensionSize(0)}");
@@ -65,7 +60,7 @@ public class ${namespacedName} implements IMimdMetadataValue, INestedKlvValue  {
             }
         }
 </#if>
-        this.doubleArray = value.clone();
+        this.implementingType = value.clone();
     }
 
     /**
@@ -74,9 +69,13 @@ public class ${namespacedName} implements IMimdMetadataValue, INestedKlvValue  {
      * @param bytes Encoded byte array
      * @throws KlvParseException if the array could not be parsed
      */
-    public ${namespacedName}(byte[] bytes) throws KlvParseException { 
+    public ${namespacedName}(byte[] bytes) throws KlvParseException {
         MDAPDecoder decoder = new MDAPDecoder();
-        this.doubleArray = decoder.decodeFloatingPoint1D(bytes, 0);
+<#if typeName=="Real">
+        this.implementingType = decoder.decodeFloatingPoint1D(bytes, 0);
+<#elseif typeName=="UInt">
+        this.implementingType = decoder.decodeUInt1D(bytes, 0);
+</#if>
     }
 
     /**
@@ -98,14 +97,18 @@ public class ${namespacedName} implements IMimdMetadataValue, INestedKlvValue  {
     @Override
     public byte[] getBytes(){
         try {
+<#if typeName=="Real">
     <#if resolution??>
-            ElementProcessedEncoder encoder = new ElementProcessedEncoder(${minValue}, ${maxValue}, (double)${resolution});
+            org.jmisb.api.klv.st1303.ElementProcessedEncoder encoder = new org.jmisb.api.klv.st1303.ElementProcessedEncoder(${minValue}, ${maxValue}, (double)${resolution});
     <#elseif minValue?? && maxValue??>
-            ElementProcessedEncoder encoder = new ElementProcessedEncoder(${minValue}, ${maxValue}, Float.BYTES});
+            org.jmisb.api.klv.st1303.ElementProcessedEncoder encoder = new org.jmisb.api.klv.st1303.ElementProcessedEncoder(${minValue}, ${maxValue}, Float.BYTES});
     <#else>
-            NaturalFormatEncoder encoder = new NaturalFormatEncoder();
+            org.jmisb.api.klv.st1303.NaturalFormatEncoder encoder = new org.jmisb.api.klv.st1303.NaturalFormatEncoder();
     </#if>
-            return encoder.encode(this.doubleArray);
+<#elseif typeName=="UInt">
+            org.jmisb.api.klv.st1303.UnsignedIntegerEncodingEncoder encoder = new org.jmisb.api.klv.st1303.UnsignedIntegerEncodingEncoder();
+</#if>
+            return encoder.encode(this.implementingType);
         } catch (KlvParseException ex) {
             return new byte[0];
         }
@@ -119,20 +122,20 @@ public class ${namespacedName} implements IMimdMetadataValue, INestedKlvValue  {
     /**
      * Get the value of this ${namespacedName}.
      *
-     * @return the value as a double array
+     * @return the value as ${typeDescription} 1D array.
      */
-    public double[] getValue() {
-        return this.doubleArray.clone();
+    public ${primitiveType}[] getValue() {
+        return this.implementingType.clone();
     }
 
-   @Override
+    @Override
     public IKlvValue getField(IKlvKey tag) {
         ArrayItemKey key = (ArrayItemKey) tag;
-        double value = this.doubleArray[key.getIdentifier()];
+        ${primitiveType} value = this.implementingType[key.getIdentifier()];
         IKlvValue field = new IKlvValue() {
             @Override
             public String getDisplayableValue() {
-                return String.format("%f", value);
+                return String.format("${displayFormatter}", value);
             }
 
             @Override
@@ -146,7 +149,7 @@ public class ${namespacedName} implements IMimdMetadataValue, INestedKlvValue  {
     @Override
     public Set<? extends IKlvKey> getIdentifiers() {
         SortedSet<ArrayItemKey> arrayIdentifiers = new TreeSet<>();
-        for (int i = 0; i < doubleArray.length; ++i) {
+        for (int i = 0; i < implementingType.length; ++i) {
             arrayIdentifiers.add(new ArrayItemKey(i));
         }
         return arrayIdentifiers;
