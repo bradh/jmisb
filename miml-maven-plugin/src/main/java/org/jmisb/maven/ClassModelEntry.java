@@ -81,10 +81,34 @@ public class ClassModelEntry {
         switch (getTypeName()) {
             case "Integer":
                 return "long";
+            case "Real":
+                return "double";
             case "String":
                 return "String";
             case "UInt":
                 return "long";
+            default:
+                throw new UnsupportedOperationException("Not yet implemented:" + getTypeName());
+        }
+    }
+
+    /**
+     * Get the corresponding display formatter for this entry.
+     *
+     * <p>This might be "%.3f" for a Real type or "%d" for UInt or Integer types.
+     *
+     * @return a String containing the display format string for the type
+     */
+    public String getDisplayFormatter() {
+        switch (getTypeName()) {
+            case "Integer":
+                return "%d";
+            case "Real":
+                return "%.3f";
+            case "String":
+                return "%s";
+            case "UInt":
+                return "%d";
             default:
                 throw new UnsupportedOperationException("Not yet implemented:" + getTypeName());
         }
@@ -102,6 +126,8 @@ public class ClassModelEntry {
         switch (getTypeName()) {
             case "Integer":
                 return "a signed integer";
+            case "Real":
+                return "a floating point (double)";
             case "String":
                 return "a String";
             case "UInt":

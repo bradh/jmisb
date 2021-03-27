@@ -59,25 +59,18 @@ public class ${namespacedName} implements IMimdMetadataValue {
      */
     public ${namespacedName}(byte[] bytes) throws KlvParseException {
         try {
+<#if typeName=="Real">
+    <#if minValue?? && maxValue??>
+            org.jmisb.api.klv.st1201.FpEncoder decoder = new org.jmisb.api.klv.st1201.FpEncoder(${minValue}, ${maxValue}, bytes.length);
+            this.implementingValue = decoder.decode(bytes);
+    <#else>
+            this.implementingValue = org.jmisb.core.klv.PrimitiveConverter.toFloat64(bytes);
+    </#if>
+<#elseif typeName=="Integer">
+            this.implementingValue = org.jmisb.core.klv.PrimitiveConverter.variableBytesToInt64(bytes);
+<#elseif typeName=="UInt">
             this.implementingValue = org.jmisb.core.klv.PrimitiveConverter.variableBytesToUint64(bytes);
-        } catch (IllegalArgumentException ex) {
-            throw new KlvParseException(ex.getMessage());
-        }
-    }
-
-    /**
-     * Create ${namespacedName} from encoded bytes.
-     *
-     * This version allows parsing of a specific number of bytes from a given offset.
-     *
-     * @param bytes Encoded byte array
-     * @param offset the offset into the byte array to start decoding
-     * @param length the number of bytes to decode (1 to 8)
-     * @throws KlvParseException if the byte array could not be parsed
-     */
-    public ${namespacedName}(byte[] bytes, int offset, int length) throws KlvParseException {
-        try {
-            this.implementingValue = org.jmisb.core.klv.PrimitiveConverter.variableBytesToUint64(bytes, offset, length);
+</#if>
         } catch (IllegalArgumentException ex) {
             throw new KlvParseException(ex.getMessage());
         }
@@ -94,22 +87,67 @@ public class ${namespacedName} implements IMimdMetadataValue {
         return new ${namespacedName}(bytes);
     }
 
+    /**
+     * Create ${namespacedName} from encoded bytes.
+     *
+     * This version allows parsing of a specific number of bytes from a given offset.
+     *
+     * @param bytes Encoded byte array.
+     * @param offset the offset into the byte array to start decoding.
+     * @param length the number of bytes to decode.
+     * @throws KlvParseException if the byte array could not be parsed.
+     */
+    public ${namespacedName}(byte[] bytes, int offset, int length) throws KlvParseException {
+        try {
+<#if typeName=="Real">
+    <#if minValue?? && maxValue??>
+            org.jmisb.api.klv.st1201.FpEncoder decoder = new org.jmisb.api.klv.st1201.FpEncoder(${minValue}, ${maxValue}, length);
+            this.implementingValue = decoder.decode(bytes, offset);
+    <#else>
+            this.implementingValue = org.jmisb.core.klv.PrimitiveConverter.toFloat64(bytes, offset, length);
+    </#if>
+<#elseif typeName=="Integer">
+            this.implementingValue = org.jmisb.core.klv.PrimitiveConverter.variableBytesToInt64(bytes, offset, length);
+<#elseif typeName=="UInt">
+            this.implementingValue = org.jmisb.core.klv.PrimitiveConverter.variableBytesToUint64(bytes, offset, length);
+</#if>
+        } catch (IllegalArgumentException ex) {
+            throw new KlvParseException(ex.getMessage());
+        }
+    }
+
     @Override
     public String getDisplayName() {
         return "${nameSentenceCase}";
     }
 
     @Override
-    public byte[] getBytes(){
+    public byte[] getBytes() {
+<#if typeName=="Real">
+    <#if minValue?? && maxValue??>
+        <#if resolution??>
+        org.jmisb.api.klv.st1201.FpEncoder encoder = new org.jmisb.api.klv.st1201.FpEncoder(${minValue}, ${maxValue}, (double)${resolution});
+        <#else>
+        org.jmisb.api.klv.st1201.FpEncoder encoder = new org.jmisb.api.klv.st1201.FpEncoder(${minValue}, ${maxValue}, Float.BYTES);
+        </#if>
+        return encoder.encode(implementingValue);
+    <#else>
+        // TODO: consider a version that allows selection of length 4 or 8 bytes.
+        return org.jmisb.core.klv.PrimitiveConverter.float64ToBytes(implementingValue);
+    </#if>
+<#elseif typeName=="Integer">
+        return org.jmisb.core.klv.PrimitiveConverter.int64ToVariableBytes(implementingValue);
+<#elseif typeName=="UInt">
         return org.jmisb.core.klv.PrimitiveConverter.uintToVariableBytes(implementingValue);
+</#if>
     }
 
     @Override
     public String getDisplayableValue() {
 <#if units?has_content>
-        return String.format("%d ${escapedUnits}", this.implementingValue);
+        return String.format("${displayFormatter} ${escapedUnits}", this.implementingValue);
 <#else>
-        return String.format("%d", this.implementingValue);
+        return String.format("${displayFormatter}", this.implementingValue);
 </#if>
     }
 

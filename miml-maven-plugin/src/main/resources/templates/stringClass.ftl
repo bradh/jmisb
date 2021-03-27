@@ -71,15 +71,33 @@ public class ${namespacedName} implements IMimdMetadataValue {
 
     @Override
     public byte[] getBytes(){
+<#if typeName=="Real">
+    <#if minValue?? && maxValue??>
+        <#if resolution??>
+        org.jmisb.api.klv.st1201.FpEncoder encoder = new org.jmisb.api.klv.st1201.FpEncoder(${minValue}, ${maxValue}, (double)${resolution});
+        <#else>
+        org.jmisb.api.klv.st1201.FpEncoder encoder = new org.jmisb.api.klv.st1201.FpEncoder(${minValue}, ${maxValue}, Float.BYTES);
+        </#if>
+        return encoder.encode(implementingValue);
+    <#else>
+        // TODO: consider a version that allows selection of length 4 or 8 bytes.
+        return org.jmisb.core.klv.PrimitiveConverter.float64ToBytes(implementingValue);
+    </#if>
+<#elseif typeName=="Integer">
+        return org.jmisb.core.klv.PrimitiveConverter.int64ToVariableBytes(implementingValue);
+<#elseif typeName=="String">
         return this.implementingValue.getBytes(java.nio.charset.StandardCharsets.UTF_8);
+<#elseif typeName=="UInt">
+        return org.jmisb.core.klv.PrimitiveConverter.uintToVariableBytes(implementingValue);
+</#if>
     }
 
     @Override
     public String getDisplayableValue() {
 <#if units?has_content>
-        return String.format("%s ${escapedUnits}", this.implementingValue);
+        return String.format("${displayFormatter} ${escapedUnits}", this.implementingValue);
 <#else>
-        return this.implementingValue;
+        return String.format("${displayFormatter}", this.implementingValue);
 </#if>
     }
 
