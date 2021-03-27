@@ -276,11 +276,9 @@ public class CodeGeneratorListener implements MIML_v3Listener {
             }
         } else if (entry.getTypeName().equals("String")) {
             processClassTemplate(targetDirectory, entry, "stringClass.ftl");
-        } else if (entry.getTypeName().equals("UInt")) {
-            processClassTemplate(targetDirectory, entry, "primitiveClass.ftl");
-        } else if (entry.getTypeName().equals("Integer")) {
-            processClassTemplate(targetDirectory, entry, "primitiveClass.ftl");
-        } else if (entry.getTypeName().equals("Real")) {
+        } else if (entry.getTypeName().equals("UInt")
+                || entry.getTypeName().equals("Integer")
+                || entry.getTypeName().equals("Real")) {
             processClassTemplate(targetDirectory, entry, "primitiveClass.ftl");
         } else if (entry.getTypeName().equals("Tuple")) {
             if (!entry.getName().equals("mimdId")) {

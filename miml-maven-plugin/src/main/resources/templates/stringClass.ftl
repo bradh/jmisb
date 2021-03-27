@@ -22,8 +22,23 @@ public class ${namespacedName} implements IMimdMetadataValue {
     /**
      * Construct from value.
      *
+<#if minValue?? && maxValue??>
+     * <p>The value must be in the range [${minValue}, ${maxValue}].
+     *
+<#elseif minValue??>
+     * <p>The minimum value is ${minValue}.
+     *
+</#if>
+<#if maxLength??>
+     * <p>The maximum length is ${maxLength}.
+     * 
+</#if>
+<#if units?has_content>
+     * <p>The value is in units of ${units}.
+     * 
+</#if>
      * @param value ${typeDescription} to initialise this ${namespacedName} with.
-     * @throws KlvParseException if the value is not valid (e.g. too long).
+     * @throws KlvParseException if the value is not valid.
      */
     public ${namespacedName}(${primitiveType} value) throws KlvParseException {
 <#if maxLength??>
@@ -38,9 +53,38 @@ public class ${namespacedName} implements IMimdMetadataValue {
      * Create ${namespacedName} from encoded bytes.
      *
      * @param bytes Encoded byte array.
+     * @throws KlvParseException if the byte array could not be parsed.
      */
-    public ${namespacedName}(byte[] bytes) {
-        this.implementingValue = new String(bytes, java.nio.charset.StandardCharsets.UTF_8);
+    public ${namespacedName}(byte[] bytes) throws KlvParseException {
+        try {
+<#if typeName=="Real">
+    <#if minValue?? && maxValue??>
+            org.jmisb.api.klv.st1201.FpEncoder decoder = new org.jmisb.api.klv.st1201.FpEncoder(${minValue}, ${maxValue}, bytes.length);
+            this.implementingValue = decoder.decode(bytes);
+    <#else>
+            this.implementingValue = org.jmisb.core.klv.PrimitiveConverter.toFloat64(bytes);
+    </#if>
+<#elseif typeName=="Integer">
+            this.implementingValue = org.jmisb.core.klv.PrimitiveConverter.variableBytesToInt64(bytes);
+<#elseif typeName=="String">
+            this.implementingValue = new String(bytes, java.nio.charset.StandardCharsets.UTF_8);
+<#elseif typeName=="UInt">
+            this.implementingValue = org.jmisb.core.klv.PrimitiveConverter.variableBytesToUint64(bytes);
+</#if>
+        } catch (IllegalArgumentException ex) {
+            throw new KlvParseException(ex.getMessage());
+        }
+    }
+
+    /**
+     * Create ${namespacedName} from encoded bytes.
+     *
+     * @param bytes Encoded byte array
+     * @return new ${namespacedName} corresponding to the encoded byte array.
+     * @throws KlvParseException if the byte array could not be parsed.
+     */
+    public static ${namespacedName} fromBytes(byte[] bytes) throws KlvParseException {
+        return new ${namespacedName}(bytes);
     }
 
     /**
@@ -52,16 +96,6 @@ public class ${namespacedName} implements IMimdMetadataValue {
      */
     public ${namespacedName}(byte[] bytes, int offset, int length) {
         this.implementingValue = new String(bytes, offset, length, java.nio.charset.StandardCharsets.UTF_8);
-    }
-
-    /**
-     * Create ${namespacedName} from encoded bytes.
-     *
-     * @param bytes Encoded byte array
-     * @return new ${namespacedName} corresponding to the encoded byte array.
-     */
-    public static ${namespacedName} fromBytes(byte[] bytes) {
-        return new ${namespacedName}(bytes);
     }
 
     @Override

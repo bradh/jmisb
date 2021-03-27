@@ -36,7 +36,7 @@ public class ${namespacedName}Test {
     }
 
     @Test
-    public void fromBytes() {
+    public void fromBytes() throws KlvParseException {
         ${namespacedName} uut = ${namespacedName}.fromBytes(new byte[] {0x48, 0x45, 0x6c, 0x6c, 0x6f});
         assertEquals(uut.getDisplayableValue(), "HEllo");
     }

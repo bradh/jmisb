@@ -30,6 +30,10 @@ public class ${namespacedName} implements IMimdMetadataValue {
      * <p>The minimum value is ${minValue}.
      *
 </#if>
+<#if maxLength??>
+     * <p>The maximum length is ${maxLength}.
+     * 
+</#if>
 <#if units?has_content>
      * <p>The value is in units of ${units}.
      * 
@@ -68,6 +72,8 @@ public class ${namespacedName} implements IMimdMetadataValue {
     </#if>
 <#elseif typeName=="Integer">
             this.implementingValue = org.jmisb.core.klv.PrimitiveConverter.variableBytesToInt64(bytes);
+<#elseif typeName=="String">
+            this.implementingValue = new String(bytes, java.nio.charset.StandardCharsets.UTF_8);
 <#elseif typeName=="UInt">
             this.implementingValue = org.jmisb.core.klv.PrimitiveConverter.variableBytesToUint64(bytes);
 </#if>
