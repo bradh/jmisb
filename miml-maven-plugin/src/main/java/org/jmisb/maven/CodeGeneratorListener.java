@@ -253,7 +253,9 @@ public class CodeGeneratorListener implements MIML_v3Listener {
     private void processEntry(ClassModelEntry entry, File targetDirectory)
             throws TemplateException, IOException {
         if (entry.isArray()) {
-            if ((entry.getTypeName().equals("Real") || entry.getTypeName().equals("UInt"))
+            if ((entry.isRef()
+                            || entry.getTypeName().equals("Real")
+                            || entry.getTypeName().equals("UInt"))
                     && (entry.isArray1D())) {
                 processClassTemplate(targetDirectory, entry, "primitiveArray1D.ftl");
             } else if ((entry.getTypeName().equals("Boolean")
@@ -262,8 +264,6 @@ public class CodeGeneratorListener implements MIML_v3Listener {
                             || entry.getTypeName().equals("UInt"))
                     && (entry.isArray2D())) {
                 processClassTemplate(targetDirectory, entry, "primitiveArray2D.ftl");
-            } else if ((entry.isRef()) && (entry.isArray1D())) {
-                processClassTemplate(targetDirectory, entry, "refArray.ftl");
             } else {
                 log(
                         "Need to implement array class for "

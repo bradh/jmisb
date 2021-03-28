@@ -71,13 +71,16 @@ public class ClassModelEntry {
     }
 
     /**
-     * Get the corresponding primitive type for this entry.
+     * Get the corresponding primitive / base type for this entry.
      *
      * <p>This might be "double" for a Real type or "long" for UInt or Integer types.
      *
      * @return a String containing the name of a primitive Java type
      */
     public String getPrimitiveType() {
+        if (isRef()) {
+            return "org.jmisb.api.klv.st1902.MimdId";
+        }
         switch (getTypeName()) {
             case "Boolean":
                 return "boolean";
@@ -133,6 +136,9 @@ public class ClassModelEntry {
      * @return a String containing the description of the type
      */
     public String getTypeDescription() {
+        if (isRef()) {
+            return "a REF (MimdId)";
+        }
         switch (getTypeName()) {
             case "Boolean":
                 return "a boolean";

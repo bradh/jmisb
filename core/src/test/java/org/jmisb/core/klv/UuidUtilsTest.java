@@ -84,6 +84,29 @@ public class UuidUtilsTest {
         assertEquals(uuid, expectedUuid);
     }
 
+    @Test(expectedExceptions = IllegalArgumentException.class)
+    public void checkByteArrayBadLengthToUUID() {
+        byte[] bytes =
+                new byte[] {
+                    (byte) 0xc2,
+                    (byte) 0xa7,
+                    (byte) 0xd7,
+                    (byte) 0x24,
+                    (byte) 0x96,
+                    (byte) 0xf7,
+                    (byte) 0x47,
+                    (byte) 0xdb,
+                    (byte) 0xa2,
+                    (byte) 0x3d,
+                    (byte) 0xa2,
+                    (byte) 0x97,
+                    (byte) 0x30,
+                    (byte) 0x07,
+                    (byte) 0x58
+                };
+        UuidUtils.arrayToUuid(bytes, 0);
+    }
+
     @Test
     public void checkUUIDStringtoByteArray() {
         byte[] ba = UuidUtils.uuidStringToByteArray("C2A7D724-96F7-47DB-A23D-A29730075876");

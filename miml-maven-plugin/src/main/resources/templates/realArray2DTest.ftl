@@ -115,6 +115,13 @@ public class ${namespacedName}Test {
         new ${namespacedName}(new double[][]
             {<#list 1..arrayDimension0 as r>{<#list 0..arrayDimension1 as c>${minVal}<#sep>, </#list>}<#sep>, </#list>});
     }
+<#else>
+
+    @Test
+    public void getBytesBad() throws KlvParseException {
+        ${namespacedName} uut = new ${namespacedName}(new double[${arrayDimension0}][0]);
+        assertEquals(uut.getBytes(), new byte[0]);
+    }
 </#if>
 
 }

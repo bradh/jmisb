@@ -116,6 +116,28 @@ public class ${namespacedName}Test {
         new ${namespacedName}(new long[][]
             {<#list 0..arrayDimension0 as r>{<#list 1..arrayDimension1 as c>${minVal}<#sep>, </#list>}<#sep>, </#list>});
     }
+
+    @Test(expectedExceptions = KlvParseException.class)
+    public void fromBytesBadDim0() throws KlvParseException {
+        ${namespacedName}.fromBytes(getByteArrayForInvalidArrayDataDim0());
+    }
+
+    @Test(expectedExceptions = KlvParseException.class)
+    public void fromBytesConstructorBadDim0() throws KlvParseException {
+        new ${namespacedName}(getByteArrayForInvalidArrayDataDim0());
+    }
+
+    static byte[] getByteArrayForInvalidArrayDataDim0() {
+        return new byte[] {
+                (byte) 0x02, // num Dimensions
+                (byte) ${arrayDimension0 - 1},
+                (byte) ${arrayDimension1},
+                (byte) 0x01, // Ebytes
+                (byte) 0x04, // APA
+                (byte) ${minVal}, // APAS aka bias value
+                <#list 1..(arrayDimension0-1)*arrayDimension1 as x>(byte) 0x00<#sep>,
+                </#list>};
+    }
 </#if>
 <#if arrayDimensionSize(1)??>
 
@@ -129,6 +151,13 @@ public class ${namespacedName}Test {
     public void BadNumberOfElementsHighColumns() throws KlvParseException {
         new ${namespacedName}(new long[][]
             {<#list 1..arrayDimension0 as r>{<#list 0..arrayDimension1 as c>${minVal}<#sep>, </#list>}<#sep>, </#list>});
+    }
+<#else>
+
+    @Test
+    public void getBytesBad() throws KlvParseException {
+        ${namespacedName} uut = new ${namespacedName}(new long[${arrayDimension0}][0]);
+        assertEquals(uut.getBytes(), new byte[0]);
     }
 </#if>
 }

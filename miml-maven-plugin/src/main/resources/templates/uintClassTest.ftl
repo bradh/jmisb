@@ -63,6 +63,38 @@ public class ${namespacedName}Test {
     }
 
     @Test
+    public void fromBytes1Offset() throws KlvParseException {
+        ${namespacedName} uut = new ${namespacedName}(new byte[] {0x7F, 0x3f, 0x01, 0x4F}, 2, 1);
+        <#if units?has_content>
+        assertEquals(uut.getDisplayableValue(), "1 ${units}");
+        <#else>
+        assertEquals(uut.getDisplayableValue(), "1");
+        </#if>
+        assertEquals(uut.getValue(), 1);
+    }
+
+    @Test
+    public void fromBytes1Offset0() throws KlvParseException {
+        ${namespacedName} uut = new ${namespacedName}(new byte[] {0x01, 0x3f, 0x02, 0x4F}, 0, 1);
+        <#if units?has_content>
+        assertEquals(uut.getDisplayableValue(), "1 ${units}");
+        <#else>
+        assertEquals(uut.getDisplayableValue(), "1");
+        </#if>
+        assertEquals(uut.getValue(), 1);
+    }
+
+    @Test(expectedExceptions = KlvParseException.class)
+    public void fromBytes1OffsetBadLength() throws KlvParseException {
+        new ${namespacedName}(new byte[] {0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08, 0x09}, 0, 9);
+    }
+
+    @Test(expectedExceptions = KlvParseException.class)
+    public void fromBytes1Offset1BadLength() throws KlvParseException {
+        new ${namespacedName}(new byte[] {0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08, 0x09}, 1, 9);
+    }
+
+    @Test
     public void fromBytesConstructor1() throws KlvParseException {
         ${namespacedName} uut = new ${namespacedName}(new byte[] {0x01});
         <#if units?has_content>

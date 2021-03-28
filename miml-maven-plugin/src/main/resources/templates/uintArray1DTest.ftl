@@ -136,5 +136,12 @@ public class ${namespacedName}Test {
     public void BadNumberOfElementsHigh() throws KlvParseException {
         new ${namespacedName}(new long[] {<#list 0..arrayDimension0 as x>${minVal}<#sep>, </#list>});
     }
+<#else>
+
+    @Test
+    public void getBytesBad() throws KlvParseException {
+        ${namespacedName} uut = new ${namespacedName}(new long[0]);
+        assertEquals(uut.getBytes(), new byte[0]);
+    }
 </#if>
 }
