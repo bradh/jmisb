@@ -124,7 +124,7 @@ public class ${namespacedName} implements IMimdMetadataValue {
 <#elseif typeName=="UInt">
             this.implementingValue = org.jmisb.core.klv.PrimitiveConverter.variableBytesToUint64(bytes, offset, length);
 </#if>
-        } catch (IllegalArgumentException ex) {
+        } catch (IllegalArgumentException | IndexOutOfBoundsException ex) {
             throw new KlvParseException(ex.getMessage());
         }
     }

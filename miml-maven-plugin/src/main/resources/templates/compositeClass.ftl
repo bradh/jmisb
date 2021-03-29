@@ -64,6 +64,50 @@ public class ${name} implements <#if topLevel>IMisbMessage, </#if>IMimdMetadataV
      */
     public ${name}(Map<${name}MetadataKey, IMimdMetadataValue> values) {
         map.putAll(values);
+        validateValueMap();
+    }
+
+    private void validateValueMap() throws IllegalArgumentException {
+        map.forEach((${name}MetadataKey key, IMimdMetadataValue value) -> {
+            switch (key) {
+<#list entries as entry>
+            case ${entry.name}:
+    <#if entry.ref && entry.array>
+                if (!(value instanceof ${entry.namespacedQualifiedName})) {
+                    throw new IllegalArgumentException("Value of ${entry.name} should be ${entry.namespacedQualifiedName}");
+                }
+                break;
+    <#elseif entry.ref>
+                if (!(value instanceof MimdIdReference)) {
+                    throw new IllegalArgumentException("Value of ${entry.name} should be MimdIdReference");
+                }
+                break;
+    <#elseif entry.list>
+                if (!(value instanceof ${entry.qualifiedListTypeName})) {
+                    throw new IllegalArgumentException("Value of ${entry.name} should be ${entry.qualifiedListTypeName}");
+                }
+                break;
+    <#elseif entry.name == "mimdId">
+                if (!(value instanceof MimdId)) {
+                    throw new IllegalArgumentException("Value of ${entry.name} should be MimdId");
+                }
+                break;
+    <#elseif entry.primitive>
+                if (!(value instanceof ${entry.namespacedQualifiedName})) {
+                    throw new IllegalArgumentException("Value of ${entry.name} should be ${entry.namespacedQualifiedName}");
+                }
+                break;
+    <#else>
+                if (!(value instanceof ${entry.qualifiedTypeName})) {
+                    throw new IllegalArgumentException("Value of ${entry.name} should be ${entry.qualifiedTypeName}");
+                }
+                break;
+    </#if>
+</#list>
+            default:
+                throw new IllegalArgumentException(key.name() + " should not be present in ${name} type");
+            }
+        });
     }
 
 <#if topLevel>
@@ -131,11 +175,11 @@ public class ${name} implements <#if topLevel>IMisbMessage, </#if>IMimdMetadataV
      * Create ${name} Local Set from encoded bytes.
      *
      * @param bytes Encoded byte array
-     * @return new  ${name} corresponding to the encoded byte array.
+     * @return new ${name} corresponding to the encoded byte array.
      * @throws KlvParseException if the array could not be parsed
      */
-    public static  ${name} fromBytes(byte[] bytes) throws KlvParseException {
-        return new  ${name}(bytes, 0, bytes.length);
+    public static ${name} fromBytes(byte[] bytes) throws KlvParseException {
+        return new ${name}(bytes, 0, bytes.length);
     }
 
     @Override

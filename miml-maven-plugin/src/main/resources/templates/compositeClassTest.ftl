@@ -240,6 +240,54 @@ public class ${name}Test extends LoggerChecks {
     </#if>
     }
 </#list>
+<#list entries as entry>
+
+    @Test(expectedExceptions = IllegalArgumentException.class)
+    public void checkValidation${entry.nameSentenceCase}() throws KlvParseException {
+        SortedMap<${name}MetadataKey, IMimdMetadataValue> values = new TreeMap<>();
+        IMimdMetadataValue badValue = new IMimdMetadataValue() {
+            @Override
+            public byte[] getBytes() {
+                return new byte[]{0x00};
+            }
+
+            @Override
+            public String getDisplayName() {
+                return "";
+            }
+
+            @Override
+            public String getDisplayableValue() {
+                return "";
+            }
+        };
+        values.put(${name}MetadataKey.${entry.name}, badValue);
+        new ${name}(values);
+    }
+</#list>
+
+    @Test(expectedExceptions = IllegalArgumentException.class)
+    public void checkValidationUndefined() throws KlvParseException {
+        SortedMap<${name}MetadataKey, IMimdMetadataValue> values = new TreeMap<>();
+        IMimdMetadataValue badValue = new IMimdMetadataValue() {
+            @Override
+            public byte[] getBytes() {
+                return new byte[]{0x00};
+            }
+
+            @Override
+            public String getDisplayName() {
+                return "";
+            }
+
+            @Override
+            public String getDisplayableValue() {
+                return "";
+            }
+        };
+        values.put(${name}MetadataKey.Undefined, badValue);
+        new ${name}(values);
+    }
 
     @Test
     public void testBuildRef() throws KlvParseException {

@@ -59,6 +59,32 @@ public class UuidUtilsTest {
     }
 
     @Test
+    public void checkUUIDtoLongArray() {
+        UUID uuid = UUID.fromString("C2A7D724-96F7-47DB-A23D-A29730075876");
+        long[] la = UuidUtils.uuidToLongArray(uuid);
+        long[] expectedLongs =
+                new long[] {
+                    (long) 0xc2,
+                    (long) 0xa7,
+                    (long) 0xd7,
+                    (long) 0x24,
+                    (long) 0x96,
+                    (long) 0xf7,
+                    (long) 0x47,
+                    (long) 0xdb,
+                    (long) 0xa2,
+                    (long) 0x3d,
+                    (long) 0xa2,
+                    (long) 0x97,
+                    (long) 0x30,
+                    (long) 0x07,
+                    (long) 0x58,
+                    (long) 0x76
+                };
+        assertEquals(la, expectedLongs);
+    }
+
+    @Test
     public void checkByteArrayToUUID() {
         byte[] bytes =
                 new byte[] {

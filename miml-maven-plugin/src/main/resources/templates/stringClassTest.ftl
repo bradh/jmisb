@@ -47,6 +47,11 @@ public class ${namespacedName}Test {
         assertEquals(uut.getDisplayableValue(), "HEllo");
     }
 
+    @Test (expectedExceptions = KlvParseException.class)
+    public void fromBytesConstructorOffsetBad() throws KlvParseException {
+        new ${namespacedName}(new byte[] {0x01, 0x02, 0x48, 0x45, 0x6c, 0x6c, 0x6f}, 3, 5);
+    }
+
     @Test
     public void fromValueMaxLength() throws KlvParseException {
         String s = String.join("", Collections.nCopies(${maxLength}, String.valueOf('z')));
