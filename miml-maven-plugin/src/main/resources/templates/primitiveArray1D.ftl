@@ -10,7 +10,6 @@ import org.jmisb.api.common.KlvParseException;
 import org.jmisb.api.klv.IKlvKey;
 import org.jmisb.api.klv.IKlvValue;
 import org.jmisb.api.klv.INestedKlvValue;
-import org.jmisb.api.klv.st1902.ArrayItemKey;
 import org.jmisb.api.klv.st1902.IMimdMetadataValue;
 
 /**
@@ -161,7 +160,7 @@ public class ${namespacedName} implements IMimdMetadataValue, INestedKlvValue {
 
     @Override
     public IKlvValue getField(IKlvKey tag) {
-        ArrayItemKey key = (ArrayItemKey) tag;
+        ${namespacedName}ItemKey key = (${namespacedName}ItemKey) tag;
         ${primitiveType} value = this.implementingType[key.getIdentifier()];
         IKlvValue field = new IKlvValue() {
             @Override
@@ -183,9 +182,9 @@ public class ${namespacedName} implements IMimdMetadataValue, INestedKlvValue {
 
     @Override
     public Set<? extends IKlvKey> getIdentifiers() {
-        SortedSet<ArrayItemKey> arrayIdentifiers = new TreeSet<>();
+        SortedSet<${namespacedName}ItemKey> arrayIdentifiers = new TreeSet<>();
         for (int i = 0; i < implementingType.length; ++i) {
-            arrayIdentifiers.add(new ArrayItemKey(i));
+            arrayIdentifiers.add(new ${namespacedName}ItemKey(i));
         }
         return arrayIdentifiers;
     }

@@ -1,14 +1,16 @@
-package org.jmisb.api.klv.st1902;
+// Generated file - changes will be lost on rebuild
+// Template: ${.current_template_name}
+package ${packageName};
 
 import org.jmisb.api.klv.IKlvKey;
 
 /**
- * Pseudo-key item for items in an array.
+ * {@link ${namespacedName}} key for items in an array.
  *
  * <p>This is intended to support enumeration of array items. You should not normally be
  * instantiating this class yourself.
  */
-public class ArrayItemKey implements IKlvKey, Comparable<ArrayItemKey> {
+public class ${namespacedName}ItemKey implements IKlvKey, Comparable<${namespacedName}ItemKey> {
     private final int identifier;
 
     /**
@@ -16,7 +18,7 @@ public class ArrayItemKey implements IKlvKey, Comparable<ArrayItemKey> {
      *
      * @param identifier the unique identifier for this key.
      */
-    public ArrayItemKey(int identifier) {
+    public ${namespacedName}ItemKey(int identifier) {
         this.identifier = identifier;
     }
 
@@ -43,12 +45,12 @@ public class ArrayItemKey implements IKlvKey, Comparable<ArrayItemKey> {
         if (getClass() != obj.getClass()) {
             return false;
         }
-        final ArrayItemKey other = (ArrayItemKey) obj;
+        final ${namespacedName}ItemKey other = (${namespacedName}ItemKey) obj;
         return this.identifier == other.identifier;
     }
 
     @Override
-    public int compareTo(ArrayItemKey p) {
+    public int compareTo(${namespacedName}ItemKey p) {
         return Integer.compare(identifier, p.identifier);
     }
 }

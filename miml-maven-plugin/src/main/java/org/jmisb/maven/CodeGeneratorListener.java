@@ -258,6 +258,7 @@ public class CodeGeneratorListener implements MIML_v3Listener {
                             || entry.getTypeName().equals("UInt"))
                     && (entry.isArray1D())) {
                 processClassTemplate(targetDirectory, entry, "primitiveArray1D.ftl");
+                processArrayItemKeyTemplate(targetDirectory, entry, "arrayItemKey.ftl");
             } else if ((entry.getTypeName().equals("Boolean")
                             || entry.getTypeName().equals("Integer")
                             || entry.getTypeName().equals("Real")
@@ -320,14 +321,17 @@ public class CodeGeneratorListener implements MIML_v3Listener {
                 processClassTestTemplate(outputTestDirectory, entry, "intArray2DTest.ftl");
             } else if ((entry.getTypeName().equals("Real")) && (entry.isArray1D())) {
                 processClassTestTemplate(outputTestDirectory, entry, "realArray1DTest.ftl");
+                processArrayItemKeyTestTemplate(outputTestDirectory, entry, "arrayItemKeyTest.ftl");
             } else if ((entry.getTypeName().equals("Real")) && (entry.isArray2D())) {
                 processClassTestTemplate(outputTestDirectory, entry, "realArray2DTest.ftl");
             } else if ((entry.getTypeName().equals("UInt")) && (entry.isArray1D())) {
                 processClassTestTemplate(outputTestDirectory, entry, "uintArray1DTest.ftl");
+                processArrayItemKeyTestTemplate(outputTestDirectory, entry, "arrayItemKeyTest.ftl");
             } else if ((entry.getTypeName().equals("UInt")) && (entry.isArray2D())) {
                 processClassTestTemplate(outputTestDirectory, entry, "uintArray2DTest.ftl");
             } else if ((entry.isRef()) && (entry.isArray1D())) {
                 processClassTestTemplate(outputTestDirectory, entry, "refArrayTest.ftl");
+                processArrayItemKeyTestTemplate(outputTestDirectory, entry, "arrayItemKeyTest.ftl");
             } else {
                 log(
                         "Need to implement array class test for "
@@ -375,11 +379,36 @@ public class CodeGeneratorListener implements MIML_v3Listener {
         processTemplate(templateFile, outputFile, entry);
     }
 
+    private void processArrayItemKeyTemplate(
+            File outputSourceDirectory, ClassModelEntry entry, String templateFile)
+            throws IOException, TemplateException {
+        log(
+                "Processing array item key template "
+                        + templateFile
+                        + " for "
+                        + entry.getNameSentenceCase());
+        File outputFile =
+                new File(outputSourceDirectory, entry.getNamespacedName() + "ItemKey.java");
+        processTemplate(templateFile, outputFile, entry);
+    }
+
     private void processClassTestTemplate(
             File targetDirectory, ClassModelEntry entry, String templateFile)
             throws IOException, TemplateException {
         log("Processing test template " + templateFile + " for " + entry.getNamespacedName());
         File outputFile = new File(targetDirectory, entry.getNamespacedName() + "Test.java");
+        processTemplate(templateFile, outputFile, entry);
+    }
+
+    private void processArrayItemKeyTestTemplate(
+            File targetDirectory, ClassModelEntry entry, String templateFile)
+            throws IOException, TemplateException {
+        log(
+                "Processing array item key test template "
+                        + templateFile
+                        + " for "
+                        + entry.getNameSentenceCase());
+        File outputFile = new File(targetDirectory, entry.getNamespacedName() + "ItemKeyTest.java");
         processTemplate(templateFile, outputFile, entry);
     }
 
