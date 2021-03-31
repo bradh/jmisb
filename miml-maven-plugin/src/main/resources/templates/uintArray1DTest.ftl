@@ -39,8 +39,12 @@ public class ${namespacedName}Test {
                 (byte) 0x01, // num Dimensions
                 (byte) ${arrayDimension0},
                 (byte) 0x01, // Ebytes
+<#if minValue?? && maxValue?? && minValue==0.0 && maxValue=255.0>
+                (byte) 0x01, // APA
+<#else>
                 (byte) 0x04, // APA
                 (byte) ${minVal}, // APAS aka bias value
+</#if>
                 <#list 1..arrayDimension0 as x>(byte) 0x00<#sep>,
                 </#list>});
     }
@@ -49,7 +53,7 @@ public class ${namespacedName}Test {
     public void bytesConstructor() throws KlvParseException {
         ${namespacedName} uut = new ${namespacedName}(getByteArrayForValidArrayData());
         assertEquals(uut.getValue(), new long[] {<#list 1..arrayDimension0 as x>${minVal}<#sep>, </#list>});
-        assertEquals(uut.getBytes(),getByteArrayForValidArrayData());
+        assertEquals(uut.getBytes(), getByteArrayForValidArrayData());
     }
 
     static byte[] getByteArrayForValidArrayData() {
@@ -57,8 +61,12 @@ public class ${namespacedName}Test {
                 (byte) 0x01, // num Dimensions
                 (byte) ${arrayDimension0},
                 (byte) 0x01, // Ebytes
+<#if minValue?? && maxValue?? && minValue==0.0 && maxValue=255.0>
+                (byte) 0x01, // APA
+<#else>
                 (byte) 0x04, // APA
                 (byte) ${minVal}, // APAS aka bias value
+</#if>
                 <#list 1..arrayDimension0 as x>(byte) 0x00<#sep>,
                 </#list>};
     }
@@ -70,8 +78,12 @@ public class ${namespacedName}Test {
                 (byte) 0x01, // num Dimensions
                 (byte) ${arrayDimension0},
                 (byte) 0x01, // Ebytes
+<#if minValue?? && maxValue?? && minValue==0.0 && maxValue=255.0>
+                (byte) 0x01, // APA. note no APAS
+<#else>
                 (byte) 0x04, // APA
                 (byte) ${minVal}, // APAS aka bias value
+</#if>
                 <#list 1..arrayDimension0 as x>(byte) 0x00<#sep>,
                 </#list>});
         assertEquals(uut.getValue(), new long[] {<#list 1..arrayDimension0 as x>${minVal}<#sep>, </#list>});
@@ -80,8 +92,12 @@ public class ${namespacedName}Test {
                 (byte) 0x01, // num Dimensions
                 (byte) ${arrayDimension0},
                 (byte) 0x01, // Ebytes
+<#if minValue?? && maxValue?? && minValue==0.0 && maxValue=255.0>
+                (byte) 0x01, // APA
+<#else>
                 (byte) 0x04, // APA
                 (byte) ${minVal}, // APAS aka bias value
+</#if>
                 <#list 1..arrayDimension0 as x>(byte) 0x00<#sep>,
                 </#list>});
     }
@@ -94,8 +110,12 @@ public class ${namespacedName}Test {
                 (byte) 1,
                 (byte) ${arrayDimension0},
                 (byte) 0x01, // Ebytes
+<#if minValue?? && maxValue?? && minValue==0.0 && maxValue=255.0>
+                (byte) 0x01, // APA
+<#else>
                 (byte) 0x04, // APA
                 (byte) ${minVal}, // APAS aka bias value
+</#if>
                 <#list 1..arrayDimension0 as x>(byte) 0x00<#sep>,
                 </#list>});
     }

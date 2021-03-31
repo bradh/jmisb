@@ -3,6 +3,8 @@
 // Template: ${.current_template_name}
 package ${packageName};
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.SortedMap;
 import java.util.TreeMap;
 import org.jmisb.api.common.KlvParseException;
@@ -157,6 +159,17 @@ public class ${name}Test extends LoggerChecks {
     public void parseFromBytesBadValueNoOffset() throws KlvParseException {
         ${name}.fromBytes(new byte[]{0x01, 0x01, (byte)0x81});
     }
+
+    @Test
+    public void parseFromValuesBaseElements() throws KlvParseException {
+        SortedMap<${name}MetadataKey, IMimdMetadataValue> values = new TreeMap<>();
+        values.put(${name}MetadataKey.mimdId, new MimdId(4, 1));
+        values.put(${name}MetadataKey.timerOffset, new org.jmisb.api.klv.st1904.Base_TimerOffset(3210L));
+        Map<org.jmisb.api.klv.st1904.NumericalPrecisionMetadataKey, IMimdMetadataValue> numericPrecisionValues = new HashMap<>();
+        values.put(${name}MetadataKey.numericPrecision, new org.jmisb.api.klv.st1904.NumericalPrecision(numericPrecisionValues));
+        ${name} uut = new ${name}(values);
+        assertEquals(uut.getIdentifiers().size(), 3);
+    }
     </#if>
 </#if>
 <#list entries as entry>
@@ -238,6 +251,10 @@ public class ${name}Test extends LoggerChecks {
         IMimdMetadataValue uut = ${name}.createValue(${name}MetadataKey.${entry.name}, new byte[]{(byte) 0x01, (byte)0x01, (byte)0x06});
         assertTrue(uut instanceof ${entry.qualifiedTypeName});
     </#if>
+        SortedMap<${name}MetadataKey, IMimdMetadataValue> values = new TreeMap<>();
+        values.put(${name}MetadataKey.${entry.name}, uut);
+        ${name} parentClass = new ${name}(values);
+        assertEquals(parentClass.getIdentifiers().size(), 1);
     }
 </#list>
 <#list entries as entry>

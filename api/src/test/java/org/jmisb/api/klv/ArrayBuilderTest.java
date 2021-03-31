@@ -152,4 +152,14 @@ public class ArrayBuilderTest {
         assertEquals(
                 bytes, new byte[] {(byte) 0xFF, (byte) 0b10100001, (byte) 0b01000000, (byte) 0x08});
     }
+
+    @Test
+    public void checkBuildBasicByte() {
+        ArrayBuilder builder = new ArrayBuilder();
+        builder.appendByte((byte) 0xFF);
+        byte[] bytes = builder.toBytes();
+        assertNotNull(bytes);
+        assertEquals(bytes.length, 1);
+        assertEquals(bytes, new byte[] {(byte) 0xFF});
+    }
 }

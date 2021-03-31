@@ -129,10 +129,16 @@ public class ${namespacedName} implements IMimdMetadataValue, INestedKlvValue {
         <#else>
             org.jmisb.api.klv.st1303.NaturalFormatEncoder encoder = new org.jmisb.api.klv.st1303.NaturalFormatEncoder();
         </#if>
-    <#elseif typeName=="UInt">
-            org.jmisb.api.klv.st1303.UnsignedIntegerEncodingEncoder encoder = new org.jmisb.api.klv.st1303.UnsignedIntegerEncodingEncoder();
-    </#if>
             return encoder.encode(this.implementingType);
+    <#elseif typeName=="UInt">
+        <#if minValue?? && maxValue?? && minValue==0.0 && maxValue=255.0>
+            org.jmisb.api.klv.st1303.NaturalFormatEncoder encoder = new org.jmisb.api.klv.st1303.NaturalFormatEncoder();
+            return encoder.encodeUnsigned(this.implementingType);
+        <#else>
+            org.jmisb.api.klv.st1303.UnsignedIntegerEncodingEncoder encoder = new org.jmisb.api.klv.st1303.UnsignedIntegerEncodingEncoder();
+            return encoder.encode(this.implementingType);
+        </#if>
+    </#if>
         } catch (KlvParseException ex) {
             return new byte[0];
         }

@@ -9,7 +9,7 @@ public class ClassModelEntry {
     private int number;
     private String name;
     private String typeName;
-    private List<ArrayDimension> arrayDimensions = new ArrayList<>();
+    private final List<ArrayDimension> arrayDimensions = new ArrayList<>();
     private boolean list = false;
     private Double minValue = null;
     private Double maxValue = null;

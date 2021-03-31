@@ -38,6 +38,16 @@ public class ArrayBuilder {
     }
 
     /**
+     * Append a single byte.
+     *
+     * @param b the byte to append.
+     * @return this instance, to support method chaining.
+     */
+    public ArrayBuilder appendByte(byte b) {
+        return this.append(new byte[] {b});
+    }
+
+    /**
      * Append a Boolean value as a single bit.
      *
      * @param b the boolean value to append.

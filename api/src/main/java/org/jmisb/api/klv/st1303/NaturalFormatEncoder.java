@@ -52,7 +52,7 @@ public class NaturalFormatEncoder {
      * Encode a two dimensional (signed) integer array to a Multi-Dimensional Array Pack using
      * Natural Format Encoding.
      *
-     * @param data the array of arrays of ({@code int}) values.
+     * @param data the array of arrays of ({@code long}) values.
      * @return the encoded byte array including the MISB ST1303 header and array data.
      * @throws KlvParseException if the encoding fails, such as for invalid array dimensions.
      */
@@ -77,6 +77,45 @@ public class NaturalFormatEncoder {
             for (int c = 0; c < row.length; ++c) {
                 builder.append(PrimitiveConverter.int64ToBytes(row[c]));
             }
+        }
+        return builder.toBytes();
+    }
+
+    /**
+     * Encode a one dimensional unsigned integer array to a Multi-Dimensional Array Pack using
+     * Natural Format Encoding.
+     *
+     * @param data the array of arrays of ({@code long}) values.
+     * @return the encoded byte array including the MISB ST1303 header and array data.
+     * @throws KlvParseException if the encoding fails, such as for invalid array dimensions.
+     */
+    public byte[] encodeUnsigned(long[] data) throws KlvParseException {
+        if (data.length < 1) {
+            throw new KlvParseException("MDAP encoding requires each dimension to be at least 1");
+        }
+        int minRequiredLength = 0;
+        for (int c = 0; c < data.length; ++c) {
+            byte[] bytes = PrimitiveConverter.uintToVariableBytes(data[c]);
+            minRequiredLength = Math.max(minRequiredLength, bytes.length);
+        }
+        ArrayBuilder builder =
+                new ArrayBuilder()
+                        // Number of dimensions
+                        .appendAsOID(1)
+                        // dim_1
+                        .appendAsOID(data.length)
+                        // E_bytes value
+                        .appendAsOID(minRequiredLength)
+                        // array processing algorithm (APA)
+                        // note: no array processing algorithm support (APAS)
+                        .appendAsOID(ArrayProcessingAlgorithm.NaturalFormat.getCode());
+        for (int c = 0; c < data.length; ++c) {
+            byte[] encodedValue = PrimitiveConverter.uintToVariableBytes(data[c]);
+            int numPaddingBytes = minRequiredLength - encodedValue.length;
+            for (int i = 0; i < numPaddingBytes; i++) {
+                builder.appendByte((byte) 0x00);
+            }
+            builder.append(encodedValue);
         }
         return builder.toBytes();
     }
