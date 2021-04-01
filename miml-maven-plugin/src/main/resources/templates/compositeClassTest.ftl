@@ -170,6 +170,13 @@ public class ${name}Test extends LoggerChecks {
         ${name} uut = new ${name}(values);
         assertEquals(uut.getIdentifiers().size(), 3);
     }
+    <#else>
+    @Test
+    public void parseFromBytesBadTag() throws KlvParseException {
+        verifyNoLoggerMessages();
+        IMimdMetadataValue uut = new ${name}(new byte[]{0x7F, 0x01, 0x00}, 0, 3);
+        verifySingleLoggerMessage("Unknown MIMD ${name} Metadata tag: 127");
+    }
     </#if>
 </#if>
 <#list entries as entry>

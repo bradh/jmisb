@@ -146,6 +146,17 @@ public class MimdParseTest {
     @Test
     public void parseVersionNumber() throws KlvParseException {
         MIMD mimd = new MIMD(messageWithVersionBytes);
+        checkVersionNumberParse(mimd);
+    }
+
+    @Test
+    public void parseVersionNumberFactory() throws KlvParseException {
+        MimdLocalSetFactory factory = new MimdLocalSetFactory();
+        MIMD mimd = factory.create(messageWithVersionBytes);
+        checkVersionNumberParse(mimd);
+    }
+
+    private void checkVersionNumberParse(MIMD mimd) {
         assertEquals(mimd.displayHeader(), "MIMD");
         assertEquals(mimd.getUniversalLabel(), KlvConstants.MIMDLocalSetUl);
         assertEquals(mimd.getIdentifiers().size(), 1);
@@ -180,14 +191,7 @@ public class MimdParseTest {
         Map<MIMDMetadataKey, IMimdMetadataValue> values = new HashMap<>();
         values.put(MIMDMetadataKey.version, new MIMD_Version(1));
         MIMD mimd = new MIMD(values);
-        assertEquals(mimd.displayHeader(), "MIMD");
-        assertEquals(mimd.getUniversalLabel(), KlvConstants.MIMDLocalSetUl);
-        assertEquals(mimd.getIdentifiers().size(), 1);
-        assertTrue(mimd.getIdentifiers().contains(MIMDMetadataKey.version));
-        assertEquals(mimd.getField(MIMDMetadataKey.version).getDisplayName(), "Version");
-        assertEquals(mimd.getField(MIMDMetadataKey.version).getDisplayableValue(), "1");
-        assertEquals(mimd.frameMessage(false), messageWithVersionBytes);
-        assertEquals(mimd.frameMessage(true), new byte[] {0x21, 0x01, 0x01});
+        checkVersionNumberParse(mimd);
     }
 
     @Test

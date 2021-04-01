@@ -112,4 +112,51 @@ public class MimdIdTest {
     public void fromBytesBadGroup() throws KlvParseException {
         new MimdId(new byte[] {(byte) 0x83, 0x04, (byte) 0x81});
     }
+
+    @Test
+    public void equals() throws KlvParseException {
+        MimdId uut1 = new MimdId(135, 261);
+        MimdId uut2 = new MimdId(135, 261);
+        assertEquals(uut1, uut2);
+        assertTrue(uut1.equals(uut2));
+        assertTrue(uut2.equals(uut1));
+        assertEquals(uut1.hashCode(), uut2.hashCode());
+    }
+
+    @Test
+    public void equalsSelf() throws KlvParseException {
+        MimdId uut1 = new MimdId(135, 261);
+        assertEquals(uut1, uut1);
+        assertTrue(uut1.equals(uut1));
+        assertEquals(uut1.hashCode(), uut1.hashCode());
+    }
+
+    @Test
+    public void notEquals() throws KlvParseException {
+        MimdId uut1_1 = new MimdId(1, 1);
+        MimdId uut1_2 = new MimdId(1, 2);
+        MimdId uut2_1 = new MimdId(2, 1);
+        assertFalse(uut1_1.equals(uut1_2));
+        assertFalse(uut1_2.equals(uut1_1));
+        assertFalse(uut1_1.equals(uut2_1));
+        assertFalse(uut2_1.equals(uut1_1));
+        assertFalse(uut1_2.equals(uut2_1));
+        assertFalse(uut2_1.equals(uut1_2));
+        assertNotEquals(uut1_1.hashCode(), uut2_1.hashCode());
+        assertNotEquals(uut1_2.hashCode(), uut2_1.hashCode());
+        assertNotEquals(uut1_1.hashCode(), uut1_2.hashCode());
+    }
+
+    @Test
+    public void notEqualsNull() throws KlvParseException {
+        MimdId uut1_1 = new MimdId(1, 1);
+        assertFalse(uut1_1.equals(null));
+        assertNotEquals(uut1_1, null);
+    }
+
+    @Test
+    public void notEqualsDifferentType() throws KlvParseException {
+        MimdId uut1_1 = new MimdId(1, 1);
+        assertFalse(uut1_1.equals("2"));
+    }
 }
