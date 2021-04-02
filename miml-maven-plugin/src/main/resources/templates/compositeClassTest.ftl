@@ -8,6 +8,8 @@ import java.util.Map;
 import java.util.SortedMap;
 import java.util.TreeMap;
 import org.jmisb.api.common.KlvParseException;
+import org.jmisb.api.klv.ArrayBuilder;
+import org.jmisb.api.klv.IKlvValue;
 import org.jmisb.api.klv.LoggerChecks;
 import org.jmisb.api.klv.st1902.IMimdMetadataValue;
 <#list entries as entry>
@@ -74,6 +76,15 @@ public class ${name}Test extends LoggerChecks {
         assertNull(uut);
     }
 
+    @Test
+    public void getFieldUndefined() throws KlvParseException {
+        verifyNoLoggerMessages();
+        ${name} parentClass = new ${name}();
+        IKlvValue uut = parentClass.getField(${name}MetadataKey.Undefined);
+        verifySingleLoggerMessage("Unknown ${name} Metadata tag: -1");
+        assertNull(uut);
+    }
+
 <#if topLevel>
     @Test
     public void parseFromBytesMimdId() throws KlvParseException {
@@ -111,6 +122,69 @@ public class ${name}Test extends LoggerChecks {
         verifyNoLoggerMessages();
         assertEquals(uut.getBytes().length, 0);
     }
+
+<#list entries as entry>
+
+    @Test
+    public void checkBytesConstructor${entry.nameSentenceCase}() throws KlvParseException {
+    <#if entry.array>
+        // Array - ${entry.typeName}
+        byte[] valueBytes = ${entry.namespacedName}Test.getByteArrayForValidArrayData();
+    <#elseif entry.ref>
+        // Ref - ${entry.typeName}
+        byte[] valueBytes = new byte[]{(byte) 0x00};
+    <#elseif entry.typeName == "String">
+        // ${entry.namespacedName}, ${entry.typeName}
+        byte[] valueBytes = new byte[]{0x74};
+    <#elseif entry.typeName == "UInt">
+        // ${entry.namespacedName}, ${entry.typeName}
+        byte[] valueBytes = new byte[]{(byte)0xFF};
+    <#elseif entry.typeName == "Integer">
+        // ${entry.namespacedName}, ${entry.typeName}
+        byte[] valueBytes = new byte[]{(byte)0xFF};
+    <#elseif entry.typeName == "Real">
+        // ${entry.namespacedName}, ${entry.typeName}
+        <#if entry.minValue?? && entry.maxValue??>
+        byte[] valueBytes = new byte[]{
+                (byte) 0x00,
+                (byte) 0x00,
+                (byte) 0x00,
+                (byte) 0x00};
+        <#else>
+        byte[] valueBytes = new byte[]{
+                (byte) 0x40,
+                (byte) 0x00,
+                (byte) 0x00,
+                (byte) 0x00};
+        </#if>
+    <#elseif entry.name == "mimdId">
+        // mimdId
+        byte[] valueBytes = new byte[]{(byte) 0x01};
+    <#elseif entry.typeName == "Tuple">
+        // ${entry.namespacedName}, ${entry.typeName}
+        byte[] valueBytes = new byte[]{(byte)0x40};
+    <#elseif entry.list>
+        // List
+        byte[] valueBytes = new byte[]{(byte) 0x00};
+    <#elseif entry.typeName == "Boolean">
+        // TODO - Boolean
+        throw new RuntimeException("Unhandled primitive type: Boolean");
+    <#else>
+        // Fallback
+        byte[] valueBytes = new byte[]{(byte) 0x01, (byte)0x01, (byte)0x06};
+    </#if>
+        ArrayBuilder builder = new ArrayBuilder();
+        builder.appendAsOID(${entry.number});
+        builder.appendAsBerLength(valueBytes.length);
+        builder.append(valueBytes);
+        byte[] parseBytes = builder.toBytes();
+        ${name} parentClass = new ${name}(parseBytes);
+        assertNotNull(parentClass);
+        assertNotNull(parentClass.get${entry.nameSentenceCase}());
+        assertEquals(parentClass.getIdentifiers().size(), 1);
+        assertNotNull(parentClass.getField(${name}MetadataKey.${entry.name}));
+    }
+</#list>
 
     <#if includes??>
     @Test
@@ -158,6 +232,28 @@ public class ${name}Test extends LoggerChecks {
     @Test(expectedExceptions = KlvParseException.class)
     public void parseFromBytesBadValueNoOffset() throws KlvParseException {
         ${name}.fromBytes(new byte[]{0x01, 0x01, (byte)0x81});
+    }
+
+    @Test
+    public void parseFromBytesTimerOffset() throws KlvParseException {
+        verifyNoLoggerMessages();
+        ${name} uut = new ${name}(new byte[]{0x03, 0x04, 0x01, 0x02, 0x03, 0x04}, 0, 6);
+        verifyNoLoggerMessages();
+        assertEquals(uut.getBytes(), new byte[]{0x03, 0x04, 0x01, 0x02, 0x03, 0x04});
+        assertNotNull(uut.getIdentifiers());
+        assertEquals(uut.getIdentifiers().size(), 1);
+        assertNotNull(uut.getField(${name}MetadataKey.timerOffset));
+        assertEquals(uut.getTimerOffset().getValue(), 16909060);
+    }
+
+    @Test
+    public void parseFromBytesNumericPrecision() throws KlvParseException {
+        verifyNoLoggerMessages();
+        ${name} uut = new ${name}(new byte[]{0x04, 0x02, 0x22, 0x00}, 0, 4);
+        assertEquals(uut.getBytes(), new byte[]{0x04, 0x02, 0x22, 0x00});
+        assertNotNull(uut.getIdentifiers());
+        assertEquals(uut.getIdentifiers().size(), 1);
+        assertNotNull(uut.getField(${name}MetadataKey.numericPrecision));
     }
 
     @Test
@@ -266,6 +362,76 @@ public class ${name}Test extends LoggerChecks {
 </#list>
 <#list entries as entry>
 
+    @Test
+    public void checkSetterGetter${entry.nameSentenceCase}() throws KlvParseException {
+        ${name} parentClass = new ${name}();
+    <#if entry.array>
+        // Array - ${entry.typeName}
+        IMimdMetadataValue uut = ${name}.createValue(${name}MetadataKey.${entry.name},
+            ${entry.namespacedName}Test.getByteArrayForValidArrayData());
+        ${entry.namespacedName} value = (${entry.namespacedName})uut;
+    <#elseif entry.ref>
+        // Ref - ${entry.typeName}
+        IMimdMetadataValue uut = ${name}.createValue(${name}MetadataKey.${entry.name}, new byte[]{(byte) 0x00});
+        MimdIdReference value = (MimdIdReference)uut;
+    <#elseif entry.typeName == "String">
+        // ${entry.namespacedName}, ${entry.typeName}
+        IMimdMetadataValue uut = ${name}.createValue(${name}MetadataKey.${entry.name}, new byte[]{0x74});
+        ${entry.namespacedName} value = (${entry.namespacedName})uut;
+    <#elseif entry.typeName == "UInt">
+        // ${entry.namespacedName}, ${entry.typeName}
+        IMimdMetadataValue uut = ${name}.createValue(${name}MetadataKey.${entry.name}, new byte[]{(byte)0xFF});
+        ${entry.namespacedName} value = (${entry.namespacedName})uut;
+    <#elseif entry.typeName == "Integer">
+        // ${entry.namespacedName}, ${entry.typeName}
+        IMimdMetadataValue uut = ${name}.createValue(${name}MetadataKey.${entry.name}, new byte[]{(byte)0xFF});
+        ${entry.namespacedQualifiedName} value = (${entry.namespacedQualifiedName})uut;
+    <#elseif entry.typeName == "Real">
+        // ${entry.namespacedName}, ${entry.typeName}
+        <#if entry.minValue?? && entry.maxValue??>
+        IMimdMetadataValue uut = ${name}.createValue(
+            ${name}MetadataKey.${entry.name},
+            new byte[]{
+                (byte) 0x00,
+                (byte) 0x00,
+                (byte) 0x00,
+                (byte) 0x00});
+        <#else>
+        IMimdMetadataValue uut = ${name}.createValue(
+            ${name}MetadataKey.${entry.name},
+            new byte[]{
+                (byte) 0x40,
+                (byte) 0x00,
+                (byte) 0x00,
+                (byte) 0x00});
+        </#if>
+        ${entry.namespacedName} value = (${entry.namespacedName})uut;
+    <#elseif entry.name == "mimdId">
+        // mimdId
+        IMimdMetadataValue uut = ${name}.createValue(${name}MetadataKey.${entry.name}, new byte[]{(byte) 0x01});
+        MimdId value = (MimdId)uut;
+    <#elseif entry.typeName == "Tuple">
+        // ${entry.namespacedName}, ${entry.typeName}
+        IMimdMetadataValue uut = ${name}.createValue(${name}MetadataKey.${entry.name}, new byte[]{(byte)0x40});
+        ${entry.namespacedName} value = (${entry.namespacedName})uut;
+    <#elseif entry.list>
+        // List
+        IMimdMetadataValue uut = ${name}.createValue(${name}MetadataKey.${entry.name}, new byte[]{(byte) 0x00});
+        ${entry.qualifiedListTypeName} value = (${entry.qualifiedListTypeName})uut;
+    <#elseif entry.typeName == "Boolean">
+        // TODO - Boolean
+        throw new RuntimeException("Unhandled primitive type: Boolean");
+    <#else>
+        // Fallback
+        IMimdMetadataValue uut = ${name}.createValue(${name}MetadataKey.${entry.name}, new byte[]{(byte) 0x01, (byte)0x01, (byte)0x06});
+        ${entry.qualifiedTypeName} value = (${entry.qualifiedTypeName})uut;
+    </#if>
+        parentClass.set${entry.nameSentenceCase}(value);
+        assertEquals(parentClass.get${entry.nameSentenceCase}(), value);
+    }
+</#list>
+<#list entries as entry>
+
     @Test(expectedExceptions = IllegalArgumentException.class)
     public void checkValidation${entry.nameSentenceCase}() throws KlvParseException {
         SortedMap<${name}MetadataKey, IMimdMetadataValue> values = new TreeMap<>();
@@ -332,11 +498,7 @@ public class ${name}Test extends LoggerChecks {
             });
             byte[] bytes = uut.getBytes();
             assertTrue(bytes.length >= 3);
-<#if topLevel>
             ${name} parseResult = new ${name}(bytes);
-<#else>
-            ${name} parseResult = ${name}.fromBytes(bytes);
-</#if>
             assertEquals(parseResult.getIdentifiers().size(), values.keySet().size());
         }
     }
@@ -364,11 +526,7 @@ public class ${name}Test extends LoggerChecks {
             });
             byte[] bytes = uut.getBytes();
             assertTrue(bytes.length >= 3);
-<#if topLevel>
             ${name} parseResult = new ${name}(bytes);
-<#else>
-            ${name} parseResult = ${name}.fromBytes(bytes);
-</#if>
             assertEquals(parseResult.getIdentifiers().size(), values.keySet().size());
         }
     }    
@@ -393,11 +551,7 @@ public class ${name}Test extends LoggerChecks {
         }
         byte[] bytes = uut.getBytes();
         assertTrue(bytes.length >= 0);
-<#if topLevel>
         ${name} regenerated = new ${name}(bytes);
-<#else>
-        ${name} regenerated = new ${name}(bytes, 0, bytes.length);
-</#if>
         assertEquals(uut.getIdentifiers().size(), regenerated.getIdentifiers().size());
     }
 
@@ -421,11 +575,7 @@ public class ${name}Test extends LoggerChecks {
         }
         byte[] bytes = uut.getBytes();
         assertTrue(bytes.length >= 0);
-<#if topLevel>
         ${name} regenerated = new ${name}(bytes);
-<#else>
-        ${name} regenerated = new ${name}(bytes, 0, bytes.length);
-</#if>
         assertEquals(uut.getIdentifiers().size(), regenerated.getIdentifiers().size());
     }
 }

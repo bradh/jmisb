@@ -3,6 +3,7 @@
 // Template: ${.current_template_name}
 package ${packageName};
 
+import java.util.EnumSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -54,8 +55,30 @@ import org.slf4j.LoggerFactory;
 public class ${name} implements <#if topLevel>IMisbMessage, </#if>IMimdMetadataValue, INestedKlvValue {
     private static final Logger LOGGER = LoggerFactory.getLogger(${name}.class);
 
+<#list entries as entry>
+    <#if entry.ref && entry.array>
+    private ${entry.namespacedQualifiedName} ${entry.name};
+    <#elseif entry.ref>
+    private MimdIdReference ${entry.name};
+    <#elseif entry.list>
+    private ${entry.qualifiedListTypeName} ${entry.name};
+    <#elseif entry.name == "mimdId">
+    private MimdId ${entry.name};
+    <#elseif entry.primitive>
+    private ${entry.namespacedQualifiedName} ${entry.name};
+    <#else>
+    private ${entry.qualifiedTypeName} ${entry.name};
+    </#if>
+</#list>
+
     /** Map containing all data elements in the message. */
     private final SortedMap<${name}MetadataKey, IMimdMetadataValue> map = new TreeMap<>();
+
+    /**
+     * Create a new empty ${name} local set.
+     */
+    public ${name}() {
+    }
 
     /**
      * Create the ${name} local set from the given key/value pairs.
@@ -64,10 +87,10 @@ public class ${name} implements <#if topLevel>IMisbMessage, </#if>IMimdMetadataV
      */
     public ${name}(Map<${name}MetadataKey, IMimdMetadataValue> values) {
         map.putAll(values);
-        validateValueMap();
+        propagateValueMap(map);
     }
 
-    private void validateValueMap() throws IllegalArgumentException {
+    private void propagateValueMap(SortedMap<${name}MetadataKey, IMimdMetadataValue> map) throws IllegalArgumentException {
         map.forEach((${name}MetadataKey key, IMimdMetadataValue value) -> {
             switch (key) {
 <#list entries as entry>
@@ -76,31 +99,37 @@ public class ${name} implements <#if topLevel>IMisbMessage, </#if>IMimdMetadataV
                 if (!(value instanceof ${entry.namespacedQualifiedName})) {
                     throw new IllegalArgumentException("Value of ${entry.name} should be ${entry.namespacedQualifiedName}");
                 }
+                this.${entry.name} = (${entry.namespacedQualifiedName}) value;
                 break;
     <#elseif entry.ref>
                 if (!(value instanceof MimdIdReference)) {
                     throw new IllegalArgumentException("Value of ${entry.name} should be MimdIdReference");
                 }
+                this.${entry.name} = (MimdIdReference) value;
                 break;
     <#elseif entry.list>
                 if (!(value instanceof ${entry.qualifiedListTypeName})) {
                     throw new IllegalArgumentException("Value of ${entry.name} should be ${entry.qualifiedListTypeName}");
                 }
+                this.${entry.name} = (${entry.qualifiedListTypeName}) value;
                 break;
     <#elseif entry.name == "mimdId">
                 if (!(value instanceof MimdId)) {
                     throw new IllegalArgumentException("Value of ${entry.name} should be MimdId");
                 }
+                this.${entry.name} = (MimdId) value;
                 break;
     <#elseif entry.primitive>
                 if (!(value instanceof ${entry.namespacedQualifiedName})) {
                     throw new IllegalArgumentException("Value of ${entry.name} should be ${entry.namespacedQualifiedName}");
                 }
+                this.${entry.name} = (${entry.namespacedQualifiedName}) value;
                 break;
     <#else>
                 if (!(value instanceof ${entry.qualifiedTypeName})) {
                     throw new IllegalArgumentException("Value of ${entry.name} should be ${entry.qualifiedTypeName}");
                 }
+                this.${entry.name} = (${entry.qualifiedTypeName}) value;
                 break;
     </#if>
 </#list>
@@ -109,6 +138,123 @@ public class ${name} implements <#if topLevel>IMisbMessage, </#if>IMimdMetadataV
             }
         });
     }
+<#list entries as entry>
+    <#if entry.ref && entry.array>
+
+    /**
+     * Get the {@code ${entry.name}} attribute value.
+     *
+     * @return a ${entry.namespacedQualifiedName} value, or null if not set.
+     */
+    public ${entry.namespacedQualifiedName} get${entry.nameSentenceCase}() {
+        return ${entry.name};
+    }
+
+    /**
+     * Set the {@code ${entry.name}} attribute value.
+     *
+     * @param ${entry.name} the ${entry.namespacedQualifiedName} value to set.
+     */
+    public void set${entry.nameSentenceCase}(${entry.namespacedQualifiedName} ${entry.name}) {
+        this.${entry.name} = ${entry.name};
+    }
+    <#elseif entry.ref>
+
+    /**
+     * Get the {@code ${entry.name}} attribute value.
+     *
+     * @return a {@code MimdIdReference} value, or null if not set.
+     */
+    public MimdIdReference get${entry.nameSentenceCase}() {
+        return ${entry.name};
+    }
+
+    /**
+     * Set the {@code ${entry.name}} attribute value.
+     *
+     * @param ${entry.name} the MimdIdReference value to set.
+     */
+    public void set${entry.nameSentenceCase}(MimdIdReference ${entry.name}) {
+        this.${entry.name} = ${entry.name};
+    }
+    <#elseif entry.list>
+
+    /**
+     * Get the {@code ${entry.name}} attribute value.
+     *
+     * @return a ${entry.qualifiedListTypeName} value, or null if not set.
+     */
+    public ${entry.qualifiedListTypeName} get${entry.nameSentenceCase}() {
+        return ${entry.name};
+    }
+
+    /**
+     * Set the {@code ${entry.name}} attribute value.
+     *
+     * @param ${entry.name} the ${entry.nameSentenceCase} value to set.
+     */
+    public void set${entry.nameSentenceCase}(${entry.qualifiedListTypeName} ${entry.name}) {
+        this.${entry.name} = ${entry.name};
+    }
+    <#elseif entry.name == "mimdId">
+
+    /**
+     * Get the {@code ${entry.name}} attribute value.
+     *
+     * @return a MimdId value, or null if not set.
+     */
+    public MimdId get${entry.nameSentenceCase}() {
+        return ${entry.name};
+    }
+
+    /**
+     * Set the {@code ${entry.name}} attribute value.
+     *
+     * @param ${entry.name} the MimdId value to set.
+     */
+    public void set${entry.nameSentenceCase}(MimdId ${entry.name}) {
+        this.${entry.name} = ${entry.name};
+    }
+    <#elseif entry.primitive>
+
+    /**
+     * Get the {@code ${entry.name}} attribute value.
+     *
+     * @return a ${entry.namespacedQualifiedName} value, or null if not set.
+     */
+    public ${entry.namespacedQualifiedName} get${entry.nameSentenceCase}() {
+        return ${entry.name};
+    }
+
+    /**
+     * Set the {@code ${entry.name}} attribute value.
+     *
+     * @param ${entry.name} the ${entry.namespacedQualifiedName} value to set.
+     */
+    public void set${entry.nameSentenceCase}(${entry.namespacedQualifiedName} ${entry.name}) {
+        this.${entry.name} = ${entry.name};
+    }
+    <#else>
+
+    /**
+     * Get the {@code ${entry.name}} attribute value.
+     *
+     * @return a ${entry.qualifiedTypeName} value, or null if not set.
+     */
+    public ${entry.qualifiedTypeName} get${entry.nameSentenceCase}() {
+        return ${entry.name};
+    }
+
+    /**
+     * Set the {@code ${entry.name}} attribute value.
+     *
+     * @param ${entry.name} the ${entry.nameSentenceCase} value to set.
+     */
+    public void set${entry.nameSentenceCase}(${entry.qualifiedTypeName} ${entry.name}) {
+        this.${entry.name} = ${entry.name};
+    }
+    </#if>
+</#list>
 
 <#if topLevel>
     /**
@@ -137,6 +283,7 @@ public class ${name} implements <#if topLevel>IMisbMessage, </#if>IMimdMetadataV
                     break;
             }
         }
+        propagateValueMap(map);
     }
 
     @Override
@@ -147,28 +294,59 @@ public class ${name} implements <#if topLevel>IMisbMessage, </#if>IMimdMetadataV
     /**
      * Build a ${name} Local Set from encoded bytes.
      *
-     * @param data the bytes to build from
-     * @param offset the offset into {@code bytes} to start parsing from
-     * @param numBytes the number of bytes to parse
+     * @param data the bytes to build from.
+     * @param offset the offset into {@code bytes} to start parsing from.
+     * @param numBytes the number of bytes to parse.
      * @throws KlvParseException if parsing fails (depending on InvalidDataHandler strategy)
      */
     public ${name}(byte[] data, int offset, int numBytes) throws KlvParseException {
         List<LdsField> fields = LdsParser.parseFields(data, offset, numBytes);
         for (LdsField field : fields) {
             ${name}MetadataKey key = ${name}MetadataKey.getKey(field.getTag());
-            if (key == ${name}MetadataKey.Undefined) {
-                LOGGER.info("Unknown MIMD ${name} Metadata tag: {}", field.getTag());
-            } else {
-                try {
-                    IMimdMetadataValue value = createValue(key, field.getData());
-                    map.put(key, value);
-                } catch (KlvParseException | IllegalArgumentException ex) {
-                    InvalidDataHandler idh = InvalidDataHandler.getInstance();
-                    String msg = ex.getMessage();
-                    idh.handleInvalidFieldEncoding(LOGGER, msg);
-                }
+            try {
+                switch (key) {
+    <#list entries as entry>
+                    case ${entry.name}:
+        <#if entry.ref && entry.array>
+                        this.${entry.name} = ${entry.namespacedQualifiedName}.fromBytes(field.getData());
+                        break;
+        <#elseif entry.ref>
+                        this.${entry.name} = MimdIdReference.fromBytes(field.getData(), "${entry.nameSentenceCase}", "${entry.typeName}");
+                        break;
+        <#elseif entry.list>
+                        this.${entry.name} = ${entry.qualifiedListTypeName}.fromBytes(field.getData(), "${entry.nameSentenceCase}");
+                        break;
+        <#elseif entry.name == "mimdId">
+                        this.${entry.name} = MimdId.fromBytes(field.getData());
+                        break;
+        <#elseif entry.primitive>
+                        this.${entry.name} = ${entry.namespacedQualifiedName}.fromBytes(field.getData());
+                        break;
+        <#else>
+                        this.${entry.name} = ${entry.qualifiedTypeName}.fromBytes(field.getData());
+                        break;
+        </#if>
+    </#list>
+                    default:
+                        LOGGER.info("Unknown MIMD ${name} Metadata tag: {}", field.getTag());
+                        break;
+                    }
+            } catch (KlvParseException | IllegalArgumentException ex) {
+                InvalidDataHandler idh = InvalidDataHandler.getInstance();
+                String msg = ex.getMessage();
+                idh.handleInvalidFieldEncoding(LOGGER, msg);
             }
         }
+    }
+
+    /**
+     * Construct ${name} Local Set from encoded bytes.
+     *
+     * @param bytes Encoded byte array.
+     * @throws KlvParseException if the array could not be parsed
+     */
+    public ${name}(byte[] bytes) throws KlvParseException {
+        this(bytes, 0, bytes.length);
     }
 
     /**
@@ -185,16 +363,16 @@ public class ${name} implements <#if topLevel>IMisbMessage, </#if>IMimdMetadataV
     @Override
     public byte[] getBytes(){
         ArrayBuilder arrayBuilder = new ArrayBuilder();
-        for (Map.Entry<${name}MetadataKey, IMimdMetadataValue> entry: map.entrySet()) {
+        for (IKlvKey key: getIdentifiers()) {
             <#if hasDeprecatedAttribute>
-            if (entry.getKey().isDeprecated()) {
+            if (key.isDeprecated()) {
                 // ST1902-01
-                LOGGER.info("Omitting deprecated ${name} Metadata: {}", entry.getKey().toString());
+                LOGGER.info("Omitting deprecated ${name} Metadata: {}", key.toString());
                 continue;
             }
             </#if>
-            arrayBuilder.appendAsOID(entry.getKey().getIdentifier());
-            byte[] valueBytes = entry.getValue().getBytes();
+            arrayBuilder.appendAsOID(key.getIdentifier());
+            byte[] valueBytes = ((IMimdMetadataValue)getField(key)).getBytes();
             arrayBuilder.appendAsBerLength(valueBytes.length);
             arrayBuilder.append(valueBytes);
         }
@@ -221,16 +399,16 @@ public class ${name} implements <#if topLevel>IMisbMessage, </#if>IMimdMetadataV
     @Override
     public byte[] frameMessage(boolean isNested) {
         ArrayBuilder arrayBuilder = new ArrayBuilder();
-        for (Map.Entry<${name}MetadataKey, IMimdMetadataValue> entry: map.entrySet()) {
+        for (IKlvKey key: getIdentifiers()) {
             <#if hasDeprecatedAttribute>
-            if (entry.getKey().isDeprecated()) {
+            if (key.isDeprecated()) {
                 // ST1902-01
-                LOGGER.info("Omitting deprecated ${name} Metadata: {}", entry.getKey().toString());
+                LOGGER.info("Omitting deprecated ${name} Metadata: {}", key.toString());
                 continue;
             }
             </#if>
-            arrayBuilder.appendAsOID(entry.getKey().getIdentifier());
-            byte[] valueBytes = entry.getValue().getBytes();
+            arrayBuilder.appendAsOID(key.getIdentifier());
+            byte[] valueBytes = ((IMimdMetadataValue)getField(key)).getBytes();
             arrayBuilder.appendAsBerLength(valueBytes.length);
             arrayBuilder.append(valueBytes);
         }
@@ -279,11 +457,25 @@ public class ${name} implements <#if topLevel>IMisbMessage, </#if>IMimdMetadataV
 
     @Override
     public IKlvValue getField(IKlvKey tag) {
-        return map.get((${name}MetadataKey)tag);
+        switch ((${name}MetadataKey)tag) {
+<#list entries as entry>
+        case ${entry.name}:
+            return ${entry.name};
+</#list>
+        default:
+            LOGGER.info("Unknown ${name} Metadata tag: {}", tag.getIdentifier());
+            return null;
+        }
     }
 
     @Override
     public Set<? extends IKlvKey> getIdentifiers() {
-        return map.keySet();
+        Set<${name}MetadataKey> identifiers = EnumSet.noneOf(${name}MetadataKey.class);
+<#list entries as entry>
+        if (${entry.name} != null) {
+            identifiers.add(${name}MetadataKey.${entry.name});
+        }
+</#list>
+        return identifiers;
     }
 }

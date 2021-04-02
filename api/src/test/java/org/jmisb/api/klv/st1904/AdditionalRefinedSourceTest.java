@@ -13,8 +13,23 @@ public class AdditionalRefinedSourceTest {
 
     @Test
     public void checkFromBytesConstructor() throws KlvParseException {
-        byte[] bytes = new byte[] {(byte) 0x23, (byte) 0x01, (byte) 0x03};
+        byte[] bytes = getValidBytes();
         RefinedSource refinedSource = new RefinedSource(bytes, 0, 3);
+        checkRefinedSourceResult(refinedSource);
+    }
+
+    @Test
+    public void checkFromBytes() throws KlvParseException {
+        byte[] bytes = getValidBytes();
+        RefinedSource refinedSource = RefinedSource.fromBytes(bytes);
+        checkRefinedSourceResult(refinedSource);
+    }
+
+    private static byte[] getValidBytes() {
+        return new byte[] {(byte) 0x23, (byte) 0x01, (byte) 0x03};
+    }
+
+    private void checkRefinedSourceResult(RefinedSource refinedSource) {
         assertEquals(refinedSource.getIdentifiers().size(), 1);
         assertTrue(refinedSource.getIdentifiers().contains(RefinedSourceMetadataKey.attributeId));
         RefinedSource_AttributeId attributeId =

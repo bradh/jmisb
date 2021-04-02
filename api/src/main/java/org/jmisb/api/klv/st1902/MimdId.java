@@ -83,7 +83,7 @@ public class MimdId implements IMimdMetadataValue {
      * @return MimdId equivalent to the byte array
      * @throws KlvParseException if the parsing fails
      */
-    public static IMimdMetadataValue fromBytes(byte[] data) throws KlvParseException {
+    public static MimdId fromBytes(byte[] data) throws KlvParseException {
         return new MimdId(data);
     }
 

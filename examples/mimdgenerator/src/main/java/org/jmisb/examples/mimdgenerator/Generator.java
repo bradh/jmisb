@@ -2,6 +2,7 @@ package org.jmisb.examples.mimdgenerator;
 
 import java.awt.image.BufferedImage;
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -13,6 +14,7 @@ import org.jmisb.api.common.KlvParseException;
 import org.jmisb.api.klv.st1204.CoreIdentifier;
 import org.jmisb.api.klv.st1902.IMimdMetadataValue;
 import org.jmisb.api.klv.st1902.MimdId;
+import org.jmisb.api.klv.st1902.MimdIdReference;
 import org.jmisb.api.klv.st1903.ListOfSecurity;
 import org.jmisb.api.klv.st1903.ListOfTimer;
 import org.jmisb.api.klv.st1903.MIMD;
@@ -85,7 +87,7 @@ public class Generator {
     private final int height = 960;
     private final int bitRate = 500_000;
     private final int gopSize = 30;
-    private final double frameRate = 15.0;
+    private final double frameRate = 20.0;
     private final double frameDuration = 1.0 / frameRate;
     private final int duration = 90;
     private final String filename = "mimd.mpeg";
@@ -118,21 +120,37 @@ public class Generator {
             }
 
             final long numFrames = duration * Math.round(frameRate);
-            double pts = 1000.0 * System.currentTimeMillis(); // Close enough for this.
+            long baseTime =
+                    1000
+                            * 1000
+                            * System.currentTimeMillis(); // nanoseconds, or close enough for this.
+            double pts = 0.0;
             for (long i = 0; i < numFrames; ++i) {
                 SortedMap<MIMDMetadataKey, IMimdMetadataValue> values = new TreeMap<>();
                 values.put(MIMDMetadataKey.version, new MIMD_Version(1));
-                values.put(MIMDMetadataKey.timers, this.getTimers((long) pts * 1000));
+                values.put(MIMDMetadataKey.timers, this.getTimers(baseTime + (long) (pts * 1.0e9)));
                 values.put(MIMDMetadataKey.securityOptions, this.getSecurityOptions());
-                values.put(MIMDMetadataKey.security, new MimdId(0, 1));
-                values.put(MIMDMetadataKey.compositeProductSecurity, new MimdId(0, 1));
-                values.put(MIMDMetadataKey.compositeMotionImagerySecurity, new MimdId(0, 1));
-                values.put(MIMDMetadataKey.compositeMetadataSecurity, new MimdId(0, 1));
+                values.put(
+                        MIMDMetadataKey.security,
+                        new MimdIdReference(0, 1, "Security", "Security"));
+                values.put(
+                        MIMDMetadataKey.compositeProductSecurity,
+                        new MimdIdReference(0, 1, "CompositeProductSecurity", "Security"));
+                values.put(
+                        MIMDMetadataKey.compositeMotionImagerySecurity,
+                        new MimdIdReference(0, 1, "CompositeMotionImagerySecurity", "Security"));
+                values.put(
+                        MIMDMetadataKey.compositeMetadataSecurity,
+                        new MimdIdReference(0, 1, "CompositeMetadataSecurity", "Security"));
                 values.put(MIMDMetadataKey.platforms, this.getPlatforms());
                 MIMD message = new MIMD(values);
-                output.addVideoFrame(new VideoFrame(image, pts * 1.0e-6));
+                String path = String.format("MIMD_%04.02f.bin", pts);
+                try (FileOutputStream stream = new FileOutputStream(path)) {
+                    stream.write(message.getBytes());
+                }
+                output.addVideoFrame(new VideoFrame(image, pts));
                 output.addMetadataFrame(new MetadataFrame(message, pts));
-                pts += frameDuration * 1.0e6;
+                pts += frameDuration;
             }
 
         } catch (IOException e) {
