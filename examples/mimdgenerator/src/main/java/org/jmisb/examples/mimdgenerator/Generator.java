@@ -6,70 +6,52 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.SortedMap;
-import java.util.TreeMap;
 import java.util.UUID;
 import javax.imageio.ImageIO;
 import org.jmisb.api.common.KlvParseException;
 import org.jmisb.api.klv.st1204.CoreIdentifier;
-import org.jmisb.api.klv.st1902.IMimdMetadataValue;
 import org.jmisb.api.klv.st1902.MimdId;
 import org.jmisb.api.klv.st1902.MimdIdReference;
 import org.jmisb.api.klv.st1903.ListOfSecurity;
 import org.jmisb.api.klv.st1903.ListOfTimer;
 import org.jmisb.api.klv.st1903.MIMD;
-import org.jmisb.api.klv.st1903.MIMDMetadataKey;
 import org.jmisb.api.klv.st1903.MIMD_Version;
 import org.jmisb.api.klv.st1903.Security;
-import org.jmisb.api.klv.st1903.SecurityMetadataKey;
 import org.jmisb.api.klv.st1903.Security_Classification;
 import org.jmisb.api.klv.st1903.Security_ClassifyingMethod;
 import org.jmisb.api.klv.st1903.TimeTransferMethod;
 import org.jmisb.api.klv.st1903.Timer;
-import org.jmisb.api.klv.st1903.TimerMetadataKey;
 import org.jmisb.api.klv.st1903.Timer_NanoPrecisionTimestamp;
 import org.jmisb.api.klv.st1903.Timer_UtcLeapSeconds;
 import org.jmisb.api.klv.st1905.ListOfPlatform;
 import org.jmisb.api.klv.st1905.Platform;
-import org.jmisb.api.klv.st1905.PlatformMetadataKey;
 import org.jmisb.api.klv.st1905.PlatformType;
 import org.jmisb.api.klv.st1905.Platform_Identity;
 import org.jmisb.api.klv.st1905.Platform_Name;
 import org.jmisb.api.klv.st1906.AbsEnu;
-import org.jmisb.api.klv.st1906.AbsEnuMetadataKey;
 import org.jmisb.api.klv.st1906.AbsEnu_RotAboutEast;
 import org.jmisb.api.klv.st1906.AbsEnu_RotAboutNorth;
 import org.jmisb.api.klv.st1906.AbsEnu_RotAboutUp;
 import org.jmisb.api.klv.st1906.AbsGeodetic;
-import org.jmisb.api.klv.st1906.AbsGeodeticMetadataKey;
 import org.jmisb.api.klv.st1906.AbsGeodetic_Hae;
 import org.jmisb.api.klv.st1906.AbsGeodetic_Lat;
 import org.jmisb.api.klv.st1906.AbsGeodetic_Lon;
 import org.jmisb.api.klv.st1906.ListOfStage;
 import org.jmisb.api.klv.st1906.Orientation;
-import org.jmisb.api.klv.st1906.OrientationMetadataKey;
 import org.jmisb.api.klv.st1906.Position;
-import org.jmisb.api.klv.st1906.PositionMetadataKey;
 import org.jmisb.api.klv.st1906.Position_Country;
 import org.jmisb.api.klv.st1906.Stage;
-import org.jmisb.api.klv.st1906.StageMetadataKey;
 import org.jmisb.api.klv.st1907.GeoIntelligenceSensor;
-import org.jmisb.api.klv.st1907.GeoIntelligenceSensorMetadataKey;
 import org.jmisb.api.klv.st1907.ListOfGeoIntelligenceSensor;
 import org.jmisb.api.klv.st1907.ListOfPayload;
 import org.jmisb.api.klv.st1907.Payload;
-import org.jmisb.api.klv.st1907.PayloadMetadataKey;
 import org.jmisb.api.klv.st1908.FieldOfView;
-import org.jmisb.api.klv.st1908.FieldOfViewMetadataKey;
 import org.jmisb.api.klv.st1908.FieldOfView_Horizontal;
 import org.jmisb.api.klv.st1908.FieldOfView_Vertical;
 import org.jmisb.api.klv.st1908.ImagerSystem;
-import org.jmisb.api.klv.st1908.ImagerSystemMetadataKey;
 import org.jmisb.api.klv.st1908.ImagerSystem_Name;
 import org.jmisb.api.klv.st1908.MIIS;
-import org.jmisb.api.klv.st1908.MIISMetadataKey;
 import org.jmisb.api.klv.st1908.MinorCoreId;
-import org.jmisb.api.klv.st1908.MinorCoreIdMetadataKey;
 import org.jmisb.api.klv.st1908.MinorCoreId_Uuid;
 import org.jmisb.api.video.IVideoFileOutput;
 import org.jmisb.api.video.KlvFormat;
@@ -126,25 +108,20 @@ public class Generator {
                             * System.currentTimeMillis(); // nanoseconds, or close enough for this.
             double pts = 0.0;
             for (long i = 0; i < numFrames; ++i) {
-                SortedMap<MIMDMetadataKey, IMimdMetadataValue> values = new TreeMap<>();
-                values.put(MIMDMetadataKey.version, new MIMD_Version(1));
-                values.put(MIMDMetadataKey.timers, this.getTimers(baseTime + (long) (pts * 1.0e9)));
-                values.put(MIMDMetadataKey.securityOptions, this.getSecurityOptions());
-                values.put(
-                        MIMDMetadataKey.security,
-                        new MimdIdReference(0, 1, "Security", "Security"));
-                values.put(
-                        MIMDMetadataKey.compositeProductSecurity,
+                MIMD message = new MIMD();
+                message.setVersion(new MIMD_Version(1));
+                message.setTimers(getTimers(baseTime + (long) (pts * 1.0e9)));
+                message.setSecurityOptions(getSecurityOptions());
+                message.setSecurity(new MimdIdReference(0, 1, "Security", "Security"));
+                message.setCompositeProductSecurity(
                         new MimdIdReference(0, 1, "CompositeProductSecurity", "Security"));
-                values.put(
-                        MIMDMetadataKey.compositeMotionImagerySecurity,
+                message.setCompositeMotionImagerySecurity(
                         new MimdIdReference(0, 1, "CompositeMotionImagerySecurity", "Security"));
-                values.put(
-                        MIMDMetadataKey.compositeMetadataSecurity,
+                message.setCompositeMetadataSecurity(
                         new MimdIdReference(0, 1, "CompositeMetadataSecurity", "Security"));
-                values.put(MIMDMetadataKey.platforms, this.getPlatforms());
-                MIMD message = new MIMD(values);
-                String path = String.format("MIMD_%04.02f.bin", pts);
+                message.setPlatforms(this.getPlatforms());
+
+                String path = String.format("MIMD_%04.02f.dat", pts);
                 try (FileOutputStream stream = new FileOutputStream(path)) {
                     stream.write(message.getBytes());
                 }
@@ -166,12 +143,10 @@ public class Generator {
     }
 
     private Timer getTimer(long nanos) throws KlvParseException {
-        SortedMap<TimerMetadataKey, IMimdMetadataValue> values = new TreeMap<>();
-        values.put(
-                TimerMetadataKey.nanoPrecisionTimestamp, new Timer_NanoPrecisionTimestamp(nanos));
-        values.put(TimerMetadataKey.utcLeapSeconds, new Timer_UtcLeapSeconds(37));
-        values.put(TimerMetadataKey.timeTransferMethod, TimeTransferMethod.NTP_V3_3);
-        Timer timer = new Timer(values);
+        Timer timer = new Timer();
+        timer.setNanoPrecisionTimestamp(new Timer_NanoPrecisionTimestamp(nanos));
+        timer.setUtcLeapSeconds(new Timer_UtcLeapSeconds(37));
+        timer.setTimeTransferMethod(TimeTransferMethod.NTP_V3_3);
         return timer;
     }
 
@@ -184,25 +159,23 @@ public class Generator {
     }
 
     private Security getSecurityUnclas() throws KlvParseException {
-        SortedMap<SecurityMetadataKey, IMimdMetadataValue> values = new TreeMap<>();
-        values.put(SecurityMetadataKey.mimdId, new MimdId(0, 1));
-        values.put(SecurityMetadataKey.classifyingMethod, new Security_ClassifyingMethod("US-1"));
-        values.put(
-                SecurityMetadataKey.classification,
+        Security security = new Security();
+        security.setMimdId(new MimdId(0, 1));
+        security.setClassifyingMethod(new Security_ClassifyingMethod("US-1"));
+        security.setClassification(
                 new Security_Classification("UNCLASSIFIED//REL TO USA, AUS, CAN, GBR"));
-        Security security = new Security(values);
+
         return security;
     }
 
     private Security getSecurityFOUO() throws KlvParseException {
-        SortedMap<SecurityMetadataKey, IMimdMetadataValue> values = new TreeMap<>();
-        values.put(SecurityMetadataKey.mimdId, new MimdId(1, 1));
-        values.put(SecurityMetadataKey.classifyingMethod, new Security_ClassifyingMethod("US-1"));
-        values.put(
-                SecurityMetadataKey.classification,
+        Security security = new Security();
+        security.setMimdId(new MimdId(1, 1));
+        security.setClassifyingMethod(new Security_ClassifyingMethod("US-1"));
+        security.setClassification(
                 new Security_Classification(
                         "UNCLASSIFIED//FOR OFFICIAL USE ONLY//REL TO USA, AUS, CAN, GBR"));
-        Security security = new Security(values);
+
         return security;
     }
 
@@ -214,13 +187,12 @@ public class Generator {
     }
 
     private Platform getPlatform() throws KlvParseException {
-        SortedMap<PlatformMetadataKey, IMimdMetadataValue> values = new TreeMap<>();
-        values.put(PlatformMetadataKey.name, new Platform_Name("Test System"));
-        values.put(PlatformMetadataKey.identity, new Platform_Identity("jMISB Test 1"));
-        values.put(PlatformMetadataKey.type, PlatformType.Pole);
-        values.put(PlatformMetadataKey.stages, this.getStages());
-        values.put(PlatformMetadataKey.payloads, this.getPayloads());
-        Platform platform = new Platform(values);
+        Platform platform = new Platform();
+        platform.setName(new Platform_Name("Test System"));
+        platform.setIdentity(new Platform_Identity("jMISB Test 1"));
+        platform.setType(PlatformType.Pole);
+        platform.setStages(getStages());
+        platform.setPayloads(getPayloads());
         return platform;
     }
 
@@ -232,43 +204,38 @@ public class Generator {
     }
 
     private Stage getStage() throws KlvParseException {
-        SortedMap<StageMetadataKey, IMimdMetadataValue> values = new TreeMap<>();
-        values.put(StageMetadataKey.position, this.getPosition());
-        values.put(StageMetadataKey.orientation, this.getOrientation());
-        Stage stage = new Stage(values);
+        Stage stage = new Stage();
+        stage.setPosition(getPosition());
+        stage.setOrientation(this.getOrientation());
         return stage;
     }
 
     private Position getPosition() throws KlvParseException {
-        SortedMap<PositionMetadataKey, IMimdMetadataValue> values = new TreeMap<>();
-        values.put(PositionMetadataKey.absGeodetic, this.getGeodeticPosition());
-        values.put(PositionMetadataKey.country, new Position_Country("ge:ISO1:3:VII-13:AUS"));
-        Position position = new Position(values);
+        Position position = new Position();
+        position.setAbsGeodetic(getGeodeticPosition());
+        position.setCountry(new Position_Country("ge:ISO1:3:VII-13:AUS"));
         return position;
     }
 
     private Orientation getOrientation() throws KlvParseException {
-        SortedMap<OrientationMetadataKey, IMimdMetadataValue> values = new TreeMap<>();
-        values.put(OrientationMetadataKey.absEnu, this.getAbsEnu());
-        Orientation orientation = new Orientation(values);
+        Orientation orientation = new Orientation();
+        orientation.setAbsEnu(this.getAbsEnu());
         return orientation;
     }
 
     private AbsEnu getAbsEnu() throws KlvParseException {
-        SortedMap<AbsEnuMetadataKey, IMimdMetadataValue> values = new TreeMap<>();
-        values.put(AbsEnuMetadataKey.rotAboutEast, new AbsEnu_RotAboutEast(0.0));
-        values.put(AbsEnuMetadataKey.rotAboutNorth, new AbsEnu_RotAboutNorth(0.0));
-        values.put(AbsEnuMetadataKey.rotAboutUp, new AbsEnu_RotAboutUp(45.0 * Math.PI / 180.0));
-        AbsEnu absEnu = new AbsEnu(values);
+        AbsEnu absEnu = new AbsEnu();
+        absEnu.setRotAboutEast(new AbsEnu_RotAboutEast(0.0));
+        absEnu.setRotAboutNorth(new AbsEnu_RotAboutNorth(0.0));
+        absEnu.setRotAboutUp(new AbsEnu_RotAboutUp(45.0 * Math.PI / 180.0));
         return absEnu;
     }
 
     private AbsGeodetic getGeodeticPosition() throws KlvParseException {
-        SortedMap<AbsGeodeticMetadataKey, IMimdMetadataValue> values = new TreeMap<>();
-        values.put(AbsGeodeticMetadataKey.lat, new AbsGeodetic_Lat(-35.35349 * Math.PI / 180.0));
-        values.put(AbsGeodeticMetadataKey.lon, new AbsGeodetic_Lon(149.08932 * Math.PI / 180.0));
-        values.put(AbsGeodeticMetadataKey.hae, new AbsGeodetic_Hae(642.1));
-        AbsGeodetic geodeticPosition = new AbsGeodetic(values);
+        AbsGeodetic geodeticPosition = new AbsGeodetic();
+        geodeticPosition.setLat(new AbsGeodetic_Lat(-35.35349 * Math.PI / 180.0));
+        geodeticPosition.setLon(new AbsGeodetic_Lon(149.08932 * Math.PI / 180.0));
+        geodeticPosition.setHae(new AbsGeodetic_Hae(642.1));
         return geodeticPosition;
     }
 
@@ -280,65 +247,55 @@ public class Generator {
     }
 
     private Payload getPayload() throws KlvParseException {
-        SortedMap<PayloadMetadataKey, IMimdMetadataValue> values = new TreeMap<>();
-        values.put(PayloadMetadataKey.geoIntelligenceSensors, getGeoIntelligenceSensors());
-        Payload payload = new Payload(values);
+        Payload payload = new Payload();
+        payload.setGeoIntelligenceSensors(getGeoIntelligenceSensors());
         return payload;
     }
 
     private ListOfGeoIntelligenceSensor getGeoIntelligenceSensors() throws KlvParseException {
         List<GeoIntelligenceSensor> sensorList = new ArrayList<>();
-        sensorList.add(this.getGeoIntelligenceSensor());
+        sensorList.add(getGeoIntelligenceSensor());
         ListOfGeoIntelligenceSensor sensors =
                 new ListOfGeoIntelligenceSensor(sensorList, "GeoIntelligenceSensors");
         return sensors;
     }
 
     private GeoIntelligenceSensor getGeoIntelligenceSensor() throws KlvParseException {
-        SortedMap<GeoIntelligenceSensorMetadataKey, IMimdMetadataValue> values = new TreeMap<>();
-        values.put(GeoIntelligenceSensorMetadataKey.imagerSystem, getImagerSystem());
-        GeoIntelligenceSensor sensor = new GeoIntelligenceSensor(values);
+        GeoIntelligenceSensor sensor = new GeoIntelligenceSensor();
+        sensor.setImagerSystem(getImagerSystem());
         return sensor;
     }
 
     private ImagerSystem getImagerSystem() throws KlvParseException {
-        SortedMap<ImagerSystemMetadataKey, IMimdMetadataValue> values = new TreeMap<>();
-        values.put(ImagerSystemMetadataKey.name, new ImagerSystem_Name("EO Fixed"));
-        values.put(ImagerSystemMetadataKey.fieldOfView, getFieldOfView());
-        values.put(ImagerSystemMetadataKey.miis, getMiis());
-        ImagerSystem imagerSystem = new ImagerSystem(values);
+        ImagerSystem imagerSystem = new ImagerSystem();
+        imagerSystem.setName(new ImagerSystem_Name("EO Fixed"));
+        imagerSystem.setFieldOfView(getFieldOfView());
+        imagerSystem.setMiis(getMiis());
         return imagerSystem;
     }
 
     private FieldOfView getFieldOfView() throws KlvParseException {
-        SortedMap<FieldOfViewMetadataKey, IMimdMetadataValue> values = new TreeMap<>();
-        values.put(
-                FieldOfViewMetadataKey.horizontal,
-                new FieldOfView_Horizontal(144.571298 * Math.PI / 180.0));
-        values.put(
-                FieldOfViewMetadataKey.vertical,
-                new FieldOfView_Vertical(152.643626 * Math.PI / 180.0));
-        FieldOfView fieldOfView = new FieldOfView(values);
+        FieldOfView fieldOfView = new FieldOfView();
+        fieldOfView.setHorizontal(new FieldOfView_Horizontal(144.571298 * Math.PI / 180.0));
+        fieldOfView.setVertical(new FieldOfView_Vertical(152.643626 * Math.PI / 180.0));
         return fieldOfView;
     }
 
     private MIIS getMiis() throws KlvParseException {
-        SortedMap<MIISMetadataKey, IMimdMetadataValue> values = new TreeMap<>();
-        values.put(MIISMetadataKey.minorCoreId, getMinorCoreId());
-        MIIS miis = new MIIS(values);
+        MIIS miis = new MIIS();
+        miis.setMinorCoreId(getMinorCoreId());
         return miis;
     }
 
     private MinorCoreId getMinorCoreId() throws KlvParseException {
-        SortedMap<MinorCoreIdMetadataKey, IMimdMetadataValue> values = new TreeMap<>();
         byte[] coreIdentifierAsBytes = UuidUtils.uuidToArray(coreIdentifierUUID);
         long[] data = new long[coreIdentifierAsBytes.length];
         for (int i = 0; i < coreIdentifierAsBytes.length; ++i) {
             data[i] = (coreIdentifierAsBytes[i] & 0xFF);
         }
         MinorCoreId_Uuid uuid = new MinorCoreId_Uuid(data);
-        values.put(MinorCoreIdMetadataKey.uuid, uuid);
-        MinorCoreId minorCoreId = new MinorCoreId(values);
+        MinorCoreId minorCoreId = new MinorCoreId();
+        minorCoreId.setUuid(uuid);
         return minorCoreId;
     }
 }
