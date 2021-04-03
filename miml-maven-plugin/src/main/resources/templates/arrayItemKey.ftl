@@ -5,18 +5,19 @@ package ${packageName};
 import org.jmisb.api.klv.IKlvKey;
 
 /**
- * {@link ${namespacedName}} key for items in an array.
+ * Pseudo-key item for series identifier.
  *
- * <p>This is intended to support enumeration of array items. You should not normally be
+ * <p>This is intended to support enumeration of items in lists and arrays. You should not normally be
  * instantiating this class yourself.
  */
-public class ${namespacedName}ItemKey implements IKlvKey, Comparable<${namespacedName}ItemKey> {
+class ${namespacedName}ItemKey implements IKlvKey, Comparable<${namespacedName}ItemKey> {
+
     private final int identifier;
 
     /**
      * Constructor.
      *
-     * @param identifier the unique identifier for this key.
+     * @param identifier the integer code for this ${name} identifier.
      */
     public ${namespacedName}ItemKey(int identifier) {
         this.identifier = identifier;
@@ -52,5 +53,10 @@ public class ${namespacedName}ItemKey implements IKlvKey, Comparable<${namespace
     @Override
     public int compareTo(${namespacedName}ItemKey p) {
         return Integer.compare(identifier, p.identifier);
+    }
+
+    @Override
+    public String toString() {
+        return "Item " + identifier;
     }
 }

@@ -14,41 +14,43 @@ import org.jmisb.api.klv.IKlvKey;
 import org.jmisb.api.klv.IKlvValue;
 import org.jmisb.api.klv.INestedKlvValue;
 import org.jmisb.api.klv.st1902.IMimdMetadataValue;
+import ${qualifiedTypeName};
 
 /**
- * MIMD LIST&lt;${name}&gt; implementation.
+<#if parentName == "Base">
+ * MIMD ${parentName} ${name} attribute.
+<#else>
+ * MIMD {@link ${parentName}} ${name} attribute.
+</#if>
  *
- * See ${document} for more information on this data type.
+ * <p>This is a specialisation of a MIMD LIST&lt;${typeName}&gt;.
+ *
+ * <p>See ${document} for more information on this data type.
  */
-public class ListOf${name} implements IMimdMetadataValue, INestedKlvValue {
-    private final Map<${name}Identifier, ${name}> listValues = new HashMap<>();
-    private final String displayName;
+public class ${namespacedName} implements IMimdMetadataValue, INestedKlvValue {
+    private final Map<${namespacedName}ItemKey, ${typeName}> listValues = new HashMap<>();
 
     /**
-     * Create a LIST&lt;${name}&gt; from values.
+     * Create a ${namespacedName} from values.
      *
-     * @param values the values to construct from
-     * @param displayName the display name (label) to use for this list.
+     * @param values the values to construct from.
      */
-    public ListOf${name}(List<${name}> values, String displayName) {
+    public ${namespacedName} (List<${typeName}> values) {
         for (int i = 0; i < values.size(); i++) {
-            ${name}Identifier identifier = new ${name}Identifier(i);
+            ${namespacedName}ItemKey identifier = new ${namespacedName}ItemKey(i);
             listValues.put(identifier, values.get(i));
         }
-        this.displayName = displayName;
     }
 
     /**
-     * Build a LIST&lt;${name}&gt; from encoded bytes.
+     * Build a ${namespacedName} from encoded bytes.
      *
-     * @param data the bytes to build from
-     * @param offset the offset into {@code bytes} to start parsing from
-     * @param numBytes the number of bytes to parse
-     * @param displayName the display name (label) to use for this list.
+     * @param data the bytes to build from.
+     * @param offset the offset into {@code bytes} to start parsing from.
+     * @param numBytes the number of bytes to parse.
      * @throws KlvParseException if parsing fails
      */
-    public ListOf${name}(byte[] data, int offset, int numBytes, String displayName) throws KlvParseException {
-        this.displayName = displayName;
+    public ${namespacedName}(byte[] data, int offset, int numBytes) throws KlvParseException {
         int index = offset;
         int itemCount = 0;
         while (index < data.length - 1) {
@@ -56,34 +58,33 @@ public class ListOf${name} implements IMimdMetadataValue, INestedKlvValue {
             // TODO: handle lengthField == 0, which is a special case - ZLE.
             // Zero-Length-Element (ZLE) as a filler element to mark an element as unchanged since the last Packet
             index += lengthField.getLength();
-            ${name} listItem = new ${name}(data, index, lengthField.getValue());
-            listValues.put(new ${name}Identifier(itemCount), listItem);
+            ${typeName} listItem = new ${typeName}(data, index, lengthField.getValue());
+            listValues.put(new ${namespacedName}ItemKey(itemCount), listItem);
             index += lengthField.getValue();
             itemCount++;
         }
     }
 
     /**
-     * Build a LIST&lt;${name}&gt; from encoded bytes.
+     * Build a ${namespacedName} from encoded bytes.
      *
-     * @param data the bytes to build from
-     * @param displayName the display name (label) to use for this list.
-     * @return new ListOf${name} corresponding to the encoded byte array.
+     * @param data the bytes to build from.
+     * @return new ${namespacedName} corresponding to the encoded byte array.
      * @throws KlvParseException if parsing fails
      */
-    public static ListOf${name} fromBytes(byte[] data, String displayName) throws KlvParseException {
-        return new ListOf${name}(data, 0, data.length, displayName);
+    public static ${namespacedName} fromBytes(byte[] data) throws KlvParseException {
+        return new ${namespacedName}(data, 0, data.length);
     }
 
     @Override
     public String getDisplayName() {
-        return displayName;
+        return "${nameSentenceCase}";
     }
 
     @Override
     public byte[] getBytes() {
         ArrayBuilder arrayBuilder = new ArrayBuilder();
-        for (${name} value : listValues.values()) {
+        for (${typeName} value : listValues.values()) {
             byte[] listItemBytes = value.getBytes();
             arrayBuilder.appendAsBerLength(listItemBytes.length);
             arrayBuilder.append(listItemBytes);
@@ -93,12 +94,12 @@ public class ListOf${name} implements IMimdMetadataValue, INestedKlvValue {
 
     @Override
     public String getDisplayableValue() {
-        return "LIST[${name}]";
+        return "LIST[${typeName}]";
     }
 
     @Override
     public IKlvValue getField(IKlvKey tag) {
-        return listValues.get((${name}Identifier) tag);
+        return listValues.get((${namespacedName}ItemKey) tag);
     }
 
     @Override

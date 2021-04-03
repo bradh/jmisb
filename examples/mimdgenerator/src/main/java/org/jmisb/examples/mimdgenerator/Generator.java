@@ -12,9 +12,10 @@ import org.jmisb.api.common.KlvParseException;
 import org.jmisb.api.klv.st1204.CoreIdentifier;
 import org.jmisb.api.klv.st1902.MimdId;
 import org.jmisb.api.klv.st1902.MimdIdReference;
-import org.jmisb.api.klv.st1903.ListOfSecurity;
-import org.jmisb.api.klv.st1903.ListOfTimer;
 import org.jmisb.api.klv.st1903.MIMD;
+import org.jmisb.api.klv.st1903.MIMD_Platforms;
+import org.jmisb.api.klv.st1903.MIMD_SecurityOptions;
+import org.jmisb.api.klv.st1903.MIMD_Timers;
 import org.jmisb.api.klv.st1903.MIMD_Version;
 import org.jmisb.api.klv.st1903.Security;
 import org.jmisb.api.klv.st1903.Security_Classification;
@@ -23,11 +24,12 @@ import org.jmisb.api.klv.st1903.TimeTransferMethod;
 import org.jmisb.api.klv.st1903.Timer;
 import org.jmisb.api.klv.st1903.Timer_NanoPrecisionTimestamp;
 import org.jmisb.api.klv.st1903.Timer_UtcLeapSeconds;
-import org.jmisb.api.klv.st1905.ListOfPlatform;
 import org.jmisb.api.klv.st1905.Platform;
 import org.jmisb.api.klv.st1905.PlatformType;
 import org.jmisb.api.klv.st1905.Platform_Identity;
 import org.jmisb.api.klv.st1905.Platform_Name;
+import org.jmisb.api.klv.st1905.Platform_Payloads;
+import org.jmisb.api.klv.st1905.Platform_Stages;
 import org.jmisb.api.klv.st1906.AbsEnu;
 import org.jmisb.api.klv.st1906.AbsEnu_RotAboutEast;
 import org.jmisb.api.klv.st1906.AbsEnu_RotAboutNorth;
@@ -36,15 +38,13 @@ import org.jmisb.api.klv.st1906.AbsGeodetic;
 import org.jmisb.api.klv.st1906.AbsGeodetic_Hae;
 import org.jmisb.api.klv.st1906.AbsGeodetic_Lat;
 import org.jmisb.api.klv.st1906.AbsGeodetic_Lon;
-import org.jmisb.api.klv.st1906.ListOfStage;
 import org.jmisb.api.klv.st1906.Orientation;
 import org.jmisb.api.klv.st1906.Position;
 import org.jmisb.api.klv.st1906.Position_Country;
 import org.jmisb.api.klv.st1906.Stage;
 import org.jmisb.api.klv.st1907.GeoIntelligenceSensor;
-import org.jmisb.api.klv.st1907.ListOfGeoIntelligenceSensor;
-import org.jmisb.api.klv.st1907.ListOfPayload;
 import org.jmisb.api.klv.st1907.Payload;
+import org.jmisb.api.klv.st1907.Payload_GeoIntelligenceSensors;
 import org.jmisb.api.klv.st1908.FieldOfView;
 import org.jmisb.api.klv.st1908.FieldOfView_Horizontal;
 import org.jmisb.api.klv.st1908.FieldOfView_Vertical;
@@ -135,10 +135,10 @@ public class Generator {
         }
     }
 
-    private ListOfTimer getTimers(long nanos) throws KlvParseException {
+    private MIMD_Timers getTimers(long nanos) throws KlvParseException {
         List<Timer> timerList = new ArrayList<>();
         timerList.add(this.getTimer(nanos));
-        ListOfTimer timers = new ListOfTimer(timerList, "Timers");
+        MIMD_Timers timers = new MIMD_Timers(timerList);
         return timers;
     }
 
@@ -150,11 +150,11 @@ public class Generator {
         return timer;
     }
 
-    private ListOfSecurity getSecurityOptions() throws KlvParseException {
+    private MIMD_SecurityOptions getSecurityOptions() throws KlvParseException {
         List<Security> securityList = new ArrayList<>();
         securityList.add(this.getSecurityUnclas());
         securityList.add(this.getSecurityFOUO());
-        ListOfSecurity securityOptions = new ListOfSecurity(securityList, "SecurityOptions");
+        MIMD_SecurityOptions securityOptions = new MIMD_SecurityOptions(securityList);
         return securityOptions;
     }
 
@@ -179,10 +179,10 @@ public class Generator {
         return security;
     }
 
-    private ListOfPlatform getPlatforms() throws KlvParseException {
+    private MIMD_Platforms getPlatforms() throws KlvParseException {
         List<Platform> platformList = new ArrayList<>();
         platformList.add(this.getPlatform());
-        ListOfPlatform platforms = new ListOfPlatform(platformList, "Platforms");
+        MIMD_Platforms platforms = new MIMD_Platforms(platformList);
         return platforms;
     }
 
@@ -196,10 +196,10 @@ public class Generator {
         return platform;
     }
 
-    private ListOfStage getStages() throws KlvParseException {
+    private Platform_Stages getStages() throws KlvParseException {
         List<Stage> stageList = new ArrayList<>();
         stageList.add(this.getStage());
-        ListOfStage stages = new ListOfStage(stageList, "Stages");
+        Platform_Stages stages = new Platform_Stages(stageList);
         return stages;
     }
 
@@ -239,10 +239,10 @@ public class Generator {
         return geodeticPosition;
     }
 
-    private ListOfPayload getPayloads() throws KlvParseException {
+    private Platform_Payloads getPayloads() throws KlvParseException {
         List<Payload> payloadList = new ArrayList<>();
         payloadList.add(this.getPayload());
-        ListOfPayload payloads = new ListOfPayload(payloadList, "Payloads");
+        Platform_Payloads payloads = new Platform_Payloads(payloadList);
         return payloads;
     }
 
@@ -252,11 +252,10 @@ public class Generator {
         return payload;
     }
 
-    private ListOfGeoIntelligenceSensor getGeoIntelligenceSensors() throws KlvParseException {
+    private Payload_GeoIntelligenceSensors getGeoIntelligenceSensors() throws KlvParseException {
         List<GeoIntelligenceSensor> sensorList = new ArrayList<>();
         sensorList.add(getGeoIntelligenceSensor());
-        ListOfGeoIntelligenceSensor sensors =
-                new ListOfGeoIntelligenceSensor(sensorList, "GeoIntelligenceSensors");
+        Payload_GeoIntelligenceSensors sensors = new Payload_GeoIntelligenceSensors(sensorList);
         return sensors;
     }
 

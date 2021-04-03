@@ -13,47 +13,47 @@ import static org.testng.Assert.*;
 import org.testng.annotations.Test;
 
 /** Unit tests for LIST&lt;${name}&gt;. */
-public class ListOf${name}Test extends LoggerChecks {
+public class ${namespacedName}Test extends LoggerChecks {
 
-    public ListOf${name}Test () {
-        super(ListOf${name}.class);
+    public ${namespacedName}Test () {
+        super(${namespacedName}.class);
     }
 
     @Test
     public void displayName() {
-        ListOf${name} uut = new ListOf${name}(new ArrayList<>(), "testDisplayName");
-        assertEquals(uut.getDisplayName(), "testDisplayName");
+        ${namespacedName} uut = new ${namespacedName}(new ArrayList<>());
+        assertEquals(uut.getDisplayName(), "${nameSentenceCase}");
     }
 
     @Test
     public void displayableValue() {
-        ListOf${name} uut = new ListOf${name}(new ArrayList<>(), "testDisplayName");
-        assertEquals(uut.getDisplayableValue(), "LIST[${name}]");
+        ${namespacedName} uut = new ${namespacedName}(new ArrayList<>());
+        assertEquals(uut.getDisplayableValue(), "LIST[${typeName}]");
     }
 
     @Test
     public void fromBytesConstructorZeroLength() throws KlvParseException {
-        ListOf${name} uut = new ListOf${name}(new byte[]{}, 0, 0, "testDisplayName");
+        ${namespacedName} uut = new ${namespacedName}(new byte[]{}, 0, 0);
         assertNotNull(uut);
-        assertEquals(uut.getDisplayName(), "testDisplayName");
+        assertEquals(uut.getDisplayName(), "${nameSentenceCase}");
     }
 
     @Test
     public void fromBytesNoIdentifiers() throws KlvParseException {
-        ListOf${name} uut = new ListOf${name}(new byte[]{}, 0, 0, "testDisplayName");
+        ${namespacedName} uut = new ${namespacedName}(new byte[]{}, 0, 0);
         assertNotNull(uut);
         assertEquals(uut.getIdentifiers().size(), 0);
     }
 
     @Test
-    public void fromList${name}() throws KlvParseException {
-        List<${name}> listOfValues = new ArrayList<>();
-        listOfValues.add(${name}Test.makeValue());
-        ListOf${name} uut = new ListOf${name}(listOfValues, "testDisplayName");
+    public void fromList${typeName}() throws KlvParseException {
+        List<${qualifiedTypeName}> listOfValues = new ArrayList<>();
+        listOfValues.add(${qualifiedTypeName}Test.makeValue());
+        ${namespacedName} uut = new ${namespacedName}(listOfValues);
         assertNotNull(uut);
         byte[] bytes = uut.getBytes();
         assertTrue(bytes.length > 0);
-        ListOf${name} uutRebuilt = ListOf${name}.fromBytes(bytes, "testDisplayName2");
+        ${namespacedName} uutRebuilt = ${namespacedName}.fromBytes(bytes);
         assertEquals(uut.getIdentifiers(), uutRebuilt.getIdentifiers());
         for (IKlvKey k: uut.getIdentifiers()) {
             assertNotNull(uut);

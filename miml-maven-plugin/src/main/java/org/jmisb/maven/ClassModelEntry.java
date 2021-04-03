@@ -159,10 +159,6 @@ public class ClassModelEntry {
         return parent.getTypePackage(typeName) + "." + typeName;
     }
 
-    public String getQualifiedListTypeName() {
-        return parent.getTypePackage(typeName) + ".ListOf" + typeName;
-    }
-
     public void setTypeName(String typeName) {
         if (typeName.equals("Object")) {
             this.typeName = "Objct";
@@ -211,6 +207,9 @@ public class ClassModelEntry {
     }
 
     public boolean isPrimitive() {
+        if (isList()) {
+            return false;
+        }
         return typeName.equals("Real")
                 || typeName.equals("String")
                 || typeName.equals("Integer")

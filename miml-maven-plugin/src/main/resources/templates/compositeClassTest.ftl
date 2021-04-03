@@ -26,7 +26,7 @@ import org.testng.annotations.Test;
 /** Unit tests for ${name} */
 public class ${name}Test extends LoggerChecks {
 
-    static ${name} makeValue() throws KlvParseException {
+    public static ${name} makeValue() throws KlvParseException {
         SortedMap<${name}MetadataKey, IMimdMetadataValue> values = new TreeMap<>();
 <#list entries as entry>
     <#if entry.typeName == "String">
@@ -345,7 +345,7 @@ public class ${name}Test extends LoggerChecks {
     <#elseif entry.list>
         // List
         IMimdMetadataValue uut = ${name}.createValue(${name}MetadataKey.${entry.name}, new byte[]{(byte) 0x00});
-        assertTrue(uut instanceof  ${entry.qualifiedListTypeName});
+        assertTrue(uut instanceof  ${entry.namespacedName});
     <#elseif entry.typeName == "Boolean">
         // TODO - Boolean
         throw new RuntimeException("Unhandled primitive type: Boolean");
@@ -354,10 +354,6 @@ public class ${name}Test extends LoggerChecks {
         IMimdMetadataValue uut = ${name}.createValue(${name}MetadataKey.${entry.name}, new byte[]{(byte) 0x01, (byte)0x01, (byte)0x06});
         assertTrue(uut instanceof ${entry.qualifiedTypeName});
     </#if>
-        SortedMap<${name}MetadataKey, IMimdMetadataValue> values = new TreeMap<>();
-        values.put(${name}MetadataKey.${entry.name}, uut);
-        ${name} parentClass = new ${name}(values);
-        assertEquals(parentClass.getIdentifiers().size(), 1);
     }
 </#list>
 <#list entries as entry>
@@ -417,7 +413,7 @@ public class ${name}Test extends LoggerChecks {
     <#elseif entry.list>
         // List
         IMimdMetadataValue uut = ${name}.createValue(${name}MetadataKey.${entry.name}, new byte[]{(byte) 0x00});
-        ${entry.qualifiedListTypeName} value = (${entry.qualifiedListTypeName})uut;
+        ${entry.namespacedName} value = (${entry.namespacedName})uut;
     <#elseif entry.typeName == "Boolean">
         // TODO - Boolean
         throw new RuntimeException("Unhandled primitive type: Boolean");

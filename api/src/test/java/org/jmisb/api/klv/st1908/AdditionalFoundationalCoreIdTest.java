@@ -5,12 +5,9 @@ import static org.testng.Assert.assertNotNull;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.SortedMap;
-import java.util.TreeMap;
 import java.util.UUID;
 import org.jmisb.api.common.KlvParseException;
 import org.jmisb.api.klv.IKlvKey;
-import org.jmisb.api.klv.st1902.IMimdMetadataValue;
 import org.jmisb.core.klv.UuidUtils;
 import org.testng.annotations.Test;
 
@@ -21,33 +18,25 @@ public class AdditionalFoundationalCoreIdTest {
 
     @Test
     public void fromValues() throws KlvParseException {
-        SortedMap<FoundationalCoreIdMetadataKey, IMimdMetadataValue> values = new TreeMap<>();
         List<IdComponent> idComponents = new ArrayList<>();
-        SortedMap<IdComponentMetadataKey, IMimdMetadataValue> sensorComponentValues =
-                new TreeMap<>();
         UUID sensorUuid = UUID.fromString("9bebbfa3-c5b9-4a08-89e3-271356407963");
         long[] sensorUuidBytes = UuidUtils.uuidToLongArray(sensorUuid);
-        sensorComponentValues.put(
-                IdComponentMetadataKey.uuid, new IdComponent_Uuid(sensorUuidBytes));
-        sensorComponentValues.put(IdComponentMetadataKey.idComponent, IdentifierComponent.Sensor);
-        sensorComponentValues.put(IdComponentMetadataKey.idType, IdentifierType.Managed);
-        IdComponent sensorComponent = new IdComponent(sensorComponentValues);
+        IdComponent sensorComponent = new IdComponent();
+        sensorComponent.setUuid(new IdComponent_Uuid(sensorUuidBytes));
+        sensorComponent.setIdComponent(IdentifierComponent.Sensor);
+        sensorComponent.setIdType(IdentifierType.Managed);
         idComponents.add(sensorComponent);
-        SortedMap<IdComponentMetadataKey, IMimdMetadataValue> platformComponentValues =
-                new TreeMap<>();
+
         UUID platformUuid = UUID.fromString("8533fd35-4590-4533-8b20-daa040917b9a");
-        platformComponentValues.put(
-                IdComponentMetadataKey.uuid,
-                new IdComponent_Uuid(UuidUtils.uuidToLongArray(platformUuid)));
-        platformComponentValues.put(
-                IdComponentMetadataKey.idComponent, IdentifierComponent.Platform);
-        platformComponentValues.put(IdComponentMetadataKey.idType, IdentifierType.Virtual);
-        IdComponent platformComponent = new IdComponent(platformComponentValues);
+        IdComponent platformComponent = new IdComponent();
+
+        platformComponent.setUuid(new IdComponent_Uuid(UuidUtils.uuidToLongArray(platformUuid)));
+        platformComponent.setIdComponent(IdentifierComponent.Platform);
+        platformComponent.setIdType(IdentifierType.Virtual);
         idComponents.add(platformComponent);
-        values.put(
-                FoundationalCoreIdMetadataKey.idComponents,
-                new ListOfIdComponent(idComponents, "Test Name"));
-        FoundationalCoreId uut = new FoundationalCoreId(values);
+        FoundationalCoreId uut = new FoundationalCoreId();
+        uut.setIdComponents(new FoundationalCoreId_IdComponents(idComponents));
+
         assertNotNull(uut);
         assertEquals(uut.getIdentifiers().size(), 1);
         IKlvKey identifier = (IKlvKey) uut.getIdentifiers().toArray()[0];

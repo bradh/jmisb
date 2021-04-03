@@ -61,7 +61,7 @@ public class ${name} implements <#if topLevel>IMisbMessage, </#if>IMimdMetadataV
     <#elseif entry.ref>
     private MimdIdReference ${entry.name};
     <#elseif entry.list>
-    private ${entry.qualifiedListTypeName} ${entry.name};
+    private ${entry.namespacedName} ${entry.name};
     <#elseif entry.name == "mimdId">
     private MimdId ${entry.name};
     <#elseif entry.primitive>
@@ -108,10 +108,10 @@ public class ${name} implements <#if topLevel>IMisbMessage, </#if>IMimdMetadataV
                 this.${entry.name} = (MimdIdReference) value;
                 break;
     <#elseif entry.list>
-                if (!(value instanceof ${entry.qualifiedListTypeName})) {
-                    throw new IllegalArgumentException("Value of ${entry.name} should be ${entry.qualifiedListTypeName}");
+                if (!(value instanceof ${entry.namespacedName})) {
+                    throw new IllegalArgumentException("Value of ${entry.name} should be ${entry.namespacedName}");
                 }
-                this.${entry.name} = (${entry.qualifiedListTypeName}) value;
+                this.${entry.name} = (${entry.namespacedName}) value;
                 break;
     <#elseif entry.name == "mimdId">
                 if (!(value instanceof MimdId)) {
@@ -182,18 +182,18 @@ public class ${name} implements <#if topLevel>IMisbMessage, </#if>IMimdMetadataV
     /**
      * Get the {@code ${entry.name}} attribute value.
      *
-     * @return a ${entry.qualifiedListTypeName} value, or null if not set.
+     * @return a ${entry.namespacedName} value, or null if not set.
      */
-    public ${entry.qualifiedListTypeName} get${entry.nameSentenceCase}() {
+    public ${entry.namespacedName} get${entry.nameSentenceCase}() {
         return ${entry.name};
     }
 
     /**
      * Set the {@code ${entry.name}} attribute value.
      *
-     * @param ${entry.name} the ${entry.nameSentenceCase} value to set.
+     * @param ${entry.name} the ${entry.namespacedName} value to set.
      */
-    public void set${entry.nameSentenceCase}(${entry.qualifiedListTypeName} ${entry.name}) {
+    public void set${entry.nameSentenceCase}(${entry.namespacedName} ${entry.name}) {
         this.${entry.name} = ${entry.name};
     }
     <#elseif entry.name == "mimdId">
@@ -314,7 +314,7 @@ public class ${name} implements <#if topLevel>IMisbMessage, </#if>IMimdMetadataV
                         this.${entry.name} = MimdIdReference.fromBytes(field.getData(), "${entry.nameSentenceCase}", "${entry.typeName}");
                         break;
         <#elseif entry.list>
-                        this.${entry.name} = ${entry.qualifiedListTypeName}.fromBytes(field.getData(), "${entry.nameSentenceCase}");
+                        this.${entry.name} = ${entry.namespacedName}.fromBytes(field.getData());
                         break;
         <#elseif entry.name == "mimdId">
                         this.${entry.name} = MimdId.fromBytes(field.getData());
@@ -440,7 +440,7 @@ public class ${name} implements <#if topLevel>IMisbMessage, </#if>IMimdMetadataV
 <#elseif entry.ref>
                 return MimdIdReference.fromBytes(data, "${entry.nameSentenceCase}", "${entry.typeName}");
 <#elseif entry.list>
-                return ${entry.qualifiedListTypeName}.fromBytes(data, "${entry.nameSentenceCase}");
+                return ${entry.namespacedName}.fromBytes(data);
 <#elseif entry.name == "mimdId">
                 return MimdId.fromBytes(data);
 <#elseif entry.primitive>

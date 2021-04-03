@@ -2,20 +2,24 @@
 // Template: ${.current_template_name}
 package ${packageName};
 
-import java.util.Objects;
 import org.jmisb.api.klv.IKlvKey;
 
-/** Pseudo-key item for series identifier. */
-class ${name}Identifier implements IKlvKey, Comparable<${name}Identifier> {
+/**
+ * Pseudo-key item for series identifier.
+ *
+ * <p>This is intended to support enumeration of items in lists and arrays. You should not normally be
+ * instantiating this class yourself.
+ */
+class ${namespacedName}ItemKey implements IKlvKey, Comparable<${namespacedName}ItemKey> {
 
-    private final Integer identifier;
+    private final int identifier;
 
     /**
      * Constructor.
      *
      * @param identifier the integer code for this ${name} identifier.
      */
-    public ${name}Identifier(int identifier) {
+    public ${namespacedName}ItemKey(int identifier) {
         this.identifier = identifier;
     }
 
@@ -26,7 +30,9 @@ class ${name}Identifier implements IKlvKey, Comparable<${name}Identifier> {
 
     @Override
     public int hashCode() {
-        return identifier.hashCode();
+        int hash = 7;
+        hash = 47 * hash + this.identifier;
+        return hash;
     }
 
     @Override
@@ -40,17 +46,17 @@ class ${name}Identifier implements IKlvKey, Comparable<${name}Identifier> {
         if (getClass() != obj.getClass()) {
             return false;
         }
-        final ${name}Identifier other = (${name}Identifier) obj;
-        return Objects.equals(this.identifier, other.identifier);
+        final ${namespacedName}ItemKey other = (${namespacedName}ItemKey) obj;
+        return this.identifier == other.identifier;
     }
 
     @Override
-    public int compareTo(${name}Identifier o) {
-        return identifier.compareTo(o.identifier);
+    public int compareTo(${namespacedName}ItemKey p) {
+        return Integer.compare(identifier, p.identifier);
     }
 
     @Override
     public String toString() {
-        return "List<${name}> item " + identifier;
+        return "Item " + identifier;
     }
 }

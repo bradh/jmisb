@@ -124,10 +124,10 @@ public class CodeGeneratorListener implements MIML_v3Listener {
                 generateMetadataKeyTests(outputTestDirectory, classModel);
                 generateLocalSet(outputSourceDirectory, classModel);
                 generateLocalSetTests(outputTestDirectory, classModel);
-                if (classModel.needListForm()) {
-                    generateListFormOfClass(outputSourceDirectory, classModel);
-                    generateListFormOfClassTests(outputTestDirectory, classModel);
-                }
+                // if (classModel.needListForm()) {
+                // generateListFormOfClass(outputSourceDirectory, classModel);
+                // generateListFormOfClassTests(outputTestDirectory, classModel);
+                // }
             }
             generateComponentClasses(outputSourceDirectory, classModel);
             generateComponentClassTests(outputTestDirectory, classModel);
@@ -258,7 +258,7 @@ public class CodeGeneratorListener implements MIML_v3Listener {
                             || entry.getTypeName().equals("UInt"))
                     && (entry.isArray1D())) {
                 processClassTemplate(targetDirectory, entry, "primitiveArray1D.ftl");
-                processArrayItemKeyTemplate(targetDirectory, entry, "arrayItemKey.ftl");
+                processItemKeyTemplate(targetDirectory, entry, "arrayItemKey.ftl");
             } else if ((entry.getTypeName().equals("Boolean")
                             || entry.getTypeName().equals("Integer")
                             || entry.getTypeName().equals("Real")
@@ -283,7 +283,8 @@ public class CodeGeneratorListener implements MIML_v3Listener {
                 processClassTemplate(targetDirectory, entry, "tupleClass.ftl");
             }
         } else if (entry.isList()) {
-            // Nothing - we've got this already
+            processClassTemplate(targetDirectory, entry, "listClass.ftl");
+            processItemKeyTemplate(targetDirectory, entry, "listItemIdentifier.ftl");
         } else if (isEnumerationName(entry.getTypeName())) {
             // Nothing - we've got this already
         } else if (isClassName(entry.getTypeName())) {
@@ -355,7 +356,9 @@ public class CodeGeneratorListener implements MIML_v3Listener {
         } else if (isEnumerationName(entry.getTypeName())) {
             // Nothing - we've got this already
         } else if (entry.isList()) {
-            // Nothing - we've got this already
+            processClassTestTemplate(outputTestDirectory, entry, "listClassTest.ftl");
+            processArrayItemKeyTestTemplate(
+                    outputTestDirectory, entry, "listItemIdentifierTest.ftl");
         } else if (isClassName(entry.getTypeName())) {
             // Nothing - we've got this already
         } else if (entry.isRef()) {
@@ -379,14 +382,10 @@ public class CodeGeneratorListener implements MIML_v3Listener {
         processTemplate(templateFile, outputFile, entry);
     }
 
-    private void processArrayItemKeyTemplate(
+    private void processItemKeyTemplate(
             File outputSourceDirectory, ClassModelEntry entry, String templateFile)
             throws IOException, TemplateException {
-        log(
-                "Processing array item key template "
-                        + templateFile
-                        + " for "
-                        + entry.getNameSentenceCase());
+        log("Processing item key template " + templateFile + " for " + entry.getNameSentenceCase());
         File outputFile =
                 new File(outputSourceDirectory, entry.getNamespacedName() + "ItemKey.java");
         processTemplate(templateFile, outputFile, entry);
