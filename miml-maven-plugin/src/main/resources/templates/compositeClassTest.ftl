@@ -354,7 +354,10 @@ public class ${name}Test extends LoggerChecks {
         IMimdMetadataValue uut = ${name}.createValue(${name}MetadataKey.${entry.name}, new byte[]{(byte) 0x01, (byte)0x01, (byte)0x06});
         assertTrue(uut instanceof ${entry.qualifiedTypeName});
     </#if>
-    }
+        SortedMap<${name}MetadataKey, IMimdMetadataValue> values = new TreeMap<>();
+        values.put(${name}MetadataKey.${entry.name}, uut);
+        ${name} parentClass = new ${name}(values);
+        assertEquals(parentClass.getIdentifiers().size(), 1);    }
 </#list>
 <#list entries as entry>
 

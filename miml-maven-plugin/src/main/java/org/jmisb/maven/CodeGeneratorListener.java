@@ -124,10 +124,6 @@ public class CodeGeneratorListener implements MIML_v3Listener {
                 generateMetadataKeyTests(outputTestDirectory, classModel);
                 generateLocalSet(outputSourceDirectory, classModel);
                 generateLocalSetTests(outputTestDirectory, classModel);
-                // if (classModel.needListForm()) {
-                // generateListFormOfClass(outputSourceDirectory, classModel);
-                // generateListFormOfClassTests(outputTestDirectory, classModel);
-                // }
             }
             generateComponentClasses(outputSourceDirectory, classModel);
             generateComponentClassTests(outputTestDirectory, classModel);
@@ -194,23 +190,6 @@ public class CodeGeneratorListener implements MIML_v3Listener {
         }
     }
 
-    private void generateListFormOfClass(File targetDirectory, ClassModel classModel)
-            throws TemplateException, IOException {
-        File outputFile = new File(targetDirectory, "ListOf" + classModel.getName() + ".java");
-        Template temp = templateConfiguration.getTemplate("listClass.ftl");
-        try (Writer out =
-                new OutputStreamWriter(new FileOutputStream(outputFile), StandardCharsets.UTF_8)) {
-            temp.process(classModel, out);
-        }
-
-        outputFile = new File(targetDirectory, classModel.getName() + "Identifier.java");
-        temp = templateConfiguration.getTemplate("listItemIdentifier.ftl");
-        try (Writer out =
-                new OutputStreamWriter(new FileOutputStream(outputFile), StandardCharsets.UTF_8)) {
-            temp.process(classModel, out);
-        }
-    }
-
     private void generateLocalSetTests(File outputTestDirectory, ClassModel classModel)
             throws TemplateException, IOException {
         File testFile = new File(outputTestDirectory, classModel.getName() + "Test.java");
@@ -218,24 +197,6 @@ public class CodeGeneratorListener implements MIML_v3Listener {
         try (Writer out =
                 new OutputStreamWriter(new FileOutputStream(testFile), StandardCharsets.UTF_8)) {
             temp.process(classModel, out);
-        }
-    }
-
-    private void generateListFormOfClassTests(File outputTestDirectory, ClassModel classModel)
-            throws TemplateException, IOException {
-        File outputFile =
-                new File(outputTestDirectory, "ListOf" + classModel.getName() + "Test.java");
-        Template temp = templateConfiguration.getTemplate("listClassTest.ftl");
-        try (Writer listClassOutput =
-                new OutputStreamWriter(new FileOutputStream(outputFile), StandardCharsets.UTF_8)) {
-            temp.process(classModel, listClassOutput);
-        }
-
-        outputFile = new File(outputTestDirectory, classModel.getName() + "IdentifierTest.java");
-        temp = templateConfiguration.getTemplate("listItemIdentifierTest.ftl");
-        try (Writer listIdentifierOutput =
-                new OutputStreamWriter(new FileOutputStream(outputFile), StandardCharsets.UTF_8)) {
-            temp.process(classModel, listIdentifierOutput);
         }
     }
 
@@ -258,7 +219,7 @@ public class CodeGeneratorListener implements MIML_v3Listener {
                             || entry.getTypeName().equals("UInt"))
                     && (entry.isArray1D())) {
                 processClassTemplate(targetDirectory, entry, "primitiveArray1D.ftl");
-                processItemKeyTemplate(targetDirectory, entry, "arrayItemKey.ftl");
+                processItemKeyTemplate(targetDirectory, entry, "itemKey.ftl");
             } else if ((entry.getTypeName().equals("Boolean")
                             || entry.getTypeName().equals("Integer")
                             || entry.getTypeName().equals("Real")
@@ -284,7 +245,7 @@ public class CodeGeneratorListener implements MIML_v3Listener {
             }
         } else if (entry.isList()) {
             processClassTemplate(targetDirectory, entry, "listClass.ftl");
-            processItemKeyTemplate(targetDirectory, entry, "listItemIdentifier.ftl");
+            processItemKeyTemplate(targetDirectory, entry, "itemKey.ftl");
         } else if (isEnumerationName(entry.getTypeName())) {
             // Nothing - we've got this already
         } else if (isClassName(entry.getTypeName())) {
@@ -303,7 +264,6 @@ public class CodeGeneratorListener implements MIML_v3Listener {
 
     private void generateComponentClassTests(File outputTestDirectory, ClassModel classModel)
             throws TemplateException, IOException {
-        // String packagePart = classModel.getDirectoryPackagePart();
         for (ClassModelEntry entry : classModel.getEntries()) {
             if (entry.getNumber() < 33) {
                 // We don't want to regenerate "Base" component tests in every namespace
@@ -322,17 +282,17 @@ public class CodeGeneratorListener implements MIML_v3Listener {
                 processClassTestTemplate(outputTestDirectory, entry, "intArray2DTest.ftl");
             } else if ((entry.getTypeName().equals("Real")) && (entry.isArray1D())) {
                 processClassTestTemplate(outputTestDirectory, entry, "realArray1DTest.ftl");
-                processArrayItemKeyTestTemplate(outputTestDirectory, entry, "arrayItemKeyTest.ftl");
+                processItemKeyTestTemplate(outputTestDirectory, entry, "itemKeyTest.ftl");
             } else if ((entry.getTypeName().equals("Real")) && (entry.isArray2D())) {
                 processClassTestTemplate(outputTestDirectory, entry, "realArray2DTest.ftl");
             } else if ((entry.getTypeName().equals("UInt")) && (entry.isArray1D())) {
                 processClassTestTemplate(outputTestDirectory, entry, "uintArray1DTest.ftl");
-                processArrayItemKeyTestTemplate(outputTestDirectory, entry, "arrayItemKeyTest.ftl");
+                processItemKeyTestTemplate(outputTestDirectory, entry, "itemKeyTest.ftl");
             } else if ((entry.getTypeName().equals("UInt")) && (entry.isArray2D())) {
                 processClassTestTemplate(outputTestDirectory, entry, "uintArray2DTest.ftl");
             } else if ((entry.isRef()) && (entry.isArray1D())) {
                 processClassTestTemplate(outputTestDirectory, entry, "refArrayTest.ftl");
-                processArrayItemKeyTestTemplate(outputTestDirectory, entry, "arrayItemKeyTest.ftl");
+                processItemKeyTestTemplate(outputTestDirectory, entry, "itemKeyTest.ftl");
             } else {
                 log(
                         "Need to implement array class test for "
@@ -357,8 +317,7 @@ public class CodeGeneratorListener implements MIML_v3Listener {
             // Nothing - we've got this already
         } else if (entry.isList()) {
             processClassTestTemplate(outputTestDirectory, entry, "listClassTest.ftl");
-            processArrayItemKeyTestTemplate(
-                    outputTestDirectory, entry, "listItemIdentifierTest.ftl");
+            processItemKeyTestTemplate(outputTestDirectory, entry, "itemKeyTest.ftl");
         } else if (isClassName(entry.getTypeName())) {
             // Nothing - we've got this already
         } else if (entry.isRef()) {
@@ -399,7 +358,7 @@ public class CodeGeneratorListener implements MIML_v3Listener {
         processTemplate(templateFile, outputFile, entry);
     }
 
-    private void processArrayItemKeyTestTemplate(
+    private void processItemKeyTestTemplate(
             File targetDirectory, ClassModelEntry entry, String templateFile)
             throws IOException, TemplateException {
         log(
@@ -408,18 +367,6 @@ public class CodeGeneratorListener implements MIML_v3Listener {
                         + " for "
                         + entry.getNameSentenceCase());
         File outputFile = new File(targetDirectory, entry.getNamespacedName() + "ItemKeyTest.java");
-        processTemplate(templateFile, outputFile, entry);
-    }
-
-    private void processListItemIdentifierTestTemplate(
-            File targetDirectory, ClassModelEntry entry, String templateFile)
-            throws IOException, TemplateException {
-        log(
-                "Processing list item identifier test template "
-                        + templateFile
-                        + " for "
-                        + entry.getNameSentenceCase());
-        File outputFile = new File(targetDirectory, entry.getTypeName() + "IdentifierTest.java");
         processTemplate(templateFile, outputFile, entry);
     }
 
