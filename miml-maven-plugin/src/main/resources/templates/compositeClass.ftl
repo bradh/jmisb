@@ -9,6 +9,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.SortedMap;
 import java.util.TreeMap;
+import org.jmisb.api.common.Beta;
 import org.jmisb.api.common.InvalidDataHandler;
 import org.jmisb.api.common.KlvParseException;
 import org.jmisb.api.klv.ArrayBuilder;
@@ -52,6 +53,7 @@ import org.slf4j.LoggerFactory;
  *
  * See ${document} for more information on this data type.
  */
+@Beta
 public class ${name} implements <#if topLevel>IMisbMessage, </#if>IMimdMetadataValue, INestedKlvValue {
     private static final Logger LOGGER = LoggerFactory.getLogger(${name}.class);
 
