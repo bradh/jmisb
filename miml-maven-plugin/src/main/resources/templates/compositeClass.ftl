@@ -267,23 +267,40 @@ public class ${name} implements <#if topLevel>IMisbMessage, </#if>IMimdMetadataV
         List<LdsField> fields = MimdParser.parseFields(bytes, 0, bytes.length);
         for (LdsField field : fields) {
             ${name}MetadataKey key = ${name}MetadataKey.getKey(field.getTag());
-            switch (key) {
-                case Undefined:
-                    LOGGER.info("Unknown ${name} Metadata id: {}", field.getTag());
-                    break;
-                default:
-                    try {
-                        IMimdMetadataValue value = createValue(key, field.getData());
-                        map.put(key, value);
-                    } catch (KlvParseException | IllegalArgumentException ex) {
+            try {
+                switch (key) {
+    <#list entries as entry>
+                    case ${entry.name}:
+        <#if entry.ref && entry.array>
+                        this.${entry.name} = ${entry.namespacedQualifiedName}.fromBytes(field.getData());
+                        break;
+        <#elseif entry.ref>
+                        this.${entry.name} = MimdIdReference.fromBytes(field.getData(), "${entry.nameSentenceCase}", "${entry.typeName}");
+                        break;
+        <#elseif entry.list>
+                        this.${entry.name} = ${entry.namespacedName}.fromBytes(field.getData());
+                        break;
+        <#elseif entry.name == "mimdId">
+                        this.${entry.name} = MimdId.fromBytes(field.getData());
+                        break;
+        <#elseif entry.primitive>
+                        this.${entry.name} = ${entry.namespacedQualifiedName}.fromBytes(field.getData());
+                        break;
+        <#else>
+                        this.${entry.name} = ${entry.qualifiedTypeName}.fromBytes(field.getData());
+                        break;
+        </#if>
+    </#list>
+                    default:
+                        LOGGER.info("Unknown ${name} Metadata id: {}", field.getTag());
+                        break;
+                    }
+            } catch (KlvParseException | IllegalArgumentException ex) {
                         InvalidDataHandler idh = InvalidDataHandler.getInstance();
                         String msg = ex.getMessage();
                         idh.handleInvalidFieldEncoding(LOGGER, msg);
-                    }
-                    break;
             }
         }
-        propagateValueMap(map);
     }
 
     @Override
