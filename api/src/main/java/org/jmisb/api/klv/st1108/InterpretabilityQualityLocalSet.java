@@ -59,8 +59,7 @@ public class InterpretabilityQualityLocalSet implements IMisbMessage {
             case CompressionType:
                 return CompressionType.fromBytes(bytes);
             case CompressionRatio:
-                // TODO
-                throw new UnsupportedOperationException("CompressionRatio");
+                return new CompressionRatio(bytes);
             case CompressionProfile:
                 return CompressionProfile.fromBytes(bytes);
             case CompressionLevel:
@@ -69,15 +68,9 @@ public class InterpretabilityQualityLocalSet implements IMisbMessage {
                 return new StreamBitrate(bytes);
             case DocumentVersion:
                 return new DocumentVersion(bytes);
-            case CRC16CCITT:
-                throw new KlvParseException(
-                        "Do not try to create the CRC-16-CCITT item directly. It will be generated.");
             default:
-                LOGGER.info(
-                        "Unknown Interpretability and Quality Metadata tag: "
-                                + tag.getIdentifier());
+                return null;
         }
-        return null;
     }
 
     /** Map containing all elements in the message. */

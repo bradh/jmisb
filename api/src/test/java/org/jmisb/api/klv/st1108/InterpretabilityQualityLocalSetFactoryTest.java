@@ -127,8 +127,8 @@ public class InterpretabilityQualityLocalSetFactoryTest extends LoggerChecks {
         checkCompressionType(localSet);
         checkCompressionProfile(localSet);
         checkCompressionLevel(localSet);
-        checkStreamBitrate(localSet);
 
+        checkStreamBitrate(localSet);
         checkDocumentVersion(localSet);
         assertEquals(localSet.frameMessage(false), bytes);
     }
