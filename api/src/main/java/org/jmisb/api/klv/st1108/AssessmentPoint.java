@@ -1,7 +1,5 @@
 package org.jmisb.api.klv.st1108;
 
-import static org.jmisb.api.klv.st1108.InterpretabilityQualityMetadataKey.values;
-
 import java.util.HashMap;
 import java.util.Map;
 import org.jmisb.api.common.KlvParseException;

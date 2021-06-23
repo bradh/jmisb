@@ -6,12 +6,16 @@ import org.jmisb.api.klv.IKlvKey;
 
 /** ST 1108 tags - description and numbers. */
 public enum InterpretabilityQualityMetadataKey implements IKlvKey {
-    /** Unknown key. This should not be created. */
+    /**
+     * Unknown key.
+     *
+     * <p>This should not be created. It is used to provide a mapping for "any other value".
+     */
     Undefined(0),
     /**
      * Assessment Point.
      *
-     * <p>Location in workflow metric evaluated specified as an enum.
+     * <p>Location in workflow metric evaluated specified as an enumeration.
      */
     AssessmentPoint(1),
     /**
@@ -21,6 +25,37 @@ public enum InterpretabilityQualityMetadataKey implements IKlvKey {
      */
     MetricPeriodPack(2),
     // TODO: lots missing in here
+    /**
+     * Compression Type.
+     *
+     * <p>Video encoding / compression type, specified as an enumeration.
+     */
+    CompressionType(5),
+    /**
+     * Compression Profile.
+     *
+     * <p>Compression profile (settings) for video encoding, specified as an enumeration.
+     */
+    CompressionProfile(6),
+    /**
+     * Compression Level.
+     *
+     * <p>The compression level expressed as a String; ex: "5", "4.2", "5.1". "N/A" for
+     * uncompressed.
+     */
+    CompressionLevel(7),
+    /**
+     * Compression Ratio.
+     *
+     * <p>Source-to-compressed size; ex: 25.2 means 25.2:1. Set to 1.0 for uncompressed.
+     */
+    CompressionRatio(8),
+    /**
+     * Stream Bit Rate.
+     *
+     * <p>Floating point bit rate, in kilobits per second.
+     */
+    StreamBitrate(9),
     /**
      * Document Version.
      *

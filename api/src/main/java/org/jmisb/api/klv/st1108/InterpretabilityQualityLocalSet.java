@@ -30,6 +30,7 @@ import org.slf4j.LoggerFactory;
 public class InterpretabilityQualityLocalSet implements IMisbMessage {
 
     private static final int CRC16_LENGTH = 2;
+    private static final int ST1108_3_VERSION = 3;
     private static final Logger LOGGER =
             LoggerFactory.getLogger(InterpretabilityQualityLocalSet.class);
 
@@ -47,8 +48,16 @@ public class InterpretabilityQualityLocalSet implements IMisbMessage {
         switch (tag) {
             case AssessmentPoint:
                 return AssessmentPoint.fromBytes(bytes);
+            case CompressionType:
+                return CompressionType.fromBytes(bytes);
+            case CompressionProfile:
+                return CompressionProfile.fromBytes(bytes);
+            case DocumentVersion:
+                return new DocumentVersion(bytes);
             default:
-                LOGGER.info("Unknown Interpretability and Quality Metadata tag: {}", tag);
+                LOGGER.info(
+                        "Unknown Interpretability and Quality Metadata tag: "
+                                + tag.getIdentifier());
         }
         return null;
     }
@@ -79,6 +88,23 @@ public class InterpretabilityQualityLocalSet implements IMisbMessage {
         BerField len = BerDecoder.decode(bytes, offset, false);
         offset += len.getLength();
         List<LdsField> fields = LdsParser.parseFields(bytes, offset, len.getValue());
+        int version = getVersion(fields);
+        switch (version) {
+            case ST1108_3_VERSION:
+                parseAsST1108_3(fields, bytes);
+                break;
+            default:
+                LOGGER.warn("Unsupported/unknown ST 1108 version");
+        }
+    }
+
+    private int getVersion(List<LdsField> fields) {
+        // TODO: work out heuristics for this, open question into MISB.
+        return ST1108_3_VERSION;
+    }
+
+    private void parseAsST1108_3(List<LdsField> fields, final byte[] bytes)
+            throws KlvParseException {
         for (LdsField field : fields) {
             InterpretabilityQualityMetadataKey key =
                     InterpretabilityQualityMetadataKey.getKey(field.getTag());
@@ -118,7 +144,7 @@ public class InterpretabilityQualityLocalSet implements IMisbMessage {
         arrayBuilder.appendAsBerLength(CRC16_LENGTH);
         // Nesting is highly unlikely, but is supported.
         if (!isNested) {
-            arrayBuilder.prependLength();
+            arrayBuilder.prependLengthPlus(2);
             arrayBuilder.prepend(getUniversalLabel());
         }
         CrcCcitt crc = new CrcCcitt();
