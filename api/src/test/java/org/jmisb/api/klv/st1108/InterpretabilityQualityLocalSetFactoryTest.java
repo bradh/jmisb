@@ -88,7 +88,7 @@ public class InterpretabilityQualityLocalSetFactoryTest extends LoggerChecks {
                     0x00,
                     0x00,
                     0x00,
-                    0x10,
+                    0x19,
                     0x01,
                     0x01,
                     0x04,
@@ -98,13 +98,22 @@ public class InterpretabilityQualityLocalSetFactoryTest extends LoggerChecks {
                     0x06,
                     0x01,
                     0x07,
+                    0x07,
+                    0x03,
+                    0x34,
+                    0x2E,
+                    0x31,
+                    0x09,
+                    0x02,
+                    0x04,
+                    0x01,
                     0x0A,
                     0x01,
                     0x03,
                     0x0B,
                     0x02,
-                    (byte) 0x8e,
-                    (byte) 0x5e
+                    (byte) 0xd3,
+                    (byte) 0x96
                 };
         InterpretabilityQualityLocalSetFactory factory =
                 new InterpretabilityQualityLocalSetFactory();
@@ -112,11 +121,13 @@ public class InterpretabilityQualityLocalSetFactoryTest extends LoggerChecks {
         assertNotNull(localSet);
         assertEquals(localSet.displayHeader(), "ST 1108 Interpretability and Quality");
         assertEquals(localSet.getUniversalLabel(), KlvConstants.InterpretabilityQualityLocalSetUl);
-        assertEquals(localSet.getIdentifiers().size(), 4);
+        assertEquals(localSet.getIdentifiers().size(), 6);
         checkAssessmentPoint(localSet);
 
         checkCompressionType(localSet);
         checkCompressionProfile(localSet);
+        checkCompressionLevel(localSet);
+        checkStreamBitrate(localSet);
 
         checkDocumentVersion(localSet);
         assertEquals(localSet.frameMessage(false), bytes);
@@ -148,6 +159,37 @@ public class InterpretabilityQualityLocalSetFactoryTest extends LoggerChecks {
                         localSet.getField(InterpretabilityQualityMetadataKey.CompressionProfile);
         assertNotNull(value);
         assertEquals(value, CompressionProfile.High_4_2_2);
+    }
+
+    private void checkCompressionLevel(InterpretabilityQualityLocalSet localSet) {
+        assertTrue(
+                localSet.getIdentifiers()
+                        .contains(InterpretabilityQualityMetadataKey.CompressionLevel));
+        assertTrue(
+                localSet.getField(InterpretabilityQualityMetadataKey.CompressionLevel)
+                        instanceof CompressionLevel);
+        CompressionLevel value =
+                (CompressionLevel)
+                        localSet.getField(InterpretabilityQualityMetadataKey.CompressionLevel);
+        assertNotNull(value);
+        assertEquals(value.getDisplayName(), "Compression Level");
+        assertEquals(value.getDisplayableValue(), "4.1");
+        assertEquals(value.getCompressionLevel(), "4.1");
+    }
+
+    private void checkStreamBitrate(InterpretabilityQualityLocalSet localSet) {
+        assertTrue(
+                localSet.getIdentifiers()
+                        .contains(InterpretabilityQualityMetadataKey.StreamBitrate));
+        assertTrue(
+                localSet.getField(InterpretabilityQualityMetadataKey.StreamBitrate)
+                        instanceof StreamBitrate);
+        StreamBitrate value =
+                (StreamBitrate) localSet.getField(InterpretabilityQualityMetadataKey.StreamBitrate);
+        assertNotNull(value);
+        assertEquals(value.getDisplayName(), "Stream Bitrate");
+        assertEquals(value.getDisplayableValue(), "1.025 Mbits/sec");
+        assertEquals(value.getBitrate(), 1025);
     }
 
     private void checkDocumentVersion(InterpretabilityQualityLocalSet localSet) {

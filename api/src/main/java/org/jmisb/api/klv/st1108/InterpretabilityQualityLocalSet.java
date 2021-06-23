@@ -37,23 +37,41 @@ public class InterpretabilityQualityLocalSet implements IMisbMessage {
     /**
      * Create a {@link IInterpretabilityQualityMetadataValue} instance from encoded bytes.
      *
-     * @param tag The tag defining the value type
+     * @param tag The tag defining the value type (not CRC-16-CCITT)
      * @param bytes Encoded bytes
      * @return The new instance
      * @throws KlvParseException if the byte array could not be parsed.
      */
     static IInterpretabilityQualityMetadataValue createValue(
             InterpretabilityQualityMetadataKey tag, byte[] bytes) throws KlvParseException {
-        // Many TODO here
         switch (tag) {
             case AssessmentPoint:
                 return AssessmentPoint.fromBytes(bytes);
+            case MetricPeriodPack:
+                // TODO
+                throw new UnsupportedOperationException("MetricPeriodPack");
+            case WindowCornersPack:
+                // TODO
+                throw new UnsupportedOperationException("WindowCornersPack");
+            case MetricLocalSet:
+                // TODO
+                throw new UnsupportedOperationException("MetricLocalSet");
             case CompressionType:
                 return CompressionType.fromBytes(bytes);
+            case CompressionRatio:
+                // TODO
+                throw new UnsupportedOperationException("CompressionRatio");
             case CompressionProfile:
                 return CompressionProfile.fromBytes(bytes);
+            case CompressionLevel:
+                return new CompressionLevel(bytes);
+            case StreamBitrate:
+                return new StreamBitrate(bytes);
             case DocumentVersion:
                 return new DocumentVersion(bytes);
+            case CRC16CCITT:
+                throw new KlvParseException(
+                        "Do not try to create the CRC-16-CCITT item directly. It will be generated.");
             default:
                 LOGGER.info(
                         "Unknown Interpretability and Quality Metadata tag: "

@@ -5,7 +5,7 @@ import org.jmisb.core.klv.PrimitiveConverter;
 /**
  * Document Version Number.
  *
- * <p>From ST 1108.3: : *
+ * <p>From ST 1108.3:
  *
  * <blockquote>
  *

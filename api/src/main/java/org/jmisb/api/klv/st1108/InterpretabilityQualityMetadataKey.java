@@ -4,7 +4,12 @@ import java.util.HashMap;
 import java.util.Map;
 import org.jmisb.api.klv.IKlvKey;
 
-/** ST 1108 tags - description and numbers. */
+/**
+ * ST 1108.3 tags - description and numbers.
+ *
+ * <p>Earlier version of ST 1108 used different tags, and this enumeration is not applicable to
+ * messages using that version of the local set.
+ */
 public enum InterpretabilityQualityMetadataKey implements IKlvKey {
     /**
      * Unknown key.
@@ -24,7 +29,20 @@ public enum InterpretabilityQualityMetadataKey implements IKlvKey {
      * <p>Period within metric calculated.
      */
     MetricPeriodPack(2),
-    // TODO: lots missing in here
+    /**
+     * Window Corners Pack.
+     *
+     * <p>Image subregion used for interpretability and quality metric(s) calculation.
+     */
+    WindowCornersPack(3),
+    /**
+     * Metric Local Set.
+     *
+     * <p>Subordinate local set providing a specific metric.
+     *
+     * <p>This local set is repeatable within an {@code InterpretabilityQualityLocalSet}.
+     */
+    MetricLocalSet(4),
     /**
      * Compression Type.
      *
