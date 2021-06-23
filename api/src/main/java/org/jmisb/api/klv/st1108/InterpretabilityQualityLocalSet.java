@@ -38,15 +38,15 @@ public class InterpretabilityQualityLocalSet implements IMisbMessage {
      * Create a {@link IInterpretabilityQualityMetadataValue} instance from encoded bytes.
      *
      * @param tag The tag defining the value type (not CRC-16-CCITT)
-     * @param bytes Encoded bytes
+     * @param fieldBytes Encoded bytes
      * @return The new instance
      * @throws KlvParseException if the byte array could not be parsed.
      */
     static IInterpretabilityQualityMetadataValue createValue(
-            InterpretabilityQualityMetadataKey tag, byte[] bytes) throws KlvParseException {
+            InterpretabilityQualityMetadataKey tag, byte[] fieldBytes) throws KlvParseException {
         switch (tag) {
             case AssessmentPoint:
-                return AssessmentPoint.fromBytes(bytes);
+                return AssessmentPoint.fromBytes(fieldBytes);
             case MetricPeriodPack:
                 // TODO
                 throw new UnsupportedOperationException("MetricPeriodPack");
@@ -57,17 +57,17 @@ public class InterpretabilityQualityLocalSet implements IMisbMessage {
                 // TODO
                 throw new UnsupportedOperationException("MetricLocalSet");
             case CompressionType:
-                return CompressionType.fromBytes(bytes);
+                return CompressionType.fromBytes(fieldBytes);
             case CompressionRatio:
-                return new CompressionRatio(bytes);
+                return new CompressionRatio(fieldBytes);
             case CompressionProfile:
-                return CompressionProfile.fromBytes(bytes);
+                return CompressionProfile.fromBytes(fieldBytes);
             case CompressionLevel:
-                return new CompressionLevel(bytes);
+                return new CompressionLevel(fieldBytes);
             case StreamBitrate:
-                return new StreamBitrate(bytes);
+                return new StreamBitrate(fieldBytes);
             case DocumentVersion:
-                return new DocumentVersion(bytes);
+                return new DocumentVersion(fieldBytes);
             default:
                 return null;
         }
@@ -140,6 +140,10 @@ public class InterpretabilityQualityLocalSet implements IMisbMessage {
 
     @Override
     public byte[] frameMessage(boolean isNested) {
+        if (isNested) {
+            throw new IllegalArgumentException(
+                    "Interpretability and Quality Local Set cannot be nested");
+        }
         ArrayBuilder arrayBuilder = new ArrayBuilder();
         for (InterpretabilityQualityMetadataKey tag : map.keySet()) {
             if (tag.equals(InterpretabilityQualityMetadataKey.CRC16CCITT)) {
@@ -153,11 +157,8 @@ public class InterpretabilityQualityLocalSet implements IMisbMessage {
         }
         arrayBuilder.appendAsOID(InterpretabilityQualityMetadataKey.CRC16CCITT.getIdentifier());
         arrayBuilder.appendAsBerLength(CRC16_LENGTH);
-        // Nesting is highly unlikely, but is supported.
-        if (!isNested) {
-            arrayBuilder.prependLengthPlus(2);
-            arrayBuilder.prepend(getUniversalLabel());
-        }
+        arrayBuilder.prependLengthPlus(2);
+        arrayBuilder.prepend(getUniversalLabel());
         CrcCcitt crc = new CrcCcitt();
         crc.addData(arrayBuilder.toBytes());
         arrayBuilder.append(crc.getCrc());
