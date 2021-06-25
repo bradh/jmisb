@@ -88,10 +88,32 @@ public class InterpretabilityQualityLocalSetFactoryTest extends LoggerChecks {
                     0x00,
                     0x00,
                     0x00,
-                    0x19,
+                    0x35,
                     0x01,
                     0x01,
                     0x04,
+                    0x02,
+                    0x0C,
+                    (byte) 0x00,
+                    (byte) 0x03,
+                    (byte) 0x82,
+                    (byte) 0x44,
+                    (byte) 0x30,
+                    (byte) 0xF6,
+                    (byte) 0xCE,
+                    (byte) 0x40,
+                    (byte) 0x00,
+                    (byte) 0x0D,
+                    (byte) 0xE0,
+                    (byte) 0x0A,
+                    0x03,
+                    0x06,
+                    0x01,
+                    0x02,
+                    (byte) 0x84,
+                    0x04,
+                    (byte) 0x86,
+                    0x07,
                     0x05,
                     0x01,
                     0x02,
@@ -103,6 +125,12 @@ public class InterpretabilityQualityLocalSetFactoryTest extends LoggerChecks {
                     0x34,
                     0x2E,
                     0x31,
+                    0x08,
+                    0x04,
+                    (byte) 0x41,
+                    (byte) 0xc9,
+                    (byte) 0x99,
+                    (byte) 0x9a,
                     0x09,
                     0x02,
                     0x04,
@@ -112,8 +140,8 @@ public class InterpretabilityQualityLocalSetFactoryTest extends LoggerChecks {
                     0x03,
                     0x0B,
                     0x02,
-                    (byte) 0xd3,
-                    (byte) 0x96
+                    (byte) 0xdc,
+                    (byte) 0xbc
                 };
         InterpretabilityQualityLocalSetFactory factory =
                 new InterpretabilityQualityLocalSetFactory();
@@ -121,16 +149,53 @@ public class InterpretabilityQualityLocalSetFactoryTest extends LoggerChecks {
         assertNotNull(localSet);
         assertEquals(localSet.displayHeader(), "ST 1108 Interpretability and Quality");
         assertEquals(localSet.getUniversalLabel(), KlvConstants.InterpretabilityQualityLocalSetUl);
-        assertEquals(localSet.getIdentifiers().size(), 6);
+        assertEquals(localSet.getIdentifiers().size(), 9);
         checkAssessmentPoint(localSet);
+        checkMetricPeriodPack(localSet);
+        checkWindowCornersPack(localSet);
 
         checkCompressionType(localSet);
         checkCompressionProfile(localSet);
         checkCompressionLevel(localSet);
-
+        checkCompressionRatio(localSet);
         checkStreamBitrate(localSet);
         checkDocumentVersion(localSet);
         assertEquals(localSet.frameMessage(false), bytes);
+    }
+
+    private void checkMetricPeriodPack(InterpretabilityQualityLocalSet localSet) {
+        assertTrue(
+                localSet.getIdentifiers()
+                        .contains(InterpretabilityQualityMetadataKey.MetricPeriodPack));
+        assertTrue(
+                localSet.getField(InterpretabilityQualityMetadataKey.MetricPeriodPack)
+                        instanceof MetricPeriodPack);
+        MetricPeriodPack value =
+                (MetricPeriodPack)
+                        localSet.getField(InterpretabilityQualityMetadataKey.MetricPeriodPack);
+        assertNotNull(value);
+        assertEquals(value.getStartTime().getMicroseconds(), 987654321000000L);
+        assertEquals(value.getTimeOffset(), 909322);
+    }
+
+    private void checkWindowCornersPack(InterpretabilityQualityLocalSet localSet) {
+        assertTrue(
+                localSet.getIdentifiers()
+                        .contains(InterpretabilityQualityMetadataKey.WindowCornersPack));
+        assertTrue(
+                localSet.getField(InterpretabilityQualityMetadataKey.WindowCornersPack)
+                        instanceof WindowCornersPack);
+        WindowCornersPack value =
+                (WindowCornersPack)
+                        localSet.getField(InterpretabilityQualityMetadataKey.WindowCornersPack);
+        assertNotNull(value);
+        assertEquals(value.getStartingRow(), 1);
+
+        assertEquals(value.getStartingColumn(), 2);
+
+        assertEquals(value.getEndingRow(), 516);
+
+        assertEquals(value.getEndingColumn(), 775);
     }
 
     private void checkCompressionType(InterpretabilityQualityLocalSet localSet) {
@@ -175,6 +240,22 @@ public class InterpretabilityQualityLocalSetFactoryTest extends LoggerChecks {
         assertEquals(value.getDisplayName(), "Compression Level");
         assertEquals(value.getDisplayableValue(), "4.1");
         assertEquals(value.getCompressionLevel(), "4.1");
+    }
+
+    private void checkCompressionRatio(InterpretabilityQualityLocalSet localSet) {
+        assertTrue(
+                localSet.getIdentifiers()
+                        .contains(InterpretabilityQualityMetadataKey.CompressionRatio));
+        assertTrue(
+                localSet.getField(InterpretabilityQualityMetadataKey.CompressionRatio)
+                        instanceof CompressionRatio);
+        CompressionRatio value =
+                (CompressionRatio)
+                        localSet.getField(InterpretabilityQualityMetadataKey.CompressionRatio);
+        assertNotNull(value);
+        assertEquals(value.getDisplayName(), "Compression Ratio");
+        assertEquals(value.getDisplayableValue(), "25.20");
+        assertEquals(value.getCompressionRatio(), 25.2, 0.001);
     }
 
     private void checkStreamBitrate(InterpretabilityQualityLocalSet localSet) {

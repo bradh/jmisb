@@ -48,14 +48,12 @@ public class InterpretabilityQualityLocalSet implements IMisbMessage {
             case AssessmentPoint:
                 return AssessmentPoint.fromBytes(fieldBytes);
             case MetricPeriodPack:
-                // TODO
-                throw new UnsupportedOperationException("MetricPeriodPack");
+                return new MetricPeriodPack(fieldBytes);
             case WindowCornersPack:
+                return new WindowCornersPack(fieldBytes);
+            case MetricLocalSets:
                 // TODO
-                throw new UnsupportedOperationException("WindowCornersPack");
-            case MetricLocalSet:
-                // TODO
-                throw new UnsupportedOperationException("MetricLocalSet");
+                throw new UnsupportedOperationException("MetricLocalSets");
             case CompressionType:
                 return CompressionType.fromBytes(fieldBytes);
             case CompressionRatio:

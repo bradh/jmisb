@@ -36,13 +36,14 @@ public enum InterpretabilityQualityMetadataKey implements IKlvKey {
      */
     WindowCornersPack(3),
     /**
-     * Metric Local Set.
+     * Metric Local Sets.
      *
-     * <p>Subordinate local set providing a specific metric.
+     * <p>Subordinate local sets providing a specific metric.
      *
-     * <p>This local set is repeatable within an {@code InterpretabilityQualityLocalSet}.
+     * <p>This local set is repeatable within an {@code InterpretabilityQualityLocalSet}, so the
+     * value for this is a nested list of local sets, where each local set has nested items.
      */
-    MetricLocalSet(4),
+    MetricLocalSets(4),
     /**
      * Compression Type.
      *
