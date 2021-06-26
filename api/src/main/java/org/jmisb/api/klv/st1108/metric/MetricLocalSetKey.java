@@ -1,4 +1,4 @@
-package org.jmisb.api.klv.st1108;
+package org.jmisb.api.klv.st1108.metric;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -10,7 +10,7 @@ import org.jmisb.api.klv.IKlvKey;
  * <p>The Metric Local Set is a repeatable nested local set within the ST 1108.3 Interpretability
  * and Quality Local Set.
  */
-public enum MetricLocalSetKeys implements IKlvKey {
+public enum MetricLocalSetKey implements IKlvKey {
     /**
      * Unknown key.
      *
@@ -62,15 +62,15 @@ public enum MetricLocalSetKeys implements IKlvKey {
 
     private int tag;
 
-    private static final Map<Integer, MetricLocalSetKeys> tagTable = new HashMap<>();
+    private static final Map<Integer, MetricLocalSetKey> tagTable = new HashMap<>();
 
     static {
-        for (MetricLocalSetKeys key : values()) {
+        for (MetricLocalSetKey key : values()) {
             tagTable.put(key.tag, key);
         }
     }
 
-    MetricLocalSetKeys(int tag) {
+    MetricLocalSetKey(int tag) {
         this.tag = tag;
     }
 
@@ -90,7 +90,7 @@ public enum MetricLocalSetKeys implements IKlvKey {
      * @param tag the integer tag value to look up
      * @return corresponding metadata key, or Undefined if the key is not known / valid.
      */
-    public static MetricLocalSetKeys getKey(int tag) {
+    public static MetricLocalSetKey getKey(int tag) {
         return tagTable.getOrDefault(tag, Undefined);
     }
 }
