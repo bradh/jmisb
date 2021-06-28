@@ -14,19 +14,19 @@ public class MetricImplementerTest {
         assertEquals(
                 uut.getBytes(),
                 new byte[] {
-                    (byte) 0x4D,
+                    (byte) 0x4d,
                     (byte) 0x79,
                     (byte) 0x20,
-                    (byte) 0x4F,
+                    (byte) 0x4f,
                     (byte) 0x72,
                     (byte) 0x67,
                     (byte) 0x1e,
-                    (byte) 0x4D,
+                    (byte) 0x4d,
                     (byte) 0x79,
                     (byte) 0x20,
                     (byte) 0x67,
                     (byte) 0x72,
-                    (byte) 0x6F,
+                    (byte) 0x6f,
                     (byte) 0x75,
                     (byte) 0x70
                 });
@@ -41,38 +41,38 @@ public class MetricImplementerTest {
         MetricImplementer uut =
                 new MetricImplementer(
                         new byte[] {
-                            (byte) 0x4D,
+                            (byte) 0x4d,
                             (byte) 0x79,
                             (byte) 0x20,
-                            (byte) 0x4F,
+                            (byte) 0x4f,
                             (byte) 0x72,
                             (byte) 0x67,
                             (byte) 0x1e,
-                            (byte) 0x4D,
+                            (byte) 0x4d,
                             (byte) 0x79,
                             (byte) 0x20,
                             (byte) 0x67,
                             (byte) 0x72,
-                            (byte) 0x6F,
+                            (byte) 0x6f,
                             (byte) 0x75,
                             (byte) 0x70
                         });
         assertEquals(
                 uut.getBytes(),
                 new byte[] {
-                    (byte) 0x4D,
+                    (byte) 0x4d,
                     (byte) 0x79,
                     (byte) 0x20,
-                    (byte) 0x4F,
+                    (byte) 0x4f,
                     (byte) 0x72,
                     (byte) 0x67,
                     (byte) 0x1e,
-                    (byte) 0x4D,
+                    (byte) 0x4d,
                     (byte) 0x79,
                     (byte) 0x20,
                     (byte) 0x67,
                     (byte) 0x72,
-                    (byte) 0x6F,
+                    (byte) 0x6f,
                     (byte) 0x75,
                     (byte) 0x70
                 });
@@ -86,19 +86,19 @@ public class MetricImplementerTest {
     public void testConstructFromBytesBad() throws KlvParseException {
         new MetricImplementer(
                 new byte[] {
-                    (byte) 0x4D,
+                    (byte) 0x4d,
                     (byte) 0x79,
                     (byte) 0x20,
-                    (byte) 0x4F,
+                    (byte) 0x4f,
                     (byte) 0x72,
                     (byte) 0x67,
                     (byte) 0x1d,
-                    (byte) 0x4D,
+                    (byte) 0x4d,
                     (byte) 0x79,
                     (byte) 0x20,
                     (byte) 0x67,
                     (byte) 0x72,
-                    (byte) 0x6F,
+                    (byte) 0x6f,
                     (byte) 0x75,
                     (byte) 0x70
                 });

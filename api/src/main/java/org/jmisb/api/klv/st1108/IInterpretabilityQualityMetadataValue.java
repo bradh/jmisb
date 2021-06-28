@@ -1,12 +1,15 @@
 package org.jmisb.api.klv.st1108;
 
+import org.jmisb.api.klv.ArrayBuilder;
 import org.jmisb.api.klv.IKlvValue;
 
 public interface IInterpretabilityQualityMetadataValue extends IKlvValue {
     /**
-     * Get the encoded bytes.
+     * Append the encoded bytes for this item to the byte array builder.
      *
-     * @return The encoded byte array
+     * <p>This includes the tag value, and field length.
+     *
+     * @param arrayBuilder the builder to append to.
      */
-    byte[] getBytes();
+    void appendBytesToBuilder(ArrayBuilder arrayBuilder);
 }

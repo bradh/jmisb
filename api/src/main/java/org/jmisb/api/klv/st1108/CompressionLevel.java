@@ -1,6 +1,7 @@
 package org.jmisb.api.klv.st1108;
 
 import java.nio.charset.StandardCharsets;
+import org.jmisb.api.klv.ArrayBuilder;
 
 /**
  * Compression Level.
@@ -56,7 +57,6 @@ public class CompressionLevel implements IInterpretabilityQualityMetadataValue {
         return level;
     }
 
-    @Override
     public byte[] getBytes() {
         return level.getBytes(StandardCharsets.UTF_8);
     }
@@ -69,5 +69,14 @@ public class CompressionLevel implements IInterpretabilityQualityMetadataValue {
     @Override
     public final String getDisplayName() {
         return "Compression Level";
+    }
+
+    @Override
+    public void appendBytesToBuilder(ArrayBuilder arrayBuilder) {
+        arrayBuilder.appendAsOID(
+                InterpretabilityQualityMetadataKey.CompressionLevel.getIdentifier());
+        byte[] valueBytes = getBytes();
+        arrayBuilder.appendAsBerLength(valueBytes.length);
+        arrayBuilder.append(valueBytes);
     }
 }

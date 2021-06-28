@@ -1,5 +1,6 @@
 package org.jmisb.api.klv.st1108;
 
+import org.jmisb.api.klv.ArrayBuilder;
 import org.jmisb.core.klv.PrimitiveConverter;
 
 /**
@@ -58,7 +59,6 @@ public class DocumentVersion implements IInterpretabilityQualityMetadataValue {
         return version;
     }
 
-    @Override
     public byte[] getBytes() {
         return PrimitiveConverter.uint8ToBytes((short) version);
     }
@@ -71,5 +71,14 @@ public class DocumentVersion implements IInterpretabilityQualityMetadataValue {
     @Override
     public final String getDisplayName() {
         return "Document Version";
+    }
+
+    @Override
+    public void appendBytesToBuilder(ArrayBuilder arrayBuilder) {
+        arrayBuilder.appendAsOID(
+                InterpretabilityQualityMetadataKey.DocumentVersion.getIdentifier());
+        byte[] valueBytes = getBytes();
+        arrayBuilder.appendAsBerLength(valueBytes.length);
+        arrayBuilder.append(valueBytes);
     }
 }

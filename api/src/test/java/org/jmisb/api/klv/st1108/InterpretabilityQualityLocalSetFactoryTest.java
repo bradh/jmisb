@@ -2,9 +2,15 @@ package org.jmisb.api.klv.st1108;
 
 import static org.testng.Assert.*;
 
+import java.util.Set;
 import org.jmisb.api.common.KlvParseException;
+import org.jmisb.api.klv.IKlvKey;
+import org.jmisb.api.klv.IKlvValue;
 import org.jmisb.api.klv.KlvConstants;
 import org.jmisb.api.klv.LoggerChecks;
+import org.jmisb.api.klv.st1108.metric.MetricLocalSet;
+import org.jmisb.api.klv.st1108.metric.MetricLocalSetKey;
+import org.jmisb.api.klv.st1108.metric.MetricLocalSets;
 import org.testng.annotations.Test;
 
 /** Tests for the ST 1108 Interpretability and Quality Local Set Factory. */
@@ -88,10 +94,10 @@ public class InterpretabilityQualityLocalSetFactoryTest extends LoggerChecks {
                     0x00,
                     0x00,
                     0x00,
-                    0x35,
+                    0x6E,
                     0x01,
                     0x01,
-                    0x04,
+                    (byte) 0x04,
                     0x02,
                     0x0C,
                     (byte) 0x00,
@@ -108,23 +114,80 @@ public class InterpretabilityQualityLocalSetFactoryTest extends LoggerChecks {
                     (byte) 0x0A,
                     0x03,
                     0x06,
-                    0x01,
-                    0x02,
+                    (byte) 0x01,
+                    (byte) 0x02,
                     (byte) 0x84,
-                    0x04,
+                    (byte) 0x04,
                     (byte) 0x86,
-                    0x07,
+                    (byte) 0x07,
+                    0x04,
+                    0x37,
+                    0x01,
+                    0x03,
+                    (byte) 0x52,
+                    (byte) 0x45,
+                    (byte) 0x52,
+                    0x02,
+                    0x04,
+                    (byte) 0x31,
+                    (byte) 0x2E,
+                    (byte) 0x33,
+                    (byte) 0x38,
+                    0x03,
+                    0x0F,
+                    (byte) 0x4D,
+                    (byte) 0x79,
+                    (byte) 0x20,
+                    (byte) 0x4F,
+                    (byte) 0x72,
+                    (byte) 0x67,
+                    (byte) 0x1e,
+                    (byte) 0x4D,
+                    (byte) 0x79,
+                    (byte) 0x20,
+                    (byte) 0x67,
+                    (byte) 0x72,
+                    (byte) 0x6F,
+                    (byte) 0x75,
+                    (byte) 0x70,
+                    0x04,
+                    0x09,
+                    (byte) 0xC3,
+                    (byte) 0xBC,
+                    (byte) 0x2C,
+                    (byte) 0x41,
+                    (byte) 0x42,
+                    (byte) 0x3A,
+                    (byte) 0x33,
+                    (byte) 0x32,
+                    (byte) 0x34,
+                    0x05,
+                    0x08,
+                    (byte) 0x00,
+                    (byte) 0x05,
+                    (byte) 0xc5,
+                    (byte) 0x8f,
+                    (byte) 0x08,
+                    (byte) 0x32,
+                    (byte) 0x58,
+                    (byte) 0x00,
+                    0x06,
+                    0x04,
+                    (byte) 0x3e,
+                    (byte) 0xae,
+                    (byte) 0x14,
+                    (byte) 0x7b,
                     0x05,
                     0x01,
-                    0x02,
+                    (byte) 0x02,
                     0x06,
                     0x01,
-                    0x07,
+                    (byte) 0x07,
                     0x07,
                     0x03,
-                    0x34,
-                    0x2E,
-                    0x31,
+                    (byte) 0x34,
+                    (byte) 0x2E,
+                    (byte) 0x31,
                     0x08,
                     0x04,
                     (byte) 0x41,
@@ -133,15 +196,15 @@ public class InterpretabilityQualityLocalSetFactoryTest extends LoggerChecks {
                     (byte) 0x9a,
                     0x09,
                     0x02,
-                    0x04,
-                    0x01,
+                    (byte) 0x04,
+                    (byte) 0x01,
                     0x0A,
                     0x01,
-                    0x03,
+                    (byte) 0x03,
                     0x0B,
                     0x02,
-                    (byte) 0xdc,
-                    (byte) 0xbc
+                    (byte) 0xa4,
+                    (byte) 0x2d
                 };
         InterpretabilityQualityLocalSetFactory factory =
                 new InterpretabilityQualityLocalSetFactory();
@@ -149,11 +212,11 @@ public class InterpretabilityQualityLocalSetFactoryTest extends LoggerChecks {
         assertNotNull(localSet);
         assertEquals(localSet.displayHeader(), "ST 1108 Interpretability and Quality");
         assertEquals(localSet.getUniversalLabel(), KlvConstants.InterpretabilityQualityLocalSetUl);
-        assertEquals(localSet.getIdentifiers().size(), 9);
+        assertEquals(localSet.getIdentifiers().size(), 10);
         checkAssessmentPoint(localSet);
         checkMetricPeriodPack(localSet);
         checkWindowCornersPack(localSet);
-
+        checkSingleMetricLocalSet(localSet);
         checkCompressionType(localSet);
         checkCompressionProfile(localSet);
         checkCompressionLevel(localSet);
@@ -190,12 +253,67 @@ public class InterpretabilityQualityLocalSetFactoryTest extends LoggerChecks {
                         localSet.getField(InterpretabilityQualityMetadataKey.WindowCornersPack);
         assertNotNull(value);
         assertEquals(value.getStartingRow(), 1);
-
         assertEquals(value.getStartingColumn(), 2);
-
         assertEquals(value.getEndingRow(), 516);
-
         assertEquals(value.getEndingColumn(), 775);
+    }
+
+    private void checkSingleMetricLocalSet(InterpretabilityQualityLocalSet localSet) {
+        assertTrue(
+                localSet.getIdentifiers()
+                        .contains(InterpretabilityQualityMetadataKey.MetricLocalSets));
+        assertTrue(
+                localSet.getField(InterpretabilityQualityMetadataKey.MetricLocalSets)
+                        instanceof MetricLocalSets);
+        MetricLocalSets value =
+                (MetricLocalSets)
+                        localSet.getField(InterpretabilityQualityMetadataKey.MetricLocalSets);
+        assertNotNull(value);
+        assertEquals(value.getDisplayName(), "Metrics");
+        assertEquals(value.getDisplayableValue(), "[Metrics]");
+        Set<? extends IKlvKey> identifiers = value.getIdentifiers();
+        assertEquals(identifiers.size(), 1);
+        IKlvKey key = identifiers.iterator().next();
+        assertEquals(key.getIdentifier(), 0);
+        IKlvValue firstField = value.getField(key);
+        assertTrue(firstField instanceof MetricLocalSet);
+        MetricLocalSet metricLocalSet = (MetricLocalSet) firstField;
+        assertEquals(metricLocalSet.getIdentifiers().size(), 6);
+        assertTrue(metricLocalSet.getIdentifiers().contains(MetricLocalSetKey.MetricName));
+        assertEquals(
+                metricLocalSet.getField(MetricLocalSetKey.MetricName).getDisplayableValue(), "RER");
+    }
+
+    private void checkTwoMetricLocalSet(InterpretabilityQualityLocalSet localSet) {
+        assertTrue(
+                localSet.getIdentifiers()
+                        .contains(InterpretabilityQualityMetadataKey.MetricLocalSets));
+        assertTrue(
+                localSet.getField(InterpretabilityQualityMetadataKey.MetricLocalSets)
+                        instanceof MetricLocalSets);
+        MetricLocalSets value =
+                (MetricLocalSets)
+                        localSet.getField(InterpretabilityQualityMetadataKey.MetricLocalSets);
+        assertNotNull(value);
+        assertEquals(value.getDisplayName(), "Metrics");
+        assertEquals(value.getDisplayableValue(), "[Metrics]");
+        Set<? extends IKlvKey> identifiers = value.getIdentifiers();
+        assertEquals(identifiers.size(), 2);
+        for (IKlvKey key : identifiers) {
+            IKlvValue field = value.getField(key);
+            assertTrue(field instanceof MetricLocalSet);
+            MetricLocalSet metricLocalSet = (MetricLocalSet) field;
+            assertTrue(metricLocalSet.getIdentifiers().contains(MetricLocalSetKey.MetricName));
+            if (key.getIdentifier() == 0) {
+                assertEquals(
+                        metricLocalSet.getField(MetricLocalSetKey.MetricName).getDisplayableValue(),
+                        "RER");
+            } else if (key.getIdentifier() == 1) {
+                assertEquals(
+                        metricLocalSet.getField(MetricLocalSetKey.MetricName).getDisplayableValue(),
+                        "PSNR");
+            }
+        }
     }
 
     private void checkCompressionType(InterpretabilityQualityLocalSet localSet) {
@@ -287,5 +405,165 @@ public class InterpretabilityQualityLocalSetFactoryTest extends LoggerChecks {
         assertEquals(value.getDisplayName(), "Document Version");
         assertEquals(value.getDisplayableValue(), "ST 1108.3");
         assertEquals(value.getVersion(), 3);
+    }
+
+    @Test
+    public void parseWithTwoMetrics() throws KlvParseException {
+        final byte[] bytes =
+                new byte[] {
+                    0x06,
+                    0x0E,
+                    0x2B,
+                    0x34,
+                    0x02,
+                    0x03,
+                    0x01,
+                    0x01,
+                    0x0E,
+                    0x01,
+                    0x03,
+                    0x03,
+                    0x1C,
+                    0x00,
+                    0x00,
+                    0x00,
+                    0x76,
+                    0x01,
+                    0x01,
+                    (byte) 0x04,
+                    0x02,
+                    0x0C,
+                    (byte) 0x00,
+                    (byte) 0x03,
+                    (byte) 0x82,
+                    (byte) 0x44,
+                    (byte) 0x30,
+                    (byte) 0xF6,
+                    (byte) 0xCE,
+                    (byte) 0x40,
+                    (byte) 0x00,
+                    (byte) 0x0D,
+                    (byte) 0xE0,
+                    (byte) 0x0A,
+                    0x03,
+                    0x06,
+                    (byte) 0x01,
+                    (byte) 0x02,
+                    (byte) 0x84,
+                    (byte) 0x04,
+                    (byte) 0x86,
+                    (byte) 0x07,
+                    0x04,
+                    0x37,
+                    0x01,
+                    0x03,
+                    (byte) 0x52,
+                    (byte) 0x45,
+                    (byte) 0x52,
+                    0x02,
+                    0x04,
+                    (byte) 0x31,
+                    (byte) 0x2E,
+                    (byte) 0x33,
+                    (byte) 0x38,
+                    0x03,
+                    0x0F,
+                    (byte) 0x4D,
+                    (byte) 0x79,
+                    (byte) 0x20,
+                    (byte) 0x4F,
+                    (byte) 0x72,
+                    (byte) 0x67,
+                    (byte) 0x1e,
+                    (byte) 0x4D,
+                    (byte) 0x79,
+                    (byte) 0x20,
+                    (byte) 0x67,
+                    (byte) 0x72,
+                    (byte) 0x6F,
+                    (byte) 0x75,
+                    (byte) 0x70,
+                    0x04,
+                    0x09,
+                    (byte) 0xC3,
+                    (byte) 0xBC,
+                    (byte) 0x2C,
+                    (byte) 0x41,
+                    (byte) 0x42,
+                    (byte) 0x3A,
+                    (byte) 0x33,
+                    (byte) 0x32,
+                    (byte) 0x34,
+                    0x05,
+                    0x08,
+                    (byte) 0x00,
+                    (byte) 0x05,
+                    (byte) 0xc5,
+                    (byte) 0x8f,
+                    (byte) 0x08,
+                    (byte) 0x32,
+                    (byte) 0x58,
+                    (byte) 0x00,
+                    0x06,
+                    0x04,
+                    (byte) 0x3e,
+                    (byte) 0xae,
+                    (byte) 0x14,
+                    (byte) 0x7b,
+                    0x04,
+                    0x06,
+                    0x01,
+                    0x04,
+                    (byte) 0x50,
+                    (byte) 0x53,
+                    (byte) 0x4e,
+                    (byte) 0x052,
+                    0x05,
+                    0x01,
+                    (byte) 0x02,
+                    0x06,
+                    0x01,
+                    (byte) 0x07,
+                    0x07,
+                    0x03,
+                    (byte) 0x34,
+                    (byte) 0x2E,
+                    (byte) 0x31,
+                    0x08,
+                    0x04,
+                    (byte) 0x41,
+                    (byte) 0xc9,
+                    (byte) 0x99,
+                    (byte) 0x9a,
+                    0x09,
+                    0x02,
+                    (byte) 0x04,
+                    (byte) 0x01,
+                    0x0A,
+                    0x01,
+                    (byte) 0x03,
+                    0x0B,
+                    0x02,
+                    (byte) 0x07,
+                    (byte) 0xe2
+                };
+        InterpretabilityQualityLocalSetFactory factory =
+                new InterpretabilityQualityLocalSetFactory();
+        InterpretabilityQualityLocalSet localSet = factory.create(bytes);
+        assertNotNull(localSet);
+        assertEquals(localSet.displayHeader(), "ST 1108 Interpretability and Quality");
+        assertEquals(localSet.getUniversalLabel(), KlvConstants.InterpretabilityQualityLocalSetUl);
+        assertEquals(localSet.getIdentifiers().size(), 10);
+        checkAssessmentPoint(localSet);
+        checkMetricPeriodPack(localSet);
+        checkWindowCornersPack(localSet);
+        checkTwoMetricLocalSet(localSet);
+        checkCompressionType(localSet);
+        checkCompressionProfile(localSet);
+        checkCompressionLevel(localSet);
+        checkCompressionRatio(localSet);
+        checkStreamBitrate(localSet);
+        checkDocumentVersion(localSet);
+        assertEquals(localSet.frameMessage(false), bytes);
     }
 }

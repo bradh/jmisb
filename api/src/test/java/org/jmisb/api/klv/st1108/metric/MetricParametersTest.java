@@ -16,7 +16,7 @@ public class MetricParametersTest {
                     (byte) 0x31,
                     (byte) 0x39,
                     (byte) 0x33,
-                    (byte) 0x2C,
+                    (byte) 0x2c,
                     (byte) 0x61,
                     (byte) 0x62,
                     (byte) 0x63
@@ -34,7 +34,7 @@ public class MetricParametersTest {
                             (byte) 0x31,
                             (byte) 0x39,
                             (byte) 0x33,
-                            (byte) 0x2C,
+                            (byte) 0x2c,
                             (byte) 0x61,
                             (byte) 0x62,
                             (byte) 0x63
@@ -45,7 +45,7 @@ public class MetricParametersTest {
                     (byte) 0x31,
                     (byte) 0x39,
                     (byte) 0x33,
-                    (byte) 0x2C,
+                    (byte) 0x2c,
                     (byte) 0x61,
                     (byte) 0x62,
                     (byte) 0x63

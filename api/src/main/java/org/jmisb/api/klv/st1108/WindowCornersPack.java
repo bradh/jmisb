@@ -86,7 +86,6 @@ public class WindowCornersPack implements IInterpretabilityQualityMetadataValue 
         }
     }
 
-    @Override
     public byte[] getBytes() {
         ArrayBuilder arrayBuilder = new ArrayBuilder();
         arrayBuilder.appendAsOID(startingRow);
@@ -153,5 +152,14 @@ public class WindowCornersPack implements IInterpretabilityQualityMetadataValue 
      */
     public int getEndingColumn() {
         return endingColumn;
+    }
+
+    @Override
+    public void appendBytesToBuilder(ArrayBuilder arrayBuilder) {
+        arrayBuilder.appendAsOID(
+                InterpretabilityQualityMetadataKey.WindowCornersPack.getIdentifier());
+        byte[] valueBytes = getBytes();
+        arrayBuilder.appendAsBerLength(valueBytes.length);
+        arrayBuilder.append(valueBytes);
     }
 }

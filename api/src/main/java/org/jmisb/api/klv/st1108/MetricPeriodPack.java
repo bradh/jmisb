@@ -55,7 +55,6 @@ public class MetricPeriodPack implements IInterpretabilityQualityMetadataValue {
         this.timeOffset = PrimitiveConverter.toUint32(bytes, REQUIRED_BYTES_TIMESTAMP);
     }
 
-    @Override
     public byte[] getBytes() {
         ArrayBuilder arrayBuilder = new ArrayBuilder();
         arrayBuilder.append(startTime.getBytesFull());
@@ -89,5 +88,14 @@ public class MetricPeriodPack implements IInterpretabilityQualityMetadataValue {
      */
     public long getTimeOffset() {
         return timeOffset;
+    }
+
+    @Override
+    public void appendBytesToBuilder(ArrayBuilder arrayBuilder) {
+        arrayBuilder.appendAsOID(
+                InterpretabilityQualityMetadataKey.MetricPeriodPack.getIdentifier());
+        byte[] valueBytes = getBytes();
+        arrayBuilder.appendAsBerLength(valueBytes.length);
+        arrayBuilder.append(valueBytes);
     }
 }

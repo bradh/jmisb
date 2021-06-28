@@ -17,7 +17,7 @@ import org.jmisb.api.klv.st1108.*;
  *
  * </blockquote>
  */
-public class MetricVersion implements IInterpretabilityQualityMetadataValue {
+public class MetricVersion implements IMetricLocalSetValue {
     private final String version;
 
     /**

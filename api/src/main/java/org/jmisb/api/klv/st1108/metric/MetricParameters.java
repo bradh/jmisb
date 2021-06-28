@@ -17,7 +17,7 @@ import org.jmisb.api.klv.st1108.*;
  *
  * </blockquote>
  */
-public class MetricParameters implements IInterpretabilityQualityMetadataValue {
+public class MetricParameters implements IMetricLocalSetValue {
     private final String parameters;
 
     /**

@@ -18,6 +18,7 @@ import org.jmisb.api.klv.IMisbMessage;
 import org.jmisb.api.klv.LdsField;
 import org.jmisb.api.klv.LdsParser;
 import org.jmisb.api.klv.UniversalLabel;
+import org.jmisb.api.klv.st1108.metric.MetricLocalSets;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -41,6 +42,7 @@ public class InterpretabilityQualityLocalSet implements IMisbMessage {
      * @param fieldBytes Encoded bytes
      * @return The new instance
      * @throws KlvParseException if the byte array could not be parsed.
+     * @deprecated to be removed
      */
     static IInterpretabilityQualityMetadataValue createValue(
             InterpretabilityQualityMetadataKey tag, byte[] fieldBytes) throws KlvParseException {
@@ -52,8 +54,7 @@ public class InterpretabilityQualityLocalSet implements IMisbMessage {
             case WindowCornersPack:
                 return new WindowCornersPack(fieldBytes);
             case MetricLocalSets:
-                // TODO
-                throw new UnsupportedOperationException("MetricLocalSets");
+                return new MetricLocalSets(fieldBytes);
             case CompressionType:
                 return CompressionType.fromBytes(fieldBytes);
             case CompressionRatio:
@@ -129,9 +130,45 @@ public class InterpretabilityQualityLocalSet implements IMisbMessage {
                         handler.handleInvalidChecksum(LOGGER, "Bad checksum");
                     }
                     break;
+                case AssessmentPoint:
+                    map.put(key, AssessmentPoint.fromBytes(field.getData()));
+                    break;
+                case MetricPeriodPack:
+                    map.put(key, new MetricPeriodPack(field.getData()));
+                    break;
+                case WindowCornersPack:
+                    map.put(key, new WindowCornersPack(field.getData()));
+                    break;
+                case MetricLocalSets:
+                    if (map.containsKey(InterpretabilityQualityMetadataKey.MetricLocalSets)) {
+                        MetricLocalSets metricLocalSets =
+                                (MetricLocalSets)
+                                        map.get(InterpretabilityQualityMetadataKey.MetricLocalSets);
+                        metricLocalSets.addMetricFromBytes(field.getData());
+                    } else {
+                        map.put(key, new MetricLocalSets(field.getData()));
+                    }
+                    break;
+                case CompressionType:
+                    map.put(key, CompressionType.fromBytes(field.getData()));
+                    break;
+                case CompressionProfile:
+                    map.put(key, CompressionProfile.fromBytes(field.getData()));
+                    break;
+                case CompressionLevel:
+                    map.put(key, new CompressionLevel(field.getData()));
+                    break;
+                case CompressionRatio:
+                    map.put(key, new CompressionRatio(field.getData()));
+                    break;
+                case StreamBitrate:
+                    map.put(key, new StreamBitrate(field.getData()));
+                    break;
+                case DocumentVersion:
+                    map.put(key, new DocumentVersion(field.getData()));
+                    break;
                 default:
-                    IInterpretabilityQualityMetadataValue value = createValue(key, field.getData());
-                    map.put(key, value);
+                    throw new AssertionError(key.name());
             }
         }
     }
@@ -148,10 +185,7 @@ public class InterpretabilityQualityLocalSet implements IMisbMessage {
                 // This will get added, at the end
                 continue;
             }
-            arrayBuilder.appendAsOID(tag.getIdentifier());
-            byte[] valueBytes = getField(tag).getBytes();
-            arrayBuilder.appendAsBerLength(valueBytes.length);
-            arrayBuilder.append(valueBytes);
+            getField(tag).appendBytesToBuilder(arrayBuilder);
         }
         arrayBuilder.appendAsOID(InterpretabilityQualityMetadataKey.CRC16CCITT.getIdentifier());
         arrayBuilder.appendAsBerLength(CRC16_LENGTH);

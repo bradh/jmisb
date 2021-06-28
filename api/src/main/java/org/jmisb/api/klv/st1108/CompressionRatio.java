@@ -1,5 +1,6 @@
 package org.jmisb.api.klv.st1108;
 
+import org.jmisb.api.klv.ArrayBuilder;
 import org.jmisb.core.klv.PrimitiveConverter;
 
 /**
@@ -65,7 +66,6 @@ public class CompressionRatio implements IInterpretabilityQualityMetadataValue {
         return compressionRatio;
     }
 
-    @Override
     public byte[] getBytes() {
         return PrimitiveConverter.float32ToBytes((float) compressionRatio);
     }
@@ -78,5 +78,14 @@ public class CompressionRatio implements IInterpretabilityQualityMetadataValue {
     @Override
     public final String getDisplayName() {
         return "Compression Ratio";
+    }
+
+    @Override
+    public void appendBytesToBuilder(ArrayBuilder arrayBuilder) {
+        arrayBuilder.appendAsOID(
+                InterpretabilityQualityMetadataKey.CompressionRatio.getIdentifier());
+        byte[] valueBytes = getBytes();
+        arrayBuilder.appendAsBerLength(valueBytes.length);
+        arrayBuilder.append(valueBytes);
     }
 }

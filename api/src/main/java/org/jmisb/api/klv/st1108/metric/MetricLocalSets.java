@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
+import org.jmisb.api.common.KlvParseException;
 import org.jmisb.api.klv.ArrayBuilder;
 import org.jmisb.api.klv.IKlvKey;
 import org.jmisb.api.klv.IKlvValue;
@@ -20,27 +21,24 @@ public class MetricLocalSets implements IInterpretabilityQualityMetadataValue, I
 
     public List<MetricLocalSet> metricLocalSets = new ArrayList<>();
 
-    /** Create new instance. */
-    public MetricLocalSets() {}
-
-    @Override
-    public byte[] getBytes() {
-        ArrayBuilder arrayBuilder = new ArrayBuilder();
-        metricLocalSets.forEach(
-                metricLocalSet -> {
-                    metricLocalSet.addBytesTo(arrayBuilder);
-                });
-        return arrayBuilder.toBytes();
+    /**
+     * Create from encoded bytes.
+     *
+     * @param bytes Byte array containing an encoded MetricLocalSet
+     * @throws KlvParseException if the byte array could not be parsed.
+     */
+    public MetricLocalSets(final byte[] bytes) throws KlvParseException {
+        this.addMetricFromBytes(bytes);
     }
 
     @Override
     public String getDisplayableValue() {
-        return "[Metric Local Sets]";
+        return "[Metrics]";
     }
 
     @Override
     public final String getDisplayName() {
-        return "Metric Local Sets";
+        return "Metrics";
     }
 
     @Override
@@ -55,5 +53,24 @@ public class MetricLocalSets implements IInterpretabilityQualityMetadataValue, I
             identifiers.add(new MetricLocalSetsKey(i));
         }
         return identifiers;
+    }
+
+    /**
+     * Add a metric local set to this object from encoded bytes.
+     *
+     * @param bytes the byte array to parse
+     * @throws KlvParseException if the parsing is not successful
+     */
+    public final void addMetricFromBytes(byte[] bytes) throws KlvParseException {
+        MetricLocalSet metricLocalSet = MetricLocalSet.fromBytes(bytes);
+        metricLocalSets.add(metricLocalSet);
+    }
+
+    @Override
+    public void appendBytesToBuilder(ArrayBuilder arrayBuilder) {
+        metricLocalSets.forEach(
+                metricLocalSet -> {
+                    metricLocalSet.appendBytesToBuilder(arrayBuilder);
+                });
     }
 }

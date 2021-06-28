@@ -3,6 +3,7 @@ package org.jmisb.api.klv.st1108;
 import java.util.HashMap;
 import java.util.Map;
 import org.jmisb.api.common.KlvParseException;
+import org.jmisb.api.klv.ArrayBuilder;
 
 /**
  * Video Compression Profile.
@@ -90,7 +91,6 @@ public enum CompressionProfile implements IInterpretabilityQualityMetadataValue 
 
     private byte value;
 
-    @Override
     public byte[] getBytes() {
         return new byte[] {(byte) value};
     }
@@ -128,5 +128,14 @@ public enum CompressionProfile implements IInterpretabilityQualityMetadataValue 
 
     private CompressionProfile(int value) {
         this.value = (byte) value;
+    }
+
+    @Override
+    public void appendBytesToBuilder(ArrayBuilder arrayBuilder) {
+        arrayBuilder.appendAsOID(
+                InterpretabilityQualityMetadataKey.CompressionProfile.getIdentifier());
+        byte[] valueBytes = getBytes();
+        arrayBuilder.appendAsBerLength(valueBytes.length);
+        arrayBuilder.append(valueBytes);
     }
 }

@@ -21,9 +21,9 @@ import org.jmisb.api.klv.st1108.*;
  * </blockquote>
  *
  * This implementation will parse the value at the Record Separator character and internally manage
- * the two parts. The required Record Separator is
+ * the two parts. The required Record Separator is automatically added on encoding.
  */
-public class MetricImplementer implements IInterpretabilityQualityMetadataValue {
+public class MetricImplementer implements IMetricLocalSetValue {
     private final String orgPart;
     private final String subgroupPart;
 

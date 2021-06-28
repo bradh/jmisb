@@ -1,21 +1,39 @@
 package org.jmisb.api.klv.st1108.metric;
 
 import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 import java.util.SortedMap;
 import java.util.TreeMap;
 import org.jmisb.api.common.KlvParseException;
 import org.jmisb.api.klv.ArrayBuilder;
 import org.jmisb.api.klv.IKlvKey;
-import org.jmisb.api.klv.IKlvValue;
 import org.jmisb.api.klv.INestedKlvValue;
 import org.jmisb.api.klv.LdsField;
 import org.jmisb.api.klv.LdsParser;
 import org.jmisb.api.klv.st1108.IInterpretabilityQualityMetadataValue;
+import org.jmisb.api.klv.st1108.InterpretabilityQualityMetadataKey;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class MetricLocalSet implements IInterpretabilityQualityMetadataValue, INestedKlvValue {
 
-    static MetricLocalSet fromBytes(byte[] bytes) throws KlvParseException {
+    private static final Logger LOGGER = LoggerFactory.getLogger(MetricLocalSet.class);
+
+    private MetricLocalSet() {}
+
+    /**
+     * Construct a MetricLocalSet from a byte array.
+     *
+     * <p>This is intended for internal use (from the MetricLocalSets implementation) and is not
+     * usually required to be instantiated directly from user code.
+     *
+     * @param bytes array of KLV encoded bytes to decode.
+     * @return instantiated MetricLocalSet with the provided values.
+     * @throws KlvParseException if the byte array could not be fully parsed.
+     */
+    public static MetricLocalSet fromBytes(byte[] bytes) throws KlvParseException {
         MetricLocalSet metricLocalSet = new MetricLocalSet();
         List<LdsField> fields = LdsParser.parseFields(bytes, 0, bytes.length);
         for (LdsField field : fields) {
@@ -40,33 +58,38 @@ public class MetricLocalSet implements IInterpretabilityQualityMetadataValue, IN
                             new MetricParameters(field.getData()));
                     break;
                 case MetricTime:
+                    metricLocalSet.map.put(
+                            MetricLocalSetKey.MetricTime, new MetricTime(field.getData()));
                     break;
                 case MetricValue:
+                    metricLocalSet.map.put(
+                            MetricLocalSetKey.MetricValue, new MetricValue(field.getData()));
                     break;
                 default:
-                    throw new AssertionError(key.name());
+                    LOGGER.warn(
+                            "Unsupported/unknown ST 1108 Metric Local Set tag: {}", field.getTag());
             }
         }
         return metricLocalSet;
     }
 
-    /** Map containing all data elements in the message. */
-    private final SortedMap<MetricLocalSetKey, IInterpretabilityQualityMetadataValue> map =
-            new TreeMap<>();
-
     /**
-     * Add the bytes for this local set to the specified array builder.
+     * Construct a MetricLocalSet from provided values.
      *
-     * <p>This is for internal usage. You can use {@code getBytes()} for other applications.
-     *
-     * @param arrayBuilder the array builder to use.
+     * @param values the values to put into the local set.
+     * @return instantiated MetricLocalSet with the provided values.
      */
-    void addBytesTo(ArrayBuilder arrayBuilder) {
-        arrayBuilder.append(getBytes());
+    public static MetricLocalSet fromMap(Map<MetricLocalSetKey, IMetricLocalSetValue> values) {
+        MetricLocalSet metricLocalSet = new MetricLocalSet();
+        metricLocalSet.map.putAll(values);
+        return metricLocalSet;
     }
 
+    /** Map containing all data elements in the message. */
+    private final SortedMap<MetricLocalSetKey, IMetricLocalSetValue> map = new TreeMap<>();
+
     @Override
-    public IKlvValue getField(IKlvKey tag) {
+    public IMetricLocalSetValue getField(IKlvKey tag) {
         MetricLocalSetKey identifier = (MetricLocalSetKey) tag;
         return map.get(identifier);
     }
@@ -87,9 +110,22 @@ public class MetricLocalSet implements IInterpretabilityQualityMetadataValue, IN
     }
 
     @Override
-    public byte[] getBytes() {
-        throw new UnsupportedOperationException(
-                "Not supported yet."); // To change body of generated methods, choose Tools |
-        // Templates.
+    public void appendBytesToBuilder(ArrayBuilder arrayBuilder) {
+        arrayBuilder.appendAsOID(
+                InterpretabilityQualityMetadataKey.MetricLocalSets.getIdentifier());
+        byte[] valueBytes = getBytes();
+        arrayBuilder.appendAsBerLength(valueBytes.length);
+        arrayBuilder.append(valueBytes);
+    }
+
+    byte[] getBytes() {
+        ArrayBuilder arrayBuilder = new ArrayBuilder();
+        for (Entry<MetricLocalSetKey, IMetricLocalSetValue> entry : map.entrySet()) {
+            arrayBuilder.appendAsOID(entry.getKey().getIdentifier());
+            byte[] valueBytes = entry.getValue().getBytes();
+            arrayBuilder.appendAsBerLength(valueBytes.length);
+            arrayBuilder.append(valueBytes);
+        }
+        return arrayBuilder.toBytes();
     }
 }
