@@ -2,7 +2,6 @@ package org.jmisb.api.klv.st1108;
 
 import static org.testng.Assert.*;
 
-import org.jmisb.api.common.KlvParseException;
 import org.testng.annotations.Test;
 
 /** Tests for DocumentVersion (ST 1108 Tag 10). */
@@ -59,20 +58,6 @@ public class DocumentVersionTest {
         assertEquals(version.getDisplayName(), "Document Version");
         assertEquals(version.getDisplayableValue(), "ST 1108.255");
         assertEquals(version.getVersion(), 255);
-    }
-
-    @Test
-    public void testFactoryEncodedBytes() throws KlvParseException {
-        IInterpretabilityQualityMetadataValue value =
-                InterpretabilityQualityLocalSet.createValue(
-                        InterpretabilityQualityMetadataKey.DocumentVersion,
-                        new byte[] {(byte) 0x04});
-        assertTrue(value instanceof DocumentVersion);
-        DocumentVersion version = (DocumentVersion) value;
-        assertEquals(version.getBytes(), new byte[] {(byte) 0x04});
-        assertEquals(version.getDisplayName(), "Document Version");
-        assertEquals(version.getDisplayableValue(), "ST 1108.4");
-        assertEquals(version.getVersion(), 4);
     }
 
     @Test(expectedExceptions = IllegalArgumentException.class)

@@ -2,7 +2,6 @@ package org.jmisb.api.klv.st1108;
 
 import static org.testng.Assert.*;
 
-import org.jmisb.api.common.KlvParseException;
 import org.jmisb.api.klv.st0603.ST0603TimeStamp;
 import org.testng.annotations.Test;
 
@@ -72,48 +71,6 @@ public class MetricPeriodPackTest {
         assertEquals(uut.getDisplayableValue(), "1624592992000000, 1500");
         assertEquals(uut.getStartTime().getMicroseconds(), 1624592992000000L);
         assertEquals(uut.getTimeOffset(), 1500);
-    }
-
-    @Test
-    public void testFactoryEncodedBytes() throws KlvParseException {
-        IInterpretabilityQualityMetadataValue value =
-                InterpretabilityQualityLocalSet.createValue(
-                        InterpretabilityQualityMetadataKey.MetricPeriodPack,
-                        new byte[] {
-                            (byte) 0x00,
-                            (byte) 0x05,
-                            (byte) 0xC5,
-                            (byte) 0x8F,
-                            (byte) 0x08,
-                            (byte) 0x31,
-                            (byte) 0x58,
-                            (byte) 0x00,
-                            (byte) 0x00,
-                            (byte) 0x2D,
-                            (byte) 0xC8,
-                            (byte) 0x0A
-                        });
-        assertTrue(value instanceof MetricPeriodPack);
-        MetricPeriodPack bitrate = (MetricPeriodPack) value;
-        assertEquals(
-                bitrate.getBytes(),
-                new byte[] {
-                    (byte) 0x00,
-                    (byte) 0x05,
-                    (byte) 0xC5,
-                    (byte) 0x8F,
-                    (byte) 0x08,
-                    (byte) 0x31,
-                    (byte) 0x58,
-                    (byte) 0x00,
-                    (byte) 0x00,
-                    (byte) 0x2d,
-                    (byte) 0xc8,
-                    (byte) 0x0a
-                });
-        assertEquals(bitrate.getDisplayName(), "Metric Period");
-        assertEquals(bitrate.getDisplayableValue(), "1624592992000000, 3000330");
-        assertEquals(bitrate.getTimeOffset(), 3000330);
     }
 
     @Test(expectedExceptions = IllegalArgumentException.class)

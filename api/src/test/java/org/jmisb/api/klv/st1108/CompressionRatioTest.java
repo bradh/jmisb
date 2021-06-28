@@ -2,7 +2,6 @@ package org.jmisb.api.klv.st1108;
 
 import static org.testng.Assert.*;
 
-import org.jmisb.api.common.KlvParseException;
 import org.testng.annotations.Test;
 
 /** Tests for CompressionRatio (ST 1108 Tag 8). */
@@ -38,22 +37,6 @@ public class CompressionRatioTest {
         assertEquals(uut.getDisplayName(), "Compression Ratio");
         assertEquals(uut.getDisplayableValue(), "25.20");
         assertEquals(uut.getCompressionRatio(), 25.200000, 0.00001);
-    }
-
-    @Test
-    public void testFactoryEncodedBytes() throws KlvParseException {
-        IInterpretabilityQualityMetadataValue value =
-                InterpretabilityQualityLocalSet.createValue(
-                        InterpretabilityQualityMetadataKey.CompressionRatio,
-                        new byte[] {(byte) 0x41, (byte) 0x19, (byte) 0x99, (byte) 0x9a});
-        assertTrue(value instanceof CompressionRatio);
-        CompressionRatio bitrate = (CompressionRatio) value;
-        assertEquals(
-                bitrate.getBytes(),
-                new byte[] {(byte) 0x41, (byte) 0x19, (byte) 0x99, (byte) 0x9a});
-        assertEquals(bitrate.getDisplayName(), "Compression Ratio");
-        assertEquals(bitrate.getDisplayableValue(), "9.60");
-        assertEquals(bitrate.getCompressionRatio(), 9.60000, 0.000001);
     }
 
     @Test(expectedExceptions = IllegalArgumentException.class)

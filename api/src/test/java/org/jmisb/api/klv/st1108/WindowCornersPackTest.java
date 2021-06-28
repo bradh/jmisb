@@ -34,23 +34,6 @@ public class WindowCornersPackTest {
         assertEquals(uut.getEndingColumn(), 775);
     }
 
-    @Test
-    public void testConstructViaFactory() throws KlvParseException {
-        IInterpretabilityQualityMetadataValue value =
-                InterpretabilityQualityLocalSet.createValue(
-                        InterpretabilityQualityMetadataKey.WindowCornersPack,
-                        new byte[] {0x01, 0x02, (byte) 0x84, 0x04, (byte) 0x86, 0x07});
-        assertTrue(value instanceof WindowCornersPack);
-        WindowCornersPack uut = (WindowCornersPack) value;
-        assertEquals(uut.getBytes(), new byte[] {0x01, 0x02, (byte) 0x84, 0x04, (byte) 0x86, 0x07});
-        assertEquals(uut.getDisplayName(), "Window Corners");
-        assertEquals(uut.getDisplayableValue(), "[1, 2], [516, 775]");
-        assertEquals(uut.getStartingRow(), 1);
-        assertEquals(uut.getStartingColumn(), 2);
-        assertEquals(uut.getEndingRow(), 516);
-        assertEquals(uut.getEndingColumn(), 775);
-    }
-
     @Test(expectedExceptions = KlvParseException.class)
     public void badArrayLengthShort() throws KlvParseException {
         new WindowCornersPack(new byte[] {0x01, 0x02, (byte) 0x82, 0x04, (byte) 0x83});

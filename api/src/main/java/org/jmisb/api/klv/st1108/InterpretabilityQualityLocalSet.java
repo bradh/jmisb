@@ -35,43 +35,6 @@ public class InterpretabilityQualityLocalSet implements IMisbMessage {
     private static final Logger LOGGER =
             LoggerFactory.getLogger(InterpretabilityQualityLocalSet.class);
 
-    /**
-     * Create a {@link IInterpretabilityQualityMetadataValue} instance from encoded bytes.
-     *
-     * @param tag The tag defining the value type (not CRC-16-CCITT)
-     * @param fieldBytes Encoded bytes
-     * @return The new instance
-     * @throws KlvParseException if the byte array could not be parsed.
-     * @deprecated to be removed
-     */
-    static IInterpretabilityQualityMetadataValue createValue(
-            InterpretabilityQualityMetadataKey tag, byte[] fieldBytes) throws KlvParseException {
-        switch (tag) {
-            case AssessmentPoint:
-                return AssessmentPoint.fromBytes(fieldBytes);
-            case MetricPeriodPack:
-                return new MetricPeriodPack(fieldBytes);
-            case WindowCornersPack:
-                return new WindowCornersPack(fieldBytes);
-            case MetricLocalSets:
-                return new MetricLocalSets(fieldBytes);
-            case CompressionType:
-                return CompressionType.fromBytes(fieldBytes);
-            case CompressionRatio:
-                return new CompressionRatio(fieldBytes);
-            case CompressionProfile:
-                return CompressionProfile.fromBytes(fieldBytes);
-            case CompressionLevel:
-                return new CompressionLevel(fieldBytes);
-            case StreamBitrate:
-                return new StreamBitrate(fieldBytes);
-            case DocumentVersion:
-                return new DocumentVersion(fieldBytes);
-            default:
-                return null;
-        }
-    }
-
     /** Map containing all elements in the message. */
     private final SortedMap<
                     InterpretabilityQualityMetadataKey, IInterpretabilityQualityMetadataValue>
@@ -116,60 +79,64 @@ public class InterpretabilityQualityLocalSet implements IMisbMessage {
     private void parseAsST1108_3(List<LdsField> fields, final byte[] bytes)
             throws KlvParseException {
         for (LdsField field : fields) {
-            InterpretabilityQualityMetadataKey key =
-                    InterpretabilityQualityMetadataKey.getKey(field.getTag());
-            switch (key) {
-                case Undefined:
-                    LOGGER.info(
-                            "Unknown Interpretability and Quality Metadata tag: {}",
-                            field.getTag());
-                    break;
-                case CRC16CCITT:
-                    if (!CrcCcitt.verify(bytes, field.getData())) {
-                        InvalidDataHandler handler = InvalidDataHandler.getInstance();
-                        handler.handleInvalidChecksum(LOGGER, "Bad checksum");
-                    }
-                    break;
-                case AssessmentPoint:
-                    map.put(key, AssessmentPoint.fromBytes(field.getData()));
-                    break;
-                case MetricPeriodPack:
-                    map.put(key, new MetricPeriodPack(field.getData()));
-                    break;
-                case WindowCornersPack:
-                    map.put(key, new WindowCornersPack(field.getData()));
-                    break;
-                case MetricLocalSets:
-                    if (map.containsKey(InterpretabilityQualityMetadataKey.MetricLocalSets)) {
-                        MetricLocalSets metricLocalSets =
-                                (MetricLocalSets)
-                                        map.get(InterpretabilityQualityMetadataKey.MetricLocalSets);
-                        metricLocalSets.addMetricFromBytes(field.getData());
-                    } else {
-                        map.put(key, new MetricLocalSets(field.getData()));
-                    }
-                    break;
-                case CompressionType:
-                    map.put(key, CompressionType.fromBytes(field.getData()));
-                    break;
-                case CompressionProfile:
-                    map.put(key, CompressionProfile.fromBytes(field.getData()));
-                    break;
-                case CompressionLevel:
-                    map.put(key, new CompressionLevel(field.getData()));
-                    break;
-                case CompressionRatio:
-                    map.put(key, new CompressionRatio(field.getData()));
-                    break;
-                case StreamBitrate:
-                    map.put(key, new StreamBitrate(field.getData()));
-                    break;
-                case DocumentVersion:
-                    map.put(key, new DocumentVersion(field.getData()));
-                    break;
-                default:
-                    throw new AssertionError(key.name());
-            }
+            processField(field, bytes);
+        }
+    }
+
+    private void processField(LdsField field, final byte[] bytes)
+            throws KlvParseException, AssertionError {
+        InterpretabilityQualityMetadataKey key =
+                InterpretabilityQualityMetadataKey.getKey(field.getTag());
+        switch (key) {
+            case Undefined:
+                LOGGER.info(
+                        "Unknown Interpretability and Quality Metadata tag: {}", field.getTag());
+                break;
+            case CRC16CCITT:
+                if (!CrcCcitt.verify(bytes, field.getData())) {
+                    InvalidDataHandler handler = InvalidDataHandler.getInstance();
+                    handler.handleInvalidChecksum(LOGGER, "Bad checksum");
+                }
+                break;
+            case AssessmentPoint:
+                map.put(key, AssessmentPoint.fromBytes(field.getData()));
+                break;
+            case MetricPeriodPack:
+                map.put(key, new MetricPeriodPack(field.getData()));
+                break;
+            case WindowCornersPack:
+                map.put(key, new WindowCornersPack(field.getData()));
+                break;
+            case MetricLocalSets:
+                if (map.containsKey(InterpretabilityQualityMetadataKey.MetricLocalSets)) {
+                    MetricLocalSets metricLocalSets =
+                            (MetricLocalSets)
+                                    map.get(InterpretabilityQualityMetadataKey.MetricLocalSets);
+                    metricLocalSets.addMetricFromBytes(field.getData());
+                } else {
+                    map.put(key, new MetricLocalSets(field.getData()));
+                }
+                break;
+            case CompressionType:
+                map.put(key, CompressionType.fromBytes(field.getData()));
+                break;
+            case CompressionProfile:
+                map.put(key, CompressionProfile.fromBytes(field.getData()));
+                break;
+            case CompressionLevel:
+                map.put(key, new CompressionLevel(field.getData()));
+                break;
+            case CompressionRatio:
+                map.put(key, new CompressionRatio(field.getData()));
+                break;
+            case StreamBitrate:
+                map.put(key, new StreamBitrate(field.getData()));
+                break;
+            case DocumentVersion:
+                map.put(key, new DocumentVersion(field.getData()));
+                break;
+            default:
+                throw new AssertionError(key.name());
         }
     }
 

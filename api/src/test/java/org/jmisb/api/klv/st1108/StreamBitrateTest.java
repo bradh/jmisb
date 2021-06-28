@@ -2,7 +2,6 @@ package org.jmisb.api.klv.st1108;
 
 import static org.testng.Assert.*;
 
-import org.jmisb.api.common.KlvParseException;
 import org.testng.annotations.Test;
 
 /** Tests for Stream Bitrate (ST 1108 Tag 9). */
@@ -33,20 +32,6 @@ public class StreamBitrateTest {
         assertEquals(uut.getDisplayName(), "Stream Bitrate");
         assertEquals(uut.getDisplayableValue(), "65.535 Mbits/sec");
         assertEquals(uut.getBitrate(), 65535);
-    }
-
-    @Test
-    public void testFactoryEncodedBytes() throws KlvParseException {
-        IInterpretabilityQualityMetadataValue value =
-                InterpretabilityQualityLocalSet.createValue(
-                        InterpretabilityQualityMetadataKey.StreamBitrate,
-                        new byte[] {(byte) 0x08, (byte) 0xFF});
-        assertTrue(value instanceof StreamBitrate);
-        StreamBitrate bitrate = (StreamBitrate) value;
-        assertEquals(bitrate.getBytes(), new byte[] {(byte) 0x08, (byte) 0xFF});
-        assertEquals(bitrate.getDisplayName(), "Stream Bitrate");
-        assertEquals(bitrate.getDisplayableValue(), "2.303 Mbits/sec");
-        assertEquals(bitrate.getBitrate(), 2303);
     }
 
     @Test(expectedExceptions = IllegalArgumentException.class)
