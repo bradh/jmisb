@@ -31,6 +31,24 @@ public class MetricLocalSets implements IInterpretabilityQualityMetadataValue, I
         this.addMetricFromBytes(bytes);
     }
 
+    /**
+     * Create from a single metric.
+     *
+     * @param metric the metric to add.
+     */
+    public MetricLocalSets(MetricLocalSet metric) {
+        metricLocalSets.add(metric);
+    }
+
+    /**
+     * Create from multiple metrics.
+     *
+     * @param metrics the metric to add.
+     */
+    public MetricLocalSets(List<MetricLocalSet> metrics) {
+        metricLocalSets.addAll(metrics);
+    }
+
     @Override
     public String getDisplayableValue() {
         return "[Metrics]";

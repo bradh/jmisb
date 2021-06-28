@@ -10,8 +10,6 @@ public class CompressionRatioTest {
     @Test
     public void testConstructFromValue() {
         CompressionRatio uut = new CompressionRatio(25.2);
-        assertEquals(
-                uut.getBytes(), new byte[] {(byte) 0x41, (byte) 0xc9, (byte) 0x99, (byte) 0x9a});
         assertEquals(uut.getDisplayName(), "Compression Ratio");
         assertEquals(uut.getDisplayableValue(), "25.20");
         assertEquals(uut.getCompressionRatio(), 25.20000, 0.00001);
@@ -20,8 +18,6 @@ public class CompressionRatioTest {
     @Test
     public void testConstructFromValueFloat() {
         CompressionRatio uut = new CompressionRatio(25.2f);
-        assertEquals(
-                uut.getBytes(), new byte[] {(byte) 0x41, (byte) 0xc9, (byte) 0x99, (byte) 0x9a});
         assertEquals(uut.getDisplayName(), "Compression Ratio");
         assertEquals(uut.getDisplayableValue(), "25.20");
         assertEquals(uut.getCompressionRatio(), 25.20000, 0.00001);
@@ -32,8 +28,6 @@ public class CompressionRatioTest {
         CompressionRatio uut =
                 new CompressionRatio(
                         new byte[] {(byte) 0x41, (byte) 0xc9, (byte) 0x99, (byte) 0x9a});
-        assertEquals(
-                uut.getBytes(), new byte[] {(byte) 0x41, (byte) 0xc9, (byte) 0x99, (byte) 0x9a});
         assertEquals(uut.getDisplayName(), "Compression Ratio");
         assertEquals(uut.getDisplayableValue(), "25.20");
         assertEquals(uut.getCompressionRatio(), 25.200000, 0.00001);

@@ -15,7 +15,14 @@ public class CompressionProfileTest {
         CompressionProfile uut = CompressionProfile.Uncompressed;
         assertEquals(uut.getDisplayName(), "Compression Profile");
         assertEquals(uut.getDisplayableValue(), "N/A (uncompressed)");
-        assertEquals(uut.getBytes(), new byte[] {0x00});
+    }
+
+    @Test
+    public void uncompressedFromBytes() throws KlvParseException {
+        CompressionProfile uut = CompressionProfile.fromBytes(new byte[] {0x00});
+        assertEquals(uut, CompressionProfile.Uncompressed);
+        assertEquals(uut.getDisplayName(), "Compression Profile");
+        assertEquals(uut.getDisplayableValue(), "N/A (uncompressed)");
     }
 
     @Test
@@ -23,7 +30,14 @@ public class CompressionProfileTest {
         CompressionProfile uut = CompressionProfile.MainH264;
         assertEquals(uut.getDisplayName(), "Compression Profile");
         assertEquals(uut.getDisplayableValue(), "Main (H.264)");
-        assertEquals(uut.getBytes(), new byte[] {0x01});
+    }
+
+    @Test
+    public void main_h264FromBytes() throws KlvParseException {
+        CompressionProfile uut = CompressionProfile.fromBytes(new byte[] {0x01});
+        assertEquals(uut, CompressionProfile.MainH264);
+        assertEquals(uut.getDisplayName(), "Compression Profile");
+        assertEquals(uut.getDisplayableValue(), "Main (H.264)");
     }
 
     @Test
@@ -31,7 +45,6 @@ public class CompressionProfileTest {
         CompressionProfile uut = CompressionProfile.Main10H265;
         assertEquals(uut.getDisplayName(), "Compression Profile");
         assertEquals(uut.getDisplayableValue(), "Main 10 (H.265)");
-        assertEquals(uut.getBytes(), new byte[] {0x02});
     }
 
     @Test
@@ -39,7 +52,6 @@ public class CompressionProfileTest {
         CompressionProfile uut = CompressionProfile.ConstrainedBaselineH264;
         assertEquals(uut.getDisplayName(), "Compression Profile");
         assertEquals(uut.getDisplayableValue(), "Constrained Baseline (H.264)");
-        assertEquals(uut.getBytes(), new byte[] {0x03});
     }
 
     @Test
@@ -47,7 +59,6 @@ public class CompressionProfileTest {
         CompressionProfile uut = CompressionProfile.HighH264;
         assertEquals(uut.getDisplayName(), "Compression Profile");
         assertEquals(uut.getDisplayableValue(), "High (H.264)");
-        assertEquals(uut.getBytes(), new byte[] {0x04});
     }
 
     @Test
@@ -55,7 +66,6 @@ public class CompressionProfileTest {
         CompressionProfile uut = CompressionProfile.Main_4_2_2_12;
         assertEquals(uut.getDisplayName(), "Compression Profile");
         assertEquals(uut.getDisplayableValue(), "Main 4:2:2 12 (H.265)");
-        assertEquals(uut.getBytes(), new byte[] {0x05});
     }
 
     @Test
@@ -63,7 +73,6 @@ public class CompressionProfileTest {
         CompressionProfile uut = CompressionProfile.Main_4_4_4_12;
         assertEquals(uut.getDisplayName(), "Compression Profile");
         assertEquals(uut.getDisplayableValue(), "Main 4:4:4 12 (H.265)");
-        assertEquals(uut.getBytes(), new byte[] {0x06});
     }
 
     @Test
@@ -71,7 +80,6 @@ public class CompressionProfileTest {
         CompressionProfile uut = CompressionProfile.High_4_2_2;
         assertEquals(uut.getDisplayName(), "Compression Profile");
         assertEquals(uut.getDisplayableValue(), "High 4:2:2 (H.264)");
-        assertEquals(uut.getBytes(), new byte[] {0x07});
     }
 
     @Test
@@ -80,7 +88,6 @@ public class CompressionProfileTest {
         assertEquals(uut, CompressionProfile.High_4_4_4_Predictive_H264);
         assertEquals(uut.getDisplayName(), "Compression Profile");
         assertEquals(uut.getDisplayableValue(), "High 4:4:4 Predictive (H.264)");
-        assertEquals(uut.getBytes(), new byte[] {0x08});
     }
 
     @Test(expectedExceptions = KlvParseException.class)

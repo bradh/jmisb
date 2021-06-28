@@ -57,10 +57,6 @@ public class StreamBitrate implements IInterpretabilityQualityMetadataValue {
         return bitrate;
     }
 
-    public byte[] getBytes() {
-        return PrimitiveConverter.uint16ToBytes(bitrate);
-    }
-
     @Override
     public String getDisplayableValue() {
         if (bitrate < 1000) {
@@ -78,7 +74,7 @@ public class StreamBitrate implements IInterpretabilityQualityMetadataValue {
     @Override
     public void appendBytesToBuilder(ArrayBuilder arrayBuilder) {
         arrayBuilder.appendAsOID(InterpretabilityQualityMetadataKey.StreamBitrate.getIdentifier());
-        byte[] valueBytes = getBytes();
+        byte[] valueBytes = PrimitiveConverter.uint16ToBytes(bitrate);
         arrayBuilder.appendAsBerLength(valueBytes.length);
         arrayBuilder.append(valueBytes);
     }

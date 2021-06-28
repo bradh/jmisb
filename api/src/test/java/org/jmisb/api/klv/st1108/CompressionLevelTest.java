@@ -10,7 +10,6 @@ public class CompressionLevelTest {
     @Test
     public void testConstructFromValue() {
         CompressionLevel uut = new CompressionLevel("4.2");
-        assertEquals(uut.getBytes(), new byte[] {(byte) 0x34, (byte) 0x2E, (byte) 0x32});
         assertEquals(uut.getDisplayName(), "Compression Level");
         assertEquals(uut.getDisplayableValue(), "4.2");
         assertEquals(uut.getCompressionLevel(), "4.2");
@@ -19,7 +18,6 @@ public class CompressionLevelTest {
     @Test
     public void testConstructFromBytes() {
         CompressionLevel uut = new CompressionLevel(new byte[] {(byte) 0x35});
-        assertEquals(uut.getBytes(), new byte[] {(byte) 0x35});
         assertEquals(uut.getDisplayName(), "Compression Level");
         assertEquals(uut.getDisplayableValue(), "5");
         assertEquals(uut.getCompressionLevel(), "5");

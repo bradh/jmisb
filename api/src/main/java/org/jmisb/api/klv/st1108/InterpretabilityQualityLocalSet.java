@@ -88,16 +88,6 @@ public class InterpretabilityQualityLocalSet implements IMisbMessage {
         InterpretabilityQualityMetadataKey key =
                 InterpretabilityQualityMetadataKey.getKey(field.getTag());
         switch (key) {
-            case Undefined:
-                LOGGER.info(
-                        "Unknown Interpretability and Quality Metadata tag: {}", field.getTag());
-                break;
-            case CRC16CCITT:
-                if (!CrcCcitt.verify(bytes, field.getData())) {
-                    InvalidDataHandler handler = InvalidDataHandler.getInstance();
-                    handler.handleInvalidChecksum(LOGGER, "Bad checksum");
-                }
-                break;
             case AssessmentPoint:
                 map.put(key, AssessmentPoint.fromBytes(field.getData()));
                 break;
@@ -135,8 +125,15 @@ public class InterpretabilityQualityLocalSet implements IMisbMessage {
             case DocumentVersion:
                 map.put(key, new DocumentVersion(field.getData()));
                 break;
+            case CRC16CCITT:
+                if (!CrcCcitt.verify(bytes, field.getData())) {
+                    InvalidDataHandler handler = InvalidDataHandler.getInstance();
+                    handler.handleInvalidChecksum(LOGGER, "Bad checksum");
+                }
+                break;
             default:
-                throw new AssertionError(key.name());
+                LOGGER.info(
+                        "Unknown Interpretability and Quality Metadata tag: {}", field.getTag());
         }
     }
 

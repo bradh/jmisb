@@ -15,7 +15,6 @@ public class CompressionTypeTest {
         CompressionType uut = CompressionType.Uncompressed;
         assertEquals(uut.getDisplayName(), "Compression Type");
         assertEquals(uut.getDisplayableValue(), "Uncompressed");
-        assertEquals(uut.getBytes(), new byte[] {0x00});
     }
 
     @Test
@@ -23,7 +22,6 @@ public class CompressionTypeTest {
         CompressionType uut = CompressionType.H262;
         assertEquals(uut.getDisplayName(), "Compression Type");
         assertEquals(uut.getDisplayableValue(), "H.262 (MPEG-2)");
-        assertEquals(uut.getBytes(), new byte[] {0x01});
     }
 
     @Test
@@ -31,7 +29,6 @@ public class CompressionTypeTest {
         CompressionType uut = CompressionType.H264;
         assertEquals(uut.getDisplayName(), "Compression Type");
         assertEquals(uut.getDisplayableValue(), "H.264 (AVC)");
-        assertEquals(uut.getBytes(), new byte[] {0x02});
     }
 
     @Test
@@ -39,7 +36,6 @@ public class CompressionTypeTest {
         CompressionType uut = CompressionType.H265;
         assertEquals(uut.getDisplayName(), "Compression Type");
         assertEquals(uut.getDisplayableValue(), "H.265 (HEVC)");
-        assertEquals(uut.getBytes(), new byte[] {0x03});
     }
 
     @Test
@@ -48,7 +44,6 @@ public class CompressionTypeTest {
         assertEquals(uut, CompressionType.JPEG2000);
         assertEquals(uut.getDisplayName(), "Compression Type");
         assertEquals(uut.getDisplayableValue(), "JPEG2000");
-        assertEquals(uut.getBytes(), new byte[] {0x04});
     }
 
     @Test(expectedExceptions = KlvParseException.class)

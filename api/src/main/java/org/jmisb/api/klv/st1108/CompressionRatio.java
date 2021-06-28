@@ -66,10 +66,6 @@ public class CompressionRatio implements IInterpretabilityQualityMetadataValue {
         return compressionRatio;
     }
 
-    public byte[] getBytes() {
-        return PrimitiveConverter.float32ToBytes((float) compressionRatio);
-    }
-
     @Override
     public String getDisplayableValue() {
         return String.format("%.2f", compressionRatio);
@@ -84,7 +80,7 @@ public class CompressionRatio implements IInterpretabilityQualityMetadataValue {
     public void appendBytesToBuilder(ArrayBuilder arrayBuilder) {
         arrayBuilder.appendAsOID(
                 InterpretabilityQualityMetadataKey.CompressionRatio.getIdentifier());
-        byte[] valueBytes = getBytes();
+        byte[] valueBytes = PrimitiveConverter.float32ToBytes((float) compressionRatio);
         arrayBuilder.appendAsBerLength(valueBytes.length);
         arrayBuilder.append(valueBytes);
     }

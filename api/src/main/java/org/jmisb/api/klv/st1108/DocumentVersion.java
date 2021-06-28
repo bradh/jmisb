@@ -59,10 +59,6 @@ public class DocumentVersion implements IInterpretabilityQualityMetadataValue {
         return version;
     }
 
-    public byte[] getBytes() {
-        return PrimitiveConverter.uint8ToBytes((short) version);
-    }
-
     @Override
     public String getDisplayableValue() {
         return "ST 1108." + version;
@@ -77,7 +73,7 @@ public class DocumentVersion implements IInterpretabilityQualityMetadataValue {
     public void appendBytesToBuilder(ArrayBuilder arrayBuilder) {
         arrayBuilder.appendAsOID(
                 InterpretabilityQualityMetadataKey.DocumentVersion.getIdentifier());
-        byte[] valueBytes = getBytes();
+        byte[] valueBytes = PrimitiveConverter.uint8ToBytes((short) version);
         arrayBuilder.appendAsBerLength(valueBytes.length);
         arrayBuilder.append(valueBytes);
     }

@@ -86,6 +86,13 @@ public class WindowCornersPack implements IInterpretabilityQualityMetadataValue 
         }
     }
 
+    /**
+     * Get the value as a byte array.
+     *
+     * <p>This is the V part of a TLV encoding.
+     *
+     * @return the value of this pack, as a byte array.
+     */
     public byte[] getBytes() {
         ArrayBuilder arrayBuilder = new ArrayBuilder();
         arrayBuilder.appendAsOID(startingRow);

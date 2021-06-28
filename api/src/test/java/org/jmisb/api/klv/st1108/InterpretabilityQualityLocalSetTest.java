@@ -2,15 +2,29 @@ package org.jmisb.api.klv.st1108;
 
 import static org.testng.Assert.*;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.Set;
+import java.util.TreeMap;
 import org.jmisb.api.common.KlvParseException;
+import org.jmisb.api.klv.ArrayBuilder;
 import org.jmisb.api.klv.IKlvKey;
 import org.jmisb.api.klv.IKlvValue;
 import org.jmisb.api.klv.KlvConstants;
 import org.jmisb.api.klv.LoggerChecks;
+import org.jmisb.api.klv.st0603.ST0603TimeStamp;
+import org.jmisb.api.klv.st1108.metric.IMetricLocalSetValue;
+import org.jmisb.api.klv.st1108.metric.MetricImplementer;
 import org.jmisb.api.klv.st1108.metric.MetricLocalSet;
 import org.jmisb.api.klv.st1108.metric.MetricLocalSetKey;
 import org.jmisb.api.klv.st1108.metric.MetricLocalSets;
+import org.jmisb.api.klv.st1108.metric.MetricName;
+import org.jmisb.api.klv.st1108.metric.MetricParameters;
+import org.jmisb.api.klv.st1108.metric.MetricTime;
+import org.jmisb.api.klv.st1108.metric.MetricValue;
+import org.jmisb.api.klv.st1108.metric.MetricVersion;
 import org.testng.annotations.Test;
 
 /** Tests for the ST 1108 Interpretability and Quality Local Set. */
@@ -375,16 +389,7 @@ public class InterpretabilityQualityLocalSetTest extends LoggerChecks {
         assertEquals(localSet.displayHeader(), "ST 1108 Interpretability and Quality");
         assertEquals(localSet.getUniversalLabel(), KlvConstants.InterpretabilityQualityLocalSetUl);
         assertEquals(localSet.getIdentifiers().size(), 10);
-        checkAssessmentPoint(localSet);
-        checkMetricPeriodPack(localSet);
-        checkWindowCornersPack(localSet);
-        checkSingleMetricLocalSet(localSet);
-        checkCompressionType(localSet);
-        checkCompressionProfile(localSet);
-        checkCompressionLevel(localSet);
-        checkCompressionRatio(localSet);
-        checkStreamBitrate(localSet);
-        checkDocumentVersion(localSet);
+        checkManyValues(localSet);
         assertEquals(localSet.frameMessage(false), manyTagsBytes);
     }
 
@@ -570,6 +575,166 @@ public class InterpretabilityQualityLocalSetTest extends LoggerChecks {
     }
 
     @Test
+    public void fromValuesMany() throws KlvParseException {
+        Map<InterpretabilityQualityMetadataKey, IInterpretabilityQualityMetadataValue> values =
+                new TreeMap<>();
+        values.put(InterpretabilityQualityMetadataKey.AssessmentPoint, AssessmentPoint.GCSTransmit);
+        values.put(
+                InterpretabilityQualityMetadataKey.MetricPeriodPack,
+                new MetricPeriodPack(new ST0603TimeStamp(987654321000000L), 909322));
+        values.put(
+                InterpretabilityQualityMetadataKey.WindowCornersPack,
+                new WindowCornersPack(1, 2, 516, 775));
+        MetricLocalSet metric = buildMetric();
+        MetricLocalSets metricLocalSets = new MetricLocalSets(metric);
+        values.put(InterpretabilityQualityMetadataKey.MetricLocalSets, metricLocalSets);
+        values.put(InterpretabilityQualityMetadataKey.CompressionType, CompressionType.H264);
+        values.put(
+                InterpretabilityQualityMetadataKey.CompressionProfile,
+                CompressionProfile.High_4_2_2);
+        values.put(
+                InterpretabilityQualityMetadataKey.CompressionLevel, new CompressionLevel("4.1"));
+        values.put(
+                InterpretabilityQualityMetadataKey.CompressionRatio, new CompressionRatio(25.20));
+        values.put(InterpretabilityQualityMetadataKey.StreamBitrate, new StreamBitrate(1025));
+        values.put(InterpretabilityQualityMetadataKey.DocumentVersion, new DocumentVersion(3));
+        InterpretabilityQualityLocalSet localSet = new InterpretabilityQualityLocalSet(values);
+        assertNotNull(localSet);
+        assertEquals(localSet.displayHeader(), "ST 1108 Interpretability and Quality");
+        assertEquals(localSet.getUniversalLabel(), KlvConstants.InterpretabilityQualityLocalSetUl);
+        assertEquals(localSet.getIdentifiers().size(), 10);
+        checkManyValues(localSet);
+        assertEquals(localSet.frameMessage(false), manyTagsBytes);
+    }
+
+    @Test
+    public void fromValuesManyWithCRC16Ignored() throws KlvParseException {
+        Map<InterpretabilityQualityMetadataKey, IInterpretabilityQualityMetadataValue> values =
+                new TreeMap<>();
+        values.put(InterpretabilityQualityMetadataKey.AssessmentPoint, AssessmentPoint.GCSTransmit);
+        values.put(
+                InterpretabilityQualityMetadataKey.MetricPeriodPack,
+                new MetricPeriodPack(new ST0603TimeStamp(987654321000000L), 909322));
+        values.put(
+                InterpretabilityQualityMetadataKey.WindowCornersPack,
+                new WindowCornersPack(1, 2, 516, 775));
+        MetricLocalSet metric = buildMetric();
+        MetricLocalSets metricLocalSets = new MetricLocalSets(metric);
+        values.put(InterpretabilityQualityMetadataKey.MetricLocalSets, metricLocalSets);
+        values.put(InterpretabilityQualityMetadataKey.CompressionType, CompressionType.H264);
+        values.put(
+                InterpretabilityQualityMetadataKey.CompressionProfile,
+                CompressionProfile.High_4_2_2);
+        values.put(
+                InterpretabilityQualityMetadataKey.CompressionLevel, new CompressionLevel("4.1"));
+        values.put(
+                InterpretabilityQualityMetadataKey.CompressionRatio, new CompressionRatio(25.20));
+        values.put(InterpretabilityQualityMetadataKey.StreamBitrate, new StreamBitrate(1025));
+        values.put(InterpretabilityQualityMetadataKey.DocumentVersion, new DocumentVersion(3));
+        values.put(
+                InterpretabilityQualityMetadataKey.CRC16CCITT,
+                new IInterpretabilityQualityMetadataValue() {
+                    @Override
+                    public void appendBytesToBuilder(ArrayBuilder arrayBuilder) {
+                        arrayBuilder.append(new byte[] {0x7F, 0x7F, 0x7F, 0x7F});
+                    }
+
+                    @Override
+                    public String getDisplayName() {
+                        return "Dummy Name";
+                    }
+
+                    @Override
+                    public String getDisplayableValue() {
+                        return "Dummy Value";
+                    }
+                });
+        InterpretabilityQualityLocalSet localSet = new InterpretabilityQualityLocalSet(values);
+        assertNotNull(localSet);
+        assertEquals(localSet.displayHeader(), "ST 1108 Interpretability and Quality");
+        assertEquals(localSet.getUniversalLabel(), KlvConstants.InterpretabilityQualityLocalSetUl);
+        assertEquals(localSet.getIdentifiers().size(), 11);
+        checkManyValues(localSet);
+        assertEquals(localSet.frameMessage(false), manyTagsBytes);
+    }
+
+    private void checkManyValues(InterpretabilityQualityLocalSet localSet) {
+        checkAssessmentPoint(localSet);
+        checkMetricPeriodPack(localSet);
+        checkWindowCornersPack(localSet);
+        checkSingleMetricLocalSet(localSet);
+        checkCompressionType(localSet);
+        checkCompressionProfile(localSet);
+        checkCompressionLevel(localSet);
+        checkCompressionRatio(localSet);
+        checkStreamBitrate(localSet);
+        checkDocumentVersion(localSet);
+    }
+
+    private MetricLocalSet buildMetric() {
+        Map<MetricLocalSetKey, IMetricLocalSetValue> map = new HashMap<>();
+        map.put(MetricLocalSetKey.MetricName, new MetricName("RER"));
+        map.put(MetricLocalSetKey.MetricVersion, new MetricVersion("1.38"));
+        map.put(MetricLocalSetKey.MetricImplementer, new MetricImplementer("My Org", "My group"));
+        map.put(MetricLocalSetKey.MetricParameters, new MetricParameters("ü,AB:324"));
+        map.put(
+                MetricLocalSetKey.MetricTime,
+                new MetricTime(new ST0603TimeStamp(1624592992065536L)));
+        map.put(MetricLocalSetKey.MetricValue, new MetricValue(0.34));
+        return MetricLocalSet.fromMap(map);
+    }
+
+    private MetricLocalSet buildSecondMetric() {
+        Map<MetricLocalSetKey, IMetricLocalSetValue> map = new HashMap<>();
+        map.put(MetricLocalSetKey.MetricName, new MetricName("PSNR"));
+        return MetricLocalSet.fromMap(map);
+    }
+
+    @Test
+    public void fromValuesTwoMetrics() throws KlvParseException {
+        Map<InterpretabilityQualityMetadataKey, IInterpretabilityQualityMetadataValue> values =
+                new TreeMap<>();
+        values.put(InterpretabilityQualityMetadataKey.AssessmentPoint, AssessmentPoint.GCSTransmit);
+        values.put(
+                InterpretabilityQualityMetadataKey.MetricPeriodPack,
+                new MetricPeriodPack(new ST0603TimeStamp(987654321000000L), 909322));
+        values.put(
+                InterpretabilityQualityMetadataKey.WindowCornersPack,
+                new WindowCornersPack(1, 2, 516, 775));
+        List<MetricLocalSet> metrics = new ArrayList<>();
+        metrics.add(buildMetric());
+        metrics.add(buildSecondMetric());
+        MetricLocalSets metricLocalSets = new MetricLocalSets(metrics);
+        values.put(InterpretabilityQualityMetadataKey.MetricLocalSets, metricLocalSets);
+        values.put(InterpretabilityQualityMetadataKey.CompressionType, CompressionType.H264);
+        values.put(
+                InterpretabilityQualityMetadataKey.CompressionProfile,
+                CompressionProfile.High_4_2_2);
+        values.put(
+                InterpretabilityQualityMetadataKey.CompressionLevel, new CompressionLevel("4.1"));
+        values.put(
+                InterpretabilityQualityMetadataKey.CompressionRatio, new CompressionRatio(25.20));
+        values.put(InterpretabilityQualityMetadataKey.StreamBitrate, new StreamBitrate(1025));
+        values.put(InterpretabilityQualityMetadataKey.DocumentVersion, new DocumentVersion(3));
+        InterpretabilityQualityLocalSet localSet = new InterpretabilityQualityLocalSet(values);
+        assertNotNull(localSet);
+        assertEquals(localSet.displayHeader(), "ST 1108 Interpretability and Quality");
+        assertEquals(localSet.getUniversalLabel(), KlvConstants.InterpretabilityQualityLocalSetUl);
+        assertEquals(localSet.getIdentifiers().size(), 10);
+        checkAssessmentPoint(localSet);
+        checkMetricPeriodPack(localSet);
+        checkWindowCornersPack(localSet);
+        checkTwoMetricLocalSet(localSet);
+        checkCompressionType(localSet);
+        checkCompressionProfile(localSet);
+        checkCompressionLevel(localSet);
+        checkCompressionRatio(localSet);
+        checkStreamBitrate(localSet);
+        checkDocumentVersion(localSet);
+        assertEquals(localSet.frameMessage(false), twoMetricBytes);
+    }
+
+    @Test
     public void parseWithTwoMetrics() throws KlvParseException {
         InterpretabilityQualityLocalSet localSet =
                 new InterpretabilityQualityLocalSet(twoMetricBytes);
@@ -588,5 +753,13 @@ public class InterpretabilityQualityLocalSetTest extends LoggerChecks {
         checkStreamBitrate(localSet);
         checkDocumentVersion(localSet);
         assertEquals(localSet.frameMessage(false), twoMetricBytes);
+    }
+
+    @Test(expectedExceptions = IllegalArgumentException.class)
+    public void badNesting() throws KlvParseException {
+        InterpretabilityQualityLocalSet localSet =
+                new InterpretabilityQualityLocalSet(twoMetricBytes);
+        assertEquals(localSet.getIdentifiers().size(), 10);
+        localSet.frameMessage(true);
     }
 }

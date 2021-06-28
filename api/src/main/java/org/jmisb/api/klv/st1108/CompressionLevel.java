@@ -57,10 +57,6 @@ public class CompressionLevel implements IInterpretabilityQualityMetadataValue {
         return level;
     }
 
-    public byte[] getBytes() {
-        return level.getBytes(StandardCharsets.UTF_8);
-    }
-
     @Override
     public String getDisplayableValue() {
         return getCompressionLevel();
@@ -75,7 +71,7 @@ public class CompressionLevel implements IInterpretabilityQualityMetadataValue {
     public void appendBytesToBuilder(ArrayBuilder arrayBuilder) {
         arrayBuilder.appendAsOID(
                 InterpretabilityQualityMetadataKey.CompressionLevel.getIdentifier());
-        byte[] valueBytes = getBytes();
+        byte[] valueBytes = level.getBytes(StandardCharsets.UTF_8);
         arrayBuilder.appendAsBerLength(valueBytes.length);
         arrayBuilder.append(valueBytes);
     }

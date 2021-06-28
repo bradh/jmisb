@@ -91,10 +91,6 @@ public enum CompressionProfile implements IInterpretabilityQualityMetadataValue 
 
     private byte value;
 
-    public byte[] getBytes() {
-        return new byte[] {(byte) value};
-    }
-
     @Override
     public String getDisplayName() {
         return "Compression Profile";
@@ -134,7 +130,7 @@ public enum CompressionProfile implements IInterpretabilityQualityMetadataValue 
     public void appendBytesToBuilder(ArrayBuilder arrayBuilder) {
         arrayBuilder.appendAsOID(
                 InterpretabilityQualityMetadataKey.CompressionProfile.getIdentifier());
-        byte[] valueBytes = getBytes();
+        byte[] valueBytes = new byte[] {(byte) value};
         arrayBuilder.appendAsBerLength(valueBytes.length);
         arrayBuilder.append(valueBytes);
     }

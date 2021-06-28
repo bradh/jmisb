@@ -15,7 +15,14 @@ public class AssessmentPointTest {
         AssessmentPoint uut = AssessmentPoint.Sensor;
         assertEquals(uut.getDisplayName(), "Assessment Point");
         assertEquals(uut.getDisplayableValue(), "Sensor");
-        assertEquals(uut.getBytes(), new byte[] {0x01});
+    }
+
+    @Test
+    public void sensorFromBytes() throws KlvParseException {
+        AssessmentPoint uut = AssessmentPoint.fromBytes(new byte[] {0x01});
+        assertEquals(uut, AssessmentPoint.Sensor);
+        assertEquals(uut.getDisplayName(), "Assessment Point");
+        assertEquals(uut.getDisplayableValue(), "Sensor");
     }
 
     @Test
@@ -23,7 +30,14 @@ public class AssessmentPointTest {
         AssessmentPoint uut = AssessmentPoint.SensorEncoder;
         assertEquals(uut.getDisplayName(), "Assessment Point");
         assertEquals(uut.getDisplayableValue(), "Sensor Encoder");
-        assertEquals(uut.getBytes(), new byte[] {0x02});
+    }
+
+    @Test
+    public void sensorEncoderFromBytes() throws KlvParseException {
+        AssessmentPoint uut = AssessmentPoint.fromBytes(new byte[] {0x02});
+        assertEquals(uut, AssessmentPoint.SensorEncoder);
+        assertEquals(uut.getDisplayName(), "Assessment Point");
+        assertEquals(uut.getDisplayableValue(), "Sensor Encoder");
     }
 
     @Test
@@ -31,7 +45,6 @@ public class AssessmentPointTest {
         AssessmentPoint uut = AssessmentPoint.GCSReceived;
         assertEquals(uut.getDisplayName(), "Assessment Point");
         assertEquals(uut.getDisplayableValue(), "GCS Received");
-        assertEquals(uut.getBytes(), new byte[] {0x03});
     }
 
     @Test
@@ -39,7 +52,6 @@ public class AssessmentPointTest {
         AssessmentPoint uut = AssessmentPoint.GCSTransmit;
         assertEquals(uut.getDisplayName(), "Assessment Point");
         assertEquals(uut.getDisplayableValue(), "GCS Transmit");
-        assertEquals(uut.getBytes(), new byte[] {0x04});
     }
 
     @Test
@@ -48,7 +60,6 @@ public class AssessmentPointTest {
         assertEquals(uut, AssessmentPoint.LibraryArchive);
         assertEquals(uut.getDisplayName(), "Assessment Point");
         assertEquals(uut.getDisplayableValue(), "Library/Archive");
-        assertEquals(uut.getBytes(), new byte[] {0x05});
     }
 
     @Test(expectedExceptions = KlvParseException.class)

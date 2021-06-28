@@ -10,7 +10,6 @@ public class StreamBitrateTest {
     @Test
     public void testConstructFromValue() {
         StreamBitrate uut = new StreamBitrate(3);
-        assertEquals(uut.getBytes(), new byte[] {(byte) 0x00, (byte) 0x03});
         assertEquals(uut.getDisplayName(), "Stream Bitrate");
         assertEquals(uut.getDisplayableValue(), "3 Kbits/sec");
         assertEquals(uut.getBitrate(), 3);
@@ -19,7 +18,6 @@ public class StreamBitrateTest {
     @Test
     public void testConstructFromEncodedBytes() {
         StreamBitrate uut = new StreamBitrate(new byte[] {(byte) 0x03, (byte) 0xe7});
-        assertEquals(uut.getBytes(), new byte[] {(byte) 0x03, (byte) 0xe7});
         assertEquals(uut.getDisplayName(), "Stream Bitrate");
         assertEquals(uut.getDisplayableValue(), "999 Kbits/sec");
         assertEquals(uut.getBitrate(), 999);
@@ -28,7 +26,6 @@ public class StreamBitrateTest {
     @Test
     public void testConstructFromEncodedBytesMax() {
         StreamBitrate uut = new StreamBitrate(new byte[] {(byte) 0xFF, (byte) 0xFF});
-        assertEquals(uut.getBytes(), new byte[] {(byte) 0xFF, (byte) 0xFF});
         assertEquals(uut.getDisplayName(), "Stream Bitrate");
         assertEquals(uut.getDisplayableValue(), "65.535 Mbits/sec");
         assertEquals(uut.getBitrate(), 65535);
