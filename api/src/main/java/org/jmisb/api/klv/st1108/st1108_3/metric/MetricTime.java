@@ -32,7 +32,7 @@ public class MetricTime implements IMetricLocalSetValue {
     /**
      * Create from encoded bytes.
      *
-     * @param bytes Byte array of length 12 bytes.
+     * @param bytes Byte array of length 8 bytes.
      */
     public MetricTime(byte[] bytes) {
         if (bytes.length != REQUIRED_BYTES) {

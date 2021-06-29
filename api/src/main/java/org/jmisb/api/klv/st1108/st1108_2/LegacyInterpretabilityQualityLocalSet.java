@@ -67,6 +67,9 @@ public class LegacyInterpretabilityQualityLocalSet implements IMisbMessage {
         LegacyMetadataKey key = LegacyMetadataKey.getKey(field.getTag());
         switch (key) {
             case MostRecentFrameTime:
+                map.put(
+                        LegacyMetadataKey.MostRecentFrameTime,
+                        new MostRecentFrameTime(field.getData()));
                 break;
             case VideoInterpretability:
                 map.put(
@@ -95,6 +98,9 @@ public class LegacyInterpretabilityQualityLocalSet implements IMisbMessage {
                 map.put(LegacyMetadataKey.RatingDuration, new RatingDuration(field.getData()));
                 break;
             case MIQPakInsertionTime:
+                map.put(
+                        LegacyMetadataKey.MIQPakInsertionTime,
+                        new MIQPakInsertionTime(field.getData()));
                 break;
             case ChipLocationSizeBitDepth:
                 break;
