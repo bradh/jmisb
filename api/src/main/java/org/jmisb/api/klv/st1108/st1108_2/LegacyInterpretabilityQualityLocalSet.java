@@ -66,6 +66,52 @@ public class LegacyInterpretabilityQualityLocalSet implements IMisbMessage {
             throws KlvParseException, AssertionError {
         LegacyMetadataKey key = LegacyMetadataKey.getKey(field.getTag());
         switch (key) {
+            case MostRecentFrameTime:
+                break;
+            case VideoInterpretability:
+                map.put(
+                        LegacyMetadataKey.VideoInterpretability,
+                        new VideoInterpretability(field.getData()));
+                break;
+            case VideoQuality:
+                map.put(LegacyMetadataKey.VideoQuality, new VideoQuality(field.getData()));
+                break;
+            case InterpretabilityQualityMethod:
+                map.put(
+                        LegacyMetadataKey.InterpretabilityQualityMethod,
+                        new QualityMethod(field.getData()));
+                break;
+            case PSNRCoefficientIdentifier:
+                map.put(
+                        LegacyMetadataKey.PSNRCoefficientIdentifier,
+                        new PSNRCoefficientIdentifier(field.getData()));
+                break;
+            case QualityCoefficientIdentifier:
+                map.put(
+                        LegacyMetadataKey.QualityCoefficientIdentifier,
+                        new QualityCoefficientIdentifier(field.getData()));
+                break;
+            case RatingDuration:
+                map.put(LegacyMetadataKey.RatingDuration, new RatingDuration(field.getData()));
+                break;
+            case MIQPakInsertionTime:
+                break;
+            case ChipLocationSizeBitDepth:
+                break;
+            case ChipYvaluesUncompressed:
+                break;
+            case ChipYvaluesPNG:
+                break;
+            case ChipEdgeIntensity:
+                map.put(
+                        LegacyMetadataKey.ChipEdgeIntensity,
+                        new ChipEdgeIntensity(field.getData()));
+                break;
+            case ChipFrequencyRatio:
+                break;
+            case ChipPSNR:
+                map.put(LegacyMetadataKey.ChipPSNR, new ChipPSNR(field.getData()));
+                break;
             default:
                 LOGGER.info(
                         "Unknown Legacy Interpretability and Quality Metadata tag: {}",
