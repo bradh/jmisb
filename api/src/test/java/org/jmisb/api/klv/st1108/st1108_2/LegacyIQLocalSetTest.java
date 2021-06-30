@@ -3,6 +3,8 @@ package org.jmisb.api.klv.st1108.st1108_2;
 import static org.testng.Assert.*;
 
 import java.util.List;
+import java.util.Map;
+import java.util.TreeMap;
 import org.jmisb.api.common.KlvParseException;
 import org.jmisb.api.klv.BerDecoder;
 import org.jmisb.api.klv.BerField;
@@ -12,6 +14,8 @@ import org.jmisb.api.klv.LdsField;
 import org.jmisb.api.klv.LdsParser;
 import org.jmisb.api.klv.LoggerChecks;
 import org.jmisb.api.klv.UniversalLabel;
+import org.jmisb.api.klv.st0603.ST0603TimeStamp;
+import org.jmisb.api.klv.st1108.IInterpretabilityQualityMetadataValue;
 import org.testng.annotations.Test;
 
 /** Tests for the (legacy) ST 1108.2 Interpretability and Quality Local Set. */
@@ -1483,9 +1487,44 @@ public class LegacyIQLocalSetTest extends LoggerChecks {
 
     @Test
     public void parseTagsMany() throws KlvParseException {
-
         List<LdsField> fields = getFields(manyTagsBytes);
         LegacyIQLocalSet localSet = LegacyIQLocalSet.fromST1108_2Fields(fields, manyTagsBytes);
+        assertNotNull(localSet);
+        assertEquals(localSet.displayHeader(), "ST 1108 Legacy Interpretability and Quality");
+        assertEquals(localSet.getUniversalLabel(), KlvConstants.InterpretabilityQualityLocalSetUl);
+        assertEquals(localSet.getIdentifiers().size(), 14);
+        checkManyValues(localSet);
+        assertEquals(localSet.frameMessage(false), manyTagsBytes);
+    }
+
+    @Test
+    public void fromValuesMany() throws KlvParseException {
+        Map<LegacyIQMetadataKey, IInterpretabilityQualityMetadataValue> values = new TreeMap<>();
+        values.put(
+                LegacyIQMetadataKey.MostRecentFrameTime,
+                new MostRecentFrameTime(new ST0603TimeStamp(9)));
+        values.put(LegacyIQMetadataKey.VideoInterpretability, new VideoInterpretability(6));
+        values.put(LegacyIQMetadataKey.VideoQuality, new VideoQuality(96));
+        values.put(LegacyIQMetadataKey.InterpretabilityQualityMethod, new QualityMethod(0));
+        values.put(LegacyIQMetadataKey.PSNRCoefficientIdentifier, new PSNRCoefficientIdentifier(2));
+        values.put(
+                LegacyIQMetadataKey.QualityCoefficientIdentifier,
+                new QualityCoefficientIdentifier(4));
+        values.put(LegacyIQMetadataKey.RatingDuration, new RatingDuration(640));
+        values.put(
+                LegacyIQMetadataKey.MIQPakInsertionTime,
+                new MIQPakInsertionTime(new ST0603TimeStamp(32)));
+        values.put(
+                LegacyIQMetadataKey.ChipLocationSizeBitDepth,
+                new ChipLocationSizeBitDepth(87, 346, 32, 8));
+        values.put(
+                LegacyIQMetadataKey.ChipYvaluesUncompressed,
+                new ChipValuesUncompressed(fillByteArray(1024)));
+        values.put(LegacyIQMetadataKey.ChipYvaluesPNG, new ChipValuesPNG(fillByteArray(324)));
+        values.put(LegacyIQMetadataKey.ChipEdgeIntensity, new ChipEdgeIntensity(126));
+        values.put(LegacyIQMetadataKey.ChipFrequencyRatio, new ChipFrequencyRatio(1));
+        values.put(LegacyIQMetadataKey.ChipPSNR, new ChipPSNR(48));
+        LegacyIQLocalSet localSet = new LegacyIQLocalSet(values);
         assertNotNull(localSet);
         assertEquals(localSet.displayHeader(), "ST 1108 Legacy Interpretability and Quality");
         assertEquals(localSet.getUniversalLabel(), KlvConstants.InterpretabilityQualityLocalSetUl);
@@ -1679,5 +1718,13 @@ public class LegacyIQLocalSetTest extends LoggerChecks {
         List<LdsField> fields = getFields(manyTagsBytes);
         LegacyIQLocalSet localSet = LegacyIQLocalSet.fromST1108_2Fields(fields, manyTagsBytes);
         localSet.frameMessage(true);
+    }
+
+    private byte[] fillByteArray(int length) {
+        byte[] bytes = new byte[length];
+        for (int i = 0; i < length; i++) {
+            bytes[i] = (byte) (i % 256);
+        }
+        return bytes;
     }
 }

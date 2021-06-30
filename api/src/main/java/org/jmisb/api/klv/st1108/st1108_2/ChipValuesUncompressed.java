@@ -24,7 +24,7 @@ public class ChipValuesUncompressed implements IInterpretabilityQualityMetadataV
     }
 
     /**
-     * Get the bytes
+     * Get the bytes.
      *
      * @return The bytes for the uncompressed values.
      */
