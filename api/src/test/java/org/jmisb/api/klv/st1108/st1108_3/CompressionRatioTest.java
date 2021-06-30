@@ -33,6 +33,25 @@ public class CompressionRatioTest {
         assertEquals(uut.getCompressionRatio(), 25.200000, 0.00001);
     }
 
+    @Test
+    public void testConstructFromEncodedBytes8() {
+        CompressionRatio uut =
+                new CompressionRatio(
+                        new byte[] {
+                            (byte) 0x40,
+                            (byte) 0x39,
+                            (byte) 0x33,
+                            (byte) 0x33,
+                            (byte) 0x33,
+                            (byte) 0x33,
+                            (byte) 0x33,
+                            (byte) 0x33
+                        });
+        assertEquals(uut.getDisplayName(), "Compression Ratio");
+        assertEquals(uut.getDisplayableValue(), "25.20");
+        assertEquals(uut.getCompressionRatio(), 25.200000, 0.00001);
+    }
+
     @Test(expectedExceptions = IllegalArgumentException.class)
     public void testTooSmall() {
         new CompressionRatio(-1.0);
