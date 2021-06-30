@@ -9,8 +9,8 @@ import org.jmisb.api.klv.IMisbMessageFactory;
 import org.jmisb.api.klv.LdsField;
 import org.jmisb.api.klv.LdsParser;
 import org.jmisb.api.klv.UniversalLabel;
-import org.jmisb.api.klv.st1108.st1108_2.LegacyInterpretabilityQualityLocalSet;
-import org.jmisb.api.klv.st1108.st1108_3.InterpretabilityQualityLocalSet;
+import org.jmisb.api.klv.st1108.st1108_2.LegacyIQLocalSet;
+import org.jmisb.api.klv.st1108.st1108_3.IQLocalSet;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -32,9 +32,9 @@ public class InterpretabilityQualityLocalSetFactory implements IMisbMessageFacto
         int version = getVersion(fields);
         switch (version) {
             case ST1108_2_VERSION:
-                return LegacyInterpretabilityQualityLocalSet.fromST1108_2Fields(fields, bytes);
+                return LegacyIQLocalSet.fromST1108_2Fields(fields, bytes);
             case ST1108_3_VERSION:
-                return InterpretabilityQualityLocalSet.fromST1108_3Fields(fields, bytes);
+                return IQLocalSet.fromST1108_3Fields(fields, bytes);
             default:
                 LOGGER.warn("Unsupported/unknown ST 1108 version");
                 return null;

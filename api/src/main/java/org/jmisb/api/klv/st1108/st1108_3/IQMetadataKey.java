@@ -10,7 +10,7 @@ import org.jmisb.api.klv.IKlvKey;
  * <p>Earlier version of ST 1108 used different tags, and this enumeration is not applicable to
  * messages using that version of the local set.
  */
-public enum InterpretabilityQualityMetadataKey implements IKlvKey {
+public enum IQMetadataKey implements IKlvKey {
     /**
      * Unknown key.
      *
@@ -90,16 +90,15 @@ public enum InterpretabilityQualityMetadataKey implements IKlvKey {
 
     private int tag;
 
-    private static final Map<Integer, InterpretabilityQualityMetadataKey> tagTable =
-            new HashMap<>();
+    private static final Map<Integer, IQMetadataKey> tagTable = new HashMap<>();
 
     static {
-        for (InterpretabilityQualityMetadataKey key : values()) {
+        for (IQMetadataKey key : values()) {
             tagTable.put(key.tag, key);
         }
     }
 
-    InterpretabilityQualityMetadataKey(int tag) {
+    IQMetadataKey(int tag) {
         this.tag = tag;
     }
 
@@ -119,7 +118,7 @@ public enum InterpretabilityQualityMetadataKey implements IKlvKey {
      * @param tag the integer tag value to look up
      * @return corresponding metadata key, or Undefined if the key is not known / valid.
      */
-    public static InterpretabilityQualityMetadataKey getKey(int tag) {
+    public static IQMetadataKey getKey(int tag) {
         return tagTable.getOrDefault(tag, Undefined);
     }
 }

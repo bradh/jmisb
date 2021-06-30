@@ -129,8 +129,7 @@ public enum CompressionProfile implements IInterpretabilityQualityMetadataValue 
 
     @Override
     public void appendBytesToBuilder(ArrayBuilder arrayBuilder) {
-        arrayBuilder.appendAsOID(
-                InterpretabilityQualityMetadataKey.CompressionProfile.getIdentifier());
+        arrayBuilder.appendAsOID(IQMetadataKey.CompressionProfile.getIdentifier());
         byte[] valueBytes = new byte[] {(byte) value};
         arrayBuilder.appendAsBerLength(valueBytes.length);
         arrayBuilder.append(valueBytes);

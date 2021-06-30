@@ -10,7 +10,7 @@ import org.jmisb.api.klv.IKlvKey;
  * <p>Later versions of ST 1108 use different tags, and this enumeration is not applicable to
  * messages using that version of the local set.
  */
-public enum LegacyMetadataKey implements IKlvKey {
+public enum LegacyIQMetadataKey implements IKlvKey {
     /**
      * Unknown key.
      *
@@ -34,15 +34,15 @@ public enum LegacyMetadataKey implements IKlvKey {
 
     private int tag;
 
-    private static final Map<Integer, LegacyMetadataKey> tagTable = new HashMap<>();
+    private static final Map<Integer, LegacyIQMetadataKey> tagTable = new HashMap<>();
 
     static {
-        for (LegacyMetadataKey key : values()) {
+        for (LegacyIQMetadataKey key : values()) {
             tagTable.put(key.tag, key);
         }
     }
 
-    LegacyMetadataKey(int tag) {
+    LegacyIQMetadataKey(int tag) {
         this.tag = tag;
     }
 
@@ -62,7 +62,7 @@ public enum LegacyMetadataKey implements IKlvKey {
      * @param tag the integer tag value to look up
      * @return corresponding metadata key, or Undefined if the key is not known / valid.
      */
-    public static LegacyMetadataKey getKey(int tag) {
+    public static LegacyIQMetadataKey getKey(int tag) {
         return tagTable.getOrDefault(tag, Undefined);
     }
 }

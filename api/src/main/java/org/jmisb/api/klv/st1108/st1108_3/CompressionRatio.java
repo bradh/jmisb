@@ -79,8 +79,7 @@ public class CompressionRatio implements IInterpretabilityQualityMetadataValue {
 
     @Override
     public void appendBytesToBuilder(ArrayBuilder arrayBuilder) {
-        arrayBuilder.appendAsOID(
-                InterpretabilityQualityMetadataKey.CompressionRatio.getIdentifier());
+        arrayBuilder.appendAsOID(IQMetadataKey.CompressionRatio.getIdentifier());
         byte[] valueBytes = PrimitiveConverter.float32ToBytes((float) compressionRatio);
         arrayBuilder.appendAsBerLength(valueBytes.length);
         arrayBuilder.append(valueBytes);

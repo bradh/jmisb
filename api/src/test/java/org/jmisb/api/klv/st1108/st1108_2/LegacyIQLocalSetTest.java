@@ -15,9 +15,9 @@ import org.jmisb.api.klv.UniversalLabel;
 import org.testng.annotations.Test;
 
 /** Tests for the (legacy) ST 1108.2 Interpretability and Quality Local Set. */
-public class LegacyInterpretabilityQualityLocalSetTest extends LoggerChecks {
-    LegacyInterpretabilityQualityLocalSetTest() {
-        super(LegacyInterpretabilityQualityLocalSet.class);
+public class LegacyIQLocalSetTest extends LoggerChecks {
+    LegacyIQLocalSetTest() {
+        super(LegacyIQLocalSet.class);
     }
 
     private static List<LdsField> getFields(final byte[] bytes)
@@ -38,7 +38,7 @@ public class LegacyInterpretabilityQualityLocalSetTest extends LoggerChecks {
                 };
         List<LdsField> fields = getFields(bytes);
         verifyNoLoggerMessages();
-        LegacyInterpretabilityQualityLocalSet.fromST1108_2Fields(fields, bytes);
+        LegacyIQLocalSet.fromST1108_2Fields(fields, bytes);
         verifySingleLoggerMessage("Unknown Legacy Interpretability and Quality Metadata tag: 127");
     }
 
@@ -60,7 +60,7 @@ public class LegacyInterpretabilityQualityLocalSetTest extends LoggerChecks {
                 0x00,
                 0x00,
                 0x00,
-                0x2e,
+                0x3C,
                 0x01,
                 0x08,
                 (byte) 0x00,
@@ -100,10 +100,24 @@ public class LegacyInterpretabilityQualityLocalSetTest extends LoggerChecks {
                 (byte) 0x00,
                 (byte) 0x00,
                 (byte) 0x20,
+                0x09,
+                0x08,
+                (byte) 0x00,
+                (byte) 0x57,
+                (byte) 0x01,
+                (byte) 0x5a,
+                (byte) 0x00,
+                (byte) 0x20,
+                (byte) 0x00,
+                (byte) 0x08,
                 0x0c,
                 0x02,
                 (byte) 0x00,
                 (byte) 0x7e,
+                0x0d,
+                0x02,
+                (byte) 0x00,
+                (byte) 0x01,
                 0x0e,
                 0x01,
                 (byte) 0x30
@@ -113,17 +127,16 @@ public class LegacyInterpretabilityQualityLocalSetTest extends LoggerChecks {
     public void parseTagsMany() throws KlvParseException {
 
         List<LdsField> fields = getFields(manyTagsBytes);
-        LegacyInterpretabilityQualityLocalSet localSet =
-                LegacyInterpretabilityQualityLocalSet.fromST1108_2Fields(fields, manyTagsBytes);
+        LegacyIQLocalSet localSet = LegacyIQLocalSet.fromST1108_2Fields(fields, manyTagsBytes);
         assertNotNull(localSet);
         assertEquals(localSet.displayHeader(), "ST 1108 Legacy Interpretability and Quality");
         assertEquals(localSet.getUniversalLabel(), KlvConstants.InterpretabilityQualityLocalSetUl);
-        assertEquals(localSet.getIdentifiers().size(), 10);
+        assertEquals(localSet.getIdentifiers().size(), 12);
         checkManyValues(localSet);
         assertEquals(localSet.frameMessage(false), manyTagsBytes);
     }
 
-    private void checkManyValues(LegacyInterpretabilityQualityLocalSet localSet) {
+    private void checkManyValues(LegacyIQLocalSet localSet) {
         checkMostRecentFrameTime(localSet);
         checkInterpretability(localSet);
         checkVideoQuality(localSet);
@@ -132,13 +145,16 @@ public class LegacyInterpretabilityQualityLocalSetTest extends LoggerChecks {
         checkQualityCoefficientId(localSet);
         checkRatingDuration(localSet);
         checkMIQPakInsertionTime(localSet);
+        checkChipLocationSizeBitDepth(localSet);
+
         checkChipEdgeIntensity(localSet);
+        checkChipFrequencyRatio(localSet);
         checkChipPSNR(localSet);
     }
 
-    private void checkMostRecentFrameTime(LegacyInterpretabilityQualityLocalSet localSet) {
-        assertTrue(localSet.getIdentifiers().contains(LegacyMetadataKey.MostRecentFrameTime));
-        IKlvValue value = localSet.getField(LegacyMetadataKey.MostRecentFrameTime);
+    private void checkMostRecentFrameTime(LegacyIQLocalSet localSet) {
+        assertTrue(localSet.getIdentifiers().contains(LegacyIQMetadataKey.MostRecentFrameTime));
+        IKlvValue value = localSet.getField(LegacyIQMetadataKey.MostRecentFrameTime);
         assertTrue(value instanceof MostRecentFrameTime);
         MostRecentFrameTime uut = (MostRecentFrameTime) value;
         assertNotNull(uut);
@@ -147,9 +163,9 @@ public class LegacyInterpretabilityQualityLocalSetTest extends LoggerChecks {
         assertEquals(uut.getTime().getMicroseconds(), 9);
     }
 
-    private void checkInterpretability(LegacyInterpretabilityQualityLocalSet localSet) {
-        assertTrue(localSet.getIdentifiers().contains(LegacyMetadataKey.VideoInterpretability));
-        IKlvValue value = localSet.getField(LegacyMetadataKey.VideoInterpretability);
+    private void checkInterpretability(LegacyIQLocalSet localSet) {
+        assertTrue(localSet.getIdentifiers().contains(LegacyIQMetadataKey.VideoInterpretability));
+        IKlvValue value = localSet.getField(LegacyIQMetadataKey.VideoInterpretability);
         assertTrue(value instanceof VideoInterpretability);
         VideoInterpretability uut = (VideoInterpretability) value;
         assertNotNull(uut);
@@ -158,9 +174,9 @@ public class LegacyInterpretabilityQualityLocalSetTest extends LoggerChecks {
         assertEquals(uut.getInterpretability(), 6);
     }
 
-    private void checkVideoQuality(LegacyInterpretabilityQualityLocalSet localSet) {
-        assertTrue(localSet.getIdentifiers().contains(LegacyMetadataKey.VideoQuality));
-        IKlvValue value = localSet.getField(LegacyMetadataKey.VideoQuality);
+    private void checkVideoQuality(LegacyIQLocalSet localSet) {
+        assertTrue(localSet.getIdentifiers().contains(LegacyIQMetadataKey.VideoQuality));
+        IKlvValue value = localSet.getField(LegacyIQMetadataKey.VideoQuality);
         assertTrue(value instanceof VideoQuality);
         VideoQuality uut = (VideoQuality) value;
         assertNotNull(uut);
@@ -169,11 +185,11 @@ public class LegacyInterpretabilityQualityLocalSetTest extends LoggerChecks {
         assertEquals(uut.getQuality(), 96);
     }
 
-    private void checkMethod(LegacyInterpretabilityQualityLocalSet localSet) {
+    private void checkMethod(LegacyIQLocalSet localSet) {
         assertTrue(
                 localSet.getIdentifiers()
-                        .contains(LegacyMetadataKey.InterpretabilityQualityMethod));
-        IKlvValue value = localSet.getField(LegacyMetadataKey.InterpretabilityQualityMethod);
+                        .contains(LegacyIQMetadataKey.InterpretabilityQualityMethod));
+        IKlvValue value = localSet.getField(LegacyIQMetadataKey.InterpretabilityQualityMethod);
         assertTrue(value instanceof QualityMethod);
         QualityMethod uut = (QualityMethod) value;
         assertNotNull(uut);
@@ -182,9 +198,10 @@ public class LegacyInterpretabilityQualityLocalSetTest extends LoggerChecks {
         assertEquals(uut.getMethodId(), 0);
     }
 
-    private void checkPSNRCoefficientId(LegacyInterpretabilityQualityLocalSet localSet) {
-        assertTrue(localSet.getIdentifiers().contains(LegacyMetadataKey.PSNRCoefficientIdentifier));
-        IKlvValue value = localSet.getField(LegacyMetadataKey.PSNRCoefficientIdentifier);
+    private void checkPSNRCoefficientId(LegacyIQLocalSet localSet) {
+        assertTrue(
+                localSet.getIdentifiers().contains(LegacyIQMetadataKey.PSNRCoefficientIdentifier));
+        IKlvValue value = localSet.getField(LegacyIQMetadataKey.PSNRCoefficientIdentifier);
         assertTrue(value instanceof PSNRCoefficientIdentifier);
         PSNRCoefficientIdentifier uut = (PSNRCoefficientIdentifier) value;
         assertNotNull(uut);
@@ -193,10 +210,11 @@ public class LegacyInterpretabilityQualityLocalSetTest extends LoggerChecks {
         assertEquals(uut.getIdentifier(), 2);
     }
 
-    private void checkQualityCoefficientId(LegacyInterpretabilityQualityLocalSet localSet) {
+    private void checkQualityCoefficientId(LegacyIQLocalSet localSet) {
         assertTrue(
-                localSet.getIdentifiers().contains(LegacyMetadataKey.QualityCoefficientIdentifier));
-        IKlvValue value = localSet.getField(LegacyMetadataKey.QualityCoefficientIdentifier);
+                localSet.getIdentifiers()
+                        .contains(LegacyIQMetadataKey.QualityCoefficientIdentifier));
+        IKlvValue value = localSet.getField(LegacyIQMetadataKey.QualityCoefficientIdentifier);
         assertTrue(value instanceof QualityCoefficientIdentifier);
         QualityCoefficientIdentifier uut = (QualityCoefficientIdentifier) value;
         assertNotNull(uut);
@@ -205,9 +223,9 @@ public class LegacyInterpretabilityQualityLocalSetTest extends LoggerChecks {
         assertEquals(uut.getIdentifier(), 4);
     }
 
-    private void checkRatingDuration(LegacyInterpretabilityQualityLocalSet localSet) {
-        assertTrue(localSet.getIdentifiers().contains(LegacyMetadataKey.RatingDuration));
-        IKlvValue value = localSet.getField(LegacyMetadataKey.RatingDuration);
+    private void checkRatingDuration(LegacyIQLocalSet localSet) {
+        assertTrue(localSet.getIdentifiers().contains(LegacyIQMetadataKey.RatingDuration));
+        IKlvValue value = localSet.getField(LegacyIQMetadataKey.RatingDuration);
         assertTrue(value instanceof RatingDuration);
         RatingDuration uut = (RatingDuration) value;
         assertNotNull(uut);
@@ -216,9 +234,9 @@ public class LegacyInterpretabilityQualityLocalSetTest extends LoggerChecks {
         assertEquals(uut.getDuration(), 640);
     }
 
-    private void checkMIQPakInsertionTime(LegacyInterpretabilityQualityLocalSet localSet) {
-        assertTrue(localSet.getIdentifiers().contains(LegacyMetadataKey.MIQPakInsertionTime));
-        IKlvValue value = localSet.getField(LegacyMetadataKey.MIQPakInsertionTime);
+    private void checkMIQPakInsertionTime(LegacyIQLocalSet localSet) {
+        assertTrue(localSet.getIdentifiers().contains(LegacyIQMetadataKey.MIQPakInsertionTime));
+        IKlvValue value = localSet.getField(LegacyIQMetadataKey.MIQPakInsertionTime);
         assertTrue(value instanceof MIQPakInsertionTime);
         MIQPakInsertionTime uut = (MIQPakInsertionTime) value;
         assertNotNull(uut);
@@ -227,9 +245,24 @@ public class LegacyInterpretabilityQualityLocalSetTest extends LoggerChecks {
         assertEquals(uut.getTime().getMicroseconds(), 32);
     }
 
-    private void checkChipEdgeIntensity(LegacyInterpretabilityQualityLocalSet localSet) {
-        assertTrue(localSet.getIdentifiers().contains(LegacyMetadataKey.ChipEdgeIntensity));
-        IKlvValue value = localSet.getField(LegacyMetadataKey.ChipEdgeIntensity);
+    private void checkChipLocationSizeBitDepth(LegacyIQLocalSet localSet) {
+        assertTrue(
+                localSet.getIdentifiers().contains(LegacyIQMetadataKey.ChipLocationSizeBitDepth));
+        IKlvValue value = localSet.getField(LegacyIQMetadataKey.ChipLocationSizeBitDepth);
+        assertTrue(value instanceof ChipLocationSizeBitDepth);
+        ChipLocationSizeBitDepth uut = (ChipLocationSizeBitDepth) value;
+        assertNotNull(uut);
+        assertEquals(uut.getDisplayName(), "Chip Location, Size & Bit Depth");
+        assertEquals(uut.getDisplayableValue(), "[87, 346], 32x32, 8");
+        assertEquals(uut.getColumnIndex(), 87);
+        assertEquals(uut.getRowIndex(), 346);
+        assertEquals(uut.getChipLength(), 32);
+        assertEquals(uut.getBitDepth(), 8);
+    }
+
+    private void checkChipEdgeIntensity(LegacyIQLocalSet localSet) {
+        assertTrue(localSet.getIdentifiers().contains(LegacyIQMetadataKey.ChipEdgeIntensity));
+        IKlvValue value = localSet.getField(LegacyIQMetadataKey.ChipEdgeIntensity);
         assertTrue(value instanceof ChipEdgeIntensity);
         ChipEdgeIntensity uut = (ChipEdgeIntensity) value;
         assertNotNull(uut);
@@ -238,14 +271,32 @@ public class LegacyInterpretabilityQualityLocalSetTest extends LoggerChecks {
         assertEquals(uut.getIntensity(), 126);
     }
 
-    private void checkChipPSNR(LegacyInterpretabilityQualityLocalSet localSet) {
-        assertTrue(localSet.getIdentifiers().contains(LegacyMetadataKey.ChipPSNR));
-        IKlvValue value = localSet.getField(LegacyMetadataKey.ChipPSNR);
+    private void checkChipFrequencyRatio(LegacyIQLocalSet localSet) {
+        assertTrue(localSet.getIdentifiers().contains(LegacyIQMetadataKey.ChipFrequencyRatio));
+        IKlvValue value = localSet.getField(LegacyIQMetadataKey.ChipFrequencyRatio);
+        assertTrue(value instanceof ChipFrequencyRatio);
+        ChipFrequencyRatio uut = (ChipFrequencyRatio) value;
+        assertNotNull(uut);
+        assertEquals(uut.getDisplayName(), "Chip Frequency Ratio");
+        assertEquals(uut.getDisplayableValue(), "1");
+        assertEquals(uut.getRatio(), 1);
+    }
+
+    private void checkChipPSNR(LegacyIQLocalSet localSet) {
+        assertTrue(localSet.getIdentifiers().contains(LegacyIQMetadataKey.ChipPSNR));
+        IKlvValue value = localSet.getField(LegacyIQMetadataKey.ChipPSNR);
         assertTrue(value instanceof ChipPSNR);
         ChipPSNR uut = (ChipPSNR) value;
         assertNotNull(uut);
         assertEquals(uut.getDisplayName(), "Chip PSNR");
         assertEquals(uut.getDisplayableValue(), "48 dB");
         assertEquals(uut.getPSNR(), 48);
+    }
+
+    @Test(expectedExceptions = IllegalArgumentException.class)
+    public void badNesting() throws KlvParseException {
+        List<LdsField> fields = getFields(manyTagsBytes);
+        LegacyIQLocalSet localSet = LegacyIQLocalSet.fromST1108_2Fields(fields, manyTagsBytes);
+        localSet.frameMessage(true);
     }
 }

@@ -70,8 +70,7 @@ public class CompressionLevel implements IInterpretabilityQualityMetadataValue {
 
     @Override
     public void appendBytesToBuilder(ArrayBuilder arrayBuilder) {
-        arrayBuilder.appendAsOID(
-                InterpretabilityQualityMetadataKey.CompressionLevel.getIdentifier());
+        arrayBuilder.appendAsOID(IQMetadataKey.CompressionLevel.getIdentifier());
         byte[] valueBytes = level.getBytes(StandardCharsets.UTF_8);
         arrayBuilder.appendAsBerLength(valueBytes.length);
         arrayBuilder.append(valueBytes);

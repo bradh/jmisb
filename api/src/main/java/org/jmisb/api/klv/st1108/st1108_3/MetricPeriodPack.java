@@ -100,8 +100,7 @@ public class MetricPeriodPack implements IInterpretabilityQualityMetadataValue {
 
     @Override
     public void appendBytesToBuilder(ArrayBuilder arrayBuilder) {
-        arrayBuilder.appendAsOID(
-                InterpretabilityQualityMetadataKey.MetricPeriodPack.getIdentifier());
+        arrayBuilder.appendAsOID(IQMetadataKey.MetricPeriodPack.getIdentifier());
         byte[] valueBytes = getBytes();
         arrayBuilder.appendAsBerLength(valueBytes.length);
         arrayBuilder.append(valueBytes);

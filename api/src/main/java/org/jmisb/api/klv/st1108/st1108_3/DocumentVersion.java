@@ -72,8 +72,7 @@ public class DocumentVersion implements IInterpretabilityQualityMetadataValue {
 
     @Override
     public void appendBytesToBuilder(ArrayBuilder arrayBuilder) {
-        arrayBuilder.appendAsOID(
-                InterpretabilityQualityMetadataKey.DocumentVersion.getIdentifier());
+        arrayBuilder.appendAsOID(IQMetadataKey.DocumentVersion.getIdentifier());
         byte[] valueBytes = PrimitiveConverter.uint8ToBytes((short) version);
         arrayBuilder.appendAsBerLength(valueBytes.length);
         arrayBuilder.append(valueBytes);

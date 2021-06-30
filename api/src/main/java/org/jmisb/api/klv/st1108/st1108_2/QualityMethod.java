@@ -80,7 +80,7 @@ public class QualityMethod implements IInterpretabilityQualityMetadataValue {
 
     @Override
     public void appendBytesToBuilder(ArrayBuilder arrayBuilder) {
-        arrayBuilder.appendAsOID(LegacyMetadataKey.InterpretabilityQualityMethod.getIdentifier());
+        arrayBuilder.appendAsOID(LegacyIQMetadataKey.InterpretabilityQualityMethod.getIdentifier());
         byte[] valueBytes = PrimitiveConverter.uint8ToBytes((short) methodId);
         arrayBuilder.appendAsBerLength(valueBytes.length);
         arrayBuilder.append(valueBytes);

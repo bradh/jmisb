@@ -6,14 +6,14 @@ import org.jmisb.api.common.KlvParseException;
 import org.jmisb.api.klv.IMisbMessage;
 import org.jmisb.api.klv.KlvConstants;
 import org.jmisb.api.klv.LoggerChecks;
-import org.jmisb.api.klv.st1108.st1108_3.InterpretabilityQualityLocalSet;
-import org.jmisb.api.klv.st1108.st1108_3.InterpretabilityQualityLocalSetTest;
+import org.jmisb.api.klv.st1108.st1108_3.IQLocalSet;
+import org.jmisb.api.klv.st1108.st1108_3.IQLocalSetTest;
 import org.testng.annotations.Test;
 
 /** Tests for the ST 1108 Interpretability and Quality Local Set Factory. */
 public class InterpretabilityQualityLocalSetFactoryTest extends LoggerChecks {
     InterpretabilityQualityLocalSetFactoryTest() {
-        super(InterpretabilityQualityLocalSet.class);
+        super(IQLocalSet.class);
     }
 
     @Test
@@ -49,12 +49,12 @@ public class InterpretabilityQualityLocalSetFactoryTest extends LoggerChecks {
                 new InterpretabilityQualityLocalSetFactory();
         IMisbMessage message = factory.create(bytes);
         assertNotNull(message);
-        assertTrue(message instanceof InterpretabilityQualityLocalSet);
-        InterpretabilityQualityLocalSet localSet = (InterpretabilityQualityLocalSet) message;
+        assertTrue(message instanceof IQLocalSet);
+        IQLocalSet localSet = (IQLocalSet) message;
         assertEquals(localSet.displayHeader(), "ST 1108 Interpretability and Quality");
         assertEquals(localSet.getUniversalLabel(), KlvConstants.InterpretabilityQualityLocalSetUl);
         assertEquals(localSet.getIdentifiers().size(), 1);
-        InterpretabilityQualityLocalSetTest.checkAssessmentPoint(localSet);
+        IQLocalSetTest.checkAssessmentPoint(localSet);
 
         assertEquals(localSet.frameMessage(false), bytes);
     }

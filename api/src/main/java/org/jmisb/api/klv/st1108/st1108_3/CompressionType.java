@@ -78,8 +78,7 @@ public enum CompressionType implements IInterpretabilityQualityMetadataValue {
 
     @Override
     public void appendBytesToBuilder(ArrayBuilder arrayBuilder) {
-        arrayBuilder.appendAsOID(
-                InterpretabilityQualityMetadataKey.CompressionType.getIdentifier());
+        arrayBuilder.appendAsOID(IQMetadataKey.CompressionType.getIdentifier());
         byte[] valueBytes = new byte[] {(byte) value};
         arrayBuilder.appendAsBerLength(valueBytes.length);
         arrayBuilder.append(valueBytes);

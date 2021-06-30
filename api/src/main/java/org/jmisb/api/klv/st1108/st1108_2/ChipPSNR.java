@@ -70,7 +70,7 @@ public class ChipPSNR implements IInterpretabilityQualityMetadataValue {
 
     @Override
     public void appendBytesToBuilder(ArrayBuilder arrayBuilder) {
-        arrayBuilder.appendAsOID(LegacyMetadataKey.ChipPSNR.getIdentifier());
+        arrayBuilder.appendAsOID(LegacyIQMetadataKey.ChipPSNR.getIdentifier());
         byte[] valueBytes = PrimitiveConverter.uint8ToBytes((short) psnr);
         arrayBuilder.appendAsBerLength(valueBytes.length);
         arrayBuilder.append(valueBytes);

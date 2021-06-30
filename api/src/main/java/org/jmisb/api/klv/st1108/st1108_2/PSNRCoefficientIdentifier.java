@@ -71,7 +71,7 @@ public class PSNRCoefficientIdentifier implements IInterpretabilityQualityMetada
 
     @Override
     public void appendBytesToBuilder(ArrayBuilder arrayBuilder) {
-        arrayBuilder.appendAsOID(LegacyMetadataKey.PSNRCoefficientIdentifier.getIdentifier());
+        arrayBuilder.appendAsOID(LegacyIQMetadataKey.PSNRCoefficientIdentifier.getIdentifier());
         byte[] valueBytes = PrimitiveConverter.uint8ToBytes((short) identifier);
         arrayBuilder.appendAsBerLength(valueBytes.length);
         arrayBuilder.append(valueBytes);

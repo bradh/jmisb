@@ -13,7 +13,7 @@ import org.jmisb.api.klv.INestedKlvValue;
 import org.jmisb.api.klv.LdsField;
 import org.jmisb.api.klv.LdsParser;
 import org.jmisb.api.klv.st1108.IInterpretabilityQualityMetadataValue;
-import org.jmisb.api.klv.st1108.st1108_3.InterpretabilityQualityMetadataKey;
+import org.jmisb.api.klv.st1108.st1108_3.IQMetadataKey;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -111,8 +111,7 @@ public class MetricLocalSet implements IInterpretabilityQualityMetadataValue, IN
 
     @Override
     public void appendBytesToBuilder(ArrayBuilder arrayBuilder) {
-        arrayBuilder.appendAsOID(
-                InterpretabilityQualityMetadataKey.MetricLocalSets.getIdentifier());
+        arrayBuilder.appendAsOID(IQMetadataKey.MetricLocalSets.getIdentifier());
         byte[] valueBytes = getBytes();
         arrayBuilder.appendAsBerLength(valueBytes.length);
         arrayBuilder.append(valueBytes);

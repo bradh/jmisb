@@ -72,7 +72,7 @@ public class VideoInterpretability implements IInterpretabilityQualityMetadataVa
 
     @Override
     public void appendBytesToBuilder(ArrayBuilder arrayBuilder) {
-        arrayBuilder.appendAsOID(LegacyMetadataKey.VideoInterpretability.getIdentifier());
+        arrayBuilder.appendAsOID(LegacyIQMetadataKey.VideoInterpretability.getIdentifier());
         byte[] valueBytes = PrimitiveConverter.uint8ToBytes((short) interpretability);
         arrayBuilder.appendAsBerLength(valueBytes.length);
         arrayBuilder.append(valueBytes);

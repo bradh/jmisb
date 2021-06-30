@@ -23,24 +23,23 @@ import org.slf4j.LoggerFactory;
  * <p>The Interpretability and Quality Local Set is the parent local set for ST 1108. Note that the
  * Metric Local Set value within this Interpretability and Quality Local Set can repeat.
  */
-public class LegacyInterpretabilityQualityLocalSet implements IMisbMessage {
+public class LegacyIQLocalSet implements IMisbMessage {
 
-    private static final Logger LOGGER =
-            LoggerFactory.getLogger(LegacyInterpretabilityQualityLocalSet.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(LegacyIQLocalSet.class);
 
     /** Map containing all elements in the message. */
-    private final SortedMap<LegacyMetadataKey, IInterpretabilityQualityMetadataValue> map =
+    private final SortedMap<LegacyIQMetadataKey, IInterpretabilityQualityMetadataValue> map =
             new TreeMap<>();
 
-    private LegacyInterpretabilityQualityLocalSet() {};
+    private LegacyIQLocalSet() {};
 
     /**
      * Create the local set from the given key/value pairs.
      *
      * @param values Tag/value pairs to be included in the local set
      */
-    public LegacyInterpretabilityQualityLocalSet(
-            Map<LegacyMetadataKey, IInterpretabilityQualityMetadataValue> values) {
+    public LegacyIQLocalSet(
+            Map<LegacyIQMetadataKey, IInterpretabilityQualityMetadataValue> values) {
         map.putAll(values);
     }
 
@@ -52,10 +51,9 @@ public class LegacyInterpretabilityQualityLocalSet implements IMisbMessage {
      * @return local set corresponding to the provided fields
      * @throws KlvParseException if parsing fails
      */
-    public static LegacyInterpretabilityQualityLocalSet fromST1108_2Fields(
-            List<LdsField> fields, final byte[] bytes) throws KlvParseException {
-        LegacyInterpretabilityQualityLocalSet localSet =
-                new LegacyInterpretabilityQualityLocalSet();
+    public static LegacyIQLocalSet fromST1108_2Fields(List<LdsField> fields, final byte[] bytes)
+            throws KlvParseException {
+        LegacyIQLocalSet localSet = new LegacyIQLocalSet();
         for (LdsField field : fields) {
             localSet.processField(field, bytes);
         }
@@ -64,45 +62,48 @@ public class LegacyInterpretabilityQualityLocalSet implements IMisbMessage {
 
     private void processField(LdsField field, final byte[] bytes)
             throws KlvParseException, AssertionError {
-        LegacyMetadataKey key = LegacyMetadataKey.getKey(field.getTag());
+        LegacyIQMetadataKey key = LegacyIQMetadataKey.getKey(field.getTag());
         switch (key) {
             case MostRecentFrameTime:
                 map.put(
-                        LegacyMetadataKey.MostRecentFrameTime,
+                        LegacyIQMetadataKey.MostRecentFrameTime,
                         new MostRecentFrameTime(field.getData()));
                 break;
             case VideoInterpretability:
                 map.put(
-                        LegacyMetadataKey.VideoInterpretability,
+                        LegacyIQMetadataKey.VideoInterpretability,
                         new VideoInterpretability(field.getData()));
                 break;
             case VideoQuality:
-                map.put(LegacyMetadataKey.VideoQuality, new VideoQuality(field.getData()));
+                map.put(LegacyIQMetadataKey.VideoQuality, new VideoQuality(field.getData()));
                 break;
             case InterpretabilityQualityMethod:
                 map.put(
-                        LegacyMetadataKey.InterpretabilityQualityMethod,
+                        LegacyIQMetadataKey.InterpretabilityQualityMethod,
                         new QualityMethod(field.getData()));
                 break;
             case PSNRCoefficientIdentifier:
                 map.put(
-                        LegacyMetadataKey.PSNRCoefficientIdentifier,
+                        LegacyIQMetadataKey.PSNRCoefficientIdentifier,
                         new PSNRCoefficientIdentifier(field.getData()));
                 break;
             case QualityCoefficientIdentifier:
                 map.put(
-                        LegacyMetadataKey.QualityCoefficientIdentifier,
+                        LegacyIQMetadataKey.QualityCoefficientIdentifier,
                         new QualityCoefficientIdentifier(field.getData()));
                 break;
             case RatingDuration:
-                map.put(LegacyMetadataKey.RatingDuration, new RatingDuration(field.getData()));
+                map.put(LegacyIQMetadataKey.RatingDuration, new RatingDuration(field.getData()));
                 break;
             case MIQPakInsertionTime:
                 map.put(
-                        LegacyMetadataKey.MIQPakInsertionTime,
+                        LegacyIQMetadataKey.MIQPakInsertionTime,
                         new MIQPakInsertionTime(field.getData()));
                 break;
             case ChipLocationSizeBitDepth:
+                map.put(
+                        LegacyIQMetadataKey.ChipLocationSizeBitDepth,
+                        new ChipLocationSizeBitDepth(field.getData()));
                 break;
             case ChipYvaluesUncompressed:
                 break;
@@ -110,13 +111,16 @@ public class LegacyInterpretabilityQualityLocalSet implements IMisbMessage {
                 break;
             case ChipEdgeIntensity:
                 map.put(
-                        LegacyMetadataKey.ChipEdgeIntensity,
+                        LegacyIQMetadataKey.ChipEdgeIntensity,
                         new ChipEdgeIntensity(field.getData()));
                 break;
             case ChipFrequencyRatio:
+                map.put(
+                        LegacyIQMetadataKey.ChipFrequencyRatio,
+                        new ChipFrequencyRatio(field.getData()));
                 break;
             case ChipPSNR:
-                map.put(LegacyMetadataKey.ChipPSNR, new ChipPSNR(field.getData()));
+                map.put(LegacyIQMetadataKey.ChipPSNR, new ChipPSNR(field.getData()));
                 break;
             default:
                 LOGGER.info(
@@ -132,7 +136,7 @@ public class LegacyInterpretabilityQualityLocalSet implements IMisbMessage {
                     "Interpretability and Quality Local Set cannot be nested");
         }
         ArrayBuilder arrayBuilder = new ArrayBuilder();
-        for (LegacyMetadataKey tag : map.keySet()) {
+        for (LegacyIQMetadataKey tag : map.keySet()) {
             getField(tag).appendBytesToBuilder(arrayBuilder);
         }
         arrayBuilder.prependLength();
@@ -148,7 +152,7 @@ public class LegacyInterpretabilityQualityLocalSet implements IMisbMessage {
 
     @Override
     public IInterpretabilityQualityMetadataValue getField(IKlvKey key) {
-        return map.get((LegacyMetadataKey) key);
+        return map.get((LegacyIQMetadataKey) key);
     }
 
     @Override

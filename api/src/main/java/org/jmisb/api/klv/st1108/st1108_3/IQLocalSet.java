@@ -26,26 +26,23 @@ import org.slf4j.LoggerFactory;
  * <p>The Interpretability and Quality Local Set is the parent local set for ST 1108. Note that the
  * Metric Local Set value within this Interpretability and Quality Local Set can repeat.
  */
-public class InterpretabilityQualityLocalSet implements IMisbMessage {
+public class IQLocalSet implements IMisbMessage {
 
     private static final int CRC16_LENGTH = 2;
-    private static final Logger LOGGER =
-            LoggerFactory.getLogger(InterpretabilityQualityLocalSet.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(IQLocalSet.class);
 
     /** Map containing all elements in the message. */
-    private final SortedMap<
-                    InterpretabilityQualityMetadataKey, IInterpretabilityQualityMetadataValue>
-            map = new TreeMap<>();
+    private final SortedMap<IQMetadataKey, IInterpretabilityQualityMetadataValue> map =
+            new TreeMap<>();
 
-    private InterpretabilityQualityLocalSet() {};
+    private IQLocalSet() {};
 
     /**
      * Create the local set from the given key/value pairs.
      *
      * @param values Tag/value pairs to be included in the local set
      */
-    public InterpretabilityQualityLocalSet(
-            Map<InterpretabilityQualityMetadataKey, IInterpretabilityQualityMetadataValue> values) {
+    public IQLocalSet(Map<IQMetadataKey, IInterpretabilityQualityMetadataValue> values) {
         map.putAll(values);
     }
 
@@ -57,9 +54,9 @@ public class InterpretabilityQualityLocalSet implements IMisbMessage {
      * @return local set corresponding to the provided fields
      * @throws KlvParseException if parsing fails
      */
-    public static InterpretabilityQualityLocalSet fromST1108_3Fields(
-            List<LdsField> fields, final byte[] bytes) throws KlvParseException {
-        InterpretabilityQualityLocalSet localSet = new InterpretabilityQualityLocalSet();
+    public static IQLocalSet fromST1108_3Fields(List<LdsField> fields, final byte[] bytes)
+            throws KlvParseException {
+        IQLocalSet localSet = new IQLocalSet();
         for (LdsField field : fields) {
             localSet.processField(field, bytes);
         }
@@ -68,8 +65,7 @@ public class InterpretabilityQualityLocalSet implements IMisbMessage {
 
     private void processField(LdsField field, final byte[] bytes)
             throws KlvParseException, AssertionError {
-        InterpretabilityQualityMetadataKey key =
-                InterpretabilityQualityMetadataKey.getKey(field.getTag());
+        IQMetadataKey key = IQMetadataKey.getKey(field.getTag());
         switch (key) {
             case AssessmentPoint:
                 map.put(key, AssessmentPoint.fromBytes(field.getData()));
@@ -81,10 +77,9 @@ public class InterpretabilityQualityLocalSet implements IMisbMessage {
                 map.put(key, new WindowCornersPack(field.getData()));
                 break;
             case MetricLocalSets:
-                if (map.containsKey(InterpretabilityQualityMetadataKey.MetricLocalSets)) {
+                if (map.containsKey(IQMetadataKey.MetricLocalSets)) {
                     MetricLocalSets metricLocalSets =
-                            (MetricLocalSets)
-                                    map.get(InterpretabilityQualityMetadataKey.MetricLocalSets);
+                            (MetricLocalSets) map.get(IQMetadataKey.MetricLocalSets);
                     metricLocalSets.addMetricFromBytes(field.getData());
                 } else {
                     map.put(key, new MetricLocalSets(field.getData()));
@@ -127,14 +122,14 @@ public class InterpretabilityQualityLocalSet implements IMisbMessage {
                     "Interpretability and Quality Local Set cannot be nested");
         }
         ArrayBuilder arrayBuilder = new ArrayBuilder();
-        for (InterpretabilityQualityMetadataKey tag : map.keySet()) {
-            if (tag.equals(InterpretabilityQualityMetadataKey.CRC16CCITT)) {
+        for (IQMetadataKey tag : map.keySet()) {
+            if (tag.equals(IQMetadataKey.CRC16CCITT)) {
                 // This will get added, at the end
                 continue;
             }
             getField(tag).appendBytesToBuilder(arrayBuilder);
         }
-        arrayBuilder.appendAsOID(InterpretabilityQualityMetadataKey.CRC16CCITT.getIdentifier());
+        arrayBuilder.appendAsOID(IQMetadataKey.CRC16CCITT.getIdentifier());
         arrayBuilder.appendAsBerLength(CRC16_LENGTH);
         arrayBuilder.prependLengthPlus(2);
         arrayBuilder.prepend(getUniversalLabel());
@@ -152,7 +147,7 @@ public class InterpretabilityQualityLocalSet implements IMisbMessage {
 
     @Override
     public IInterpretabilityQualityMetadataValue getField(IKlvKey key) {
-        return map.get((InterpretabilityQualityMetadataKey) key);
+        return map.get((IQMetadataKey) key);
     }
 
     @Override

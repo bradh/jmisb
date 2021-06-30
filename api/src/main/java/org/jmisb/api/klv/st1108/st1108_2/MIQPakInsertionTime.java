@@ -63,7 +63,7 @@ public class MIQPakInsertionTime implements IInterpretabilityQualityMetadataValu
 
     @Override
     public void appendBytesToBuilder(ArrayBuilder arrayBuilder) {
-        arrayBuilder.appendAsOID(LegacyMetadataKey.MIQPakInsertionTime.getIdentifier());
+        arrayBuilder.appendAsOID(LegacyIQMetadataKey.MIQPakInsertionTime.getIdentifier());
         byte[] valueBytes = time.getBytesFull();
         arrayBuilder.appendAsBerLength(valueBytes.length);
         arrayBuilder.append(valueBytes);

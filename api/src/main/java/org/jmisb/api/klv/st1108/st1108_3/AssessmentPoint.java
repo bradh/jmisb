@@ -98,8 +98,7 @@ public enum AssessmentPoint implements IInterpretabilityQualityMetadataValue {
 
     @Override
     public void appendBytesToBuilder(ArrayBuilder arrayBuilder) {
-        arrayBuilder.appendAsOID(
-                InterpretabilityQualityMetadataKey.AssessmentPoint.getIdentifier());
+        arrayBuilder.appendAsOID(IQMetadataKey.AssessmentPoint.getIdentifier());
         byte[] valueBytes = new byte[] {(byte) value};
         arrayBuilder.appendAsBerLength(valueBytes.length);
         arrayBuilder.append(valueBytes);

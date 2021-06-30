@@ -74,7 +74,7 @@ public class StreamBitrate implements IInterpretabilityQualityMetadataValue {
 
     @Override
     public void appendBytesToBuilder(ArrayBuilder arrayBuilder) {
-        arrayBuilder.appendAsOID(InterpretabilityQualityMetadataKey.StreamBitrate.getIdentifier());
+        arrayBuilder.appendAsOID(IQMetadataKey.StreamBitrate.getIdentifier());
         byte[] valueBytes = PrimitiveConverter.uint16ToBytes(bitrate);
         arrayBuilder.appendAsBerLength(valueBytes.length);
         arrayBuilder.append(valueBytes);

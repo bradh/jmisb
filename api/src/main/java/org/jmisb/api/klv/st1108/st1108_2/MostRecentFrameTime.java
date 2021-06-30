@@ -66,7 +66,7 @@ public class MostRecentFrameTime implements IInterpretabilityQualityMetadataValu
 
     @Override
     public void appendBytesToBuilder(ArrayBuilder arrayBuilder) {
-        arrayBuilder.appendAsOID(LegacyMetadataKey.MostRecentFrameTime.getIdentifier());
+        arrayBuilder.appendAsOID(LegacyIQMetadataKey.MostRecentFrameTime.getIdentifier());
         byte[] valueBytes = time.getBytesFull();
         arrayBuilder.appendAsBerLength(valueBytes.length);
         arrayBuilder.append(valueBytes);

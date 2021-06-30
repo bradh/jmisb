@@ -164,8 +164,7 @@ public class WindowCornersPack implements IInterpretabilityQualityMetadataValue 
 
     @Override
     public void appendBytesToBuilder(ArrayBuilder arrayBuilder) {
-        arrayBuilder.appendAsOID(
-                InterpretabilityQualityMetadataKey.WindowCornersPack.getIdentifier());
+        arrayBuilder.appendAsOID(IQMetadataKey.WindowCornersPack.getIdentifier());
         byte[] valueBytes = getBytes();
         arrayBuilder.appendAsBerLength(valueBytes.length);
         arrayBuilder.append(valueBytes);

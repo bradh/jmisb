@@ -65,7 +65,7 @@ public class ChipEdgeIntensity implements IInterpretabilityQualityMetadataValue 
 
     @Override
     public void appendBytesToBuilder(ArrayBuilder arrayBuilder) {
-        arrayBuilder.appendAsOID(LegacyMetadataKey.ChipEdgeIntensity.getIdentifier());
+        arrayBuilder.appendAsOID(LegacyIQMetadataKey.ChipEdgeIntensity.getIdentifier());
         byte[] valueBytes = PrimitiveConverter.uint16ToBytes(intensity);
         arrayBuilder.appendAsBerLength(valueBytes.length);
         arrayBuilder.append(valueBytes);

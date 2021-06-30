@@ -34,9 +34,9 @@ import org.jmisb.api.klv.st1108.st1108_3.metric.MetricVersion;
 import org.testng.annotations.Test;
 
 /** Tests for the ST 1108 Interpretability and Quality Local Set. */
-public class InterpretabilityQualityLocalSetTest extends LoggerChecks {
-    InterpretabilityQualityLocalSetTest() {
-        super(InterpretabilityQualityLocalSet.class);
+public class IQLocalSetTest extends LoggerChecks {
+    IQLocalSetTest() {
+        super(IQLocalSet.class);
     }
 
     private static List<LdsField> getFields(final byte[] bytes)
@@ -79,7 +79,7 @@ public class InterpretabilityQualityLocalSetTest extends LoggerChecks {
                 };
         List<LdsField> fields = getFields(bytes);
         verifyNoLoggerMessages();
-        InterpretabilityQualityLocalSet.fromST1108_3Fields(fields, bytes);
+        IQLocalSet.fromST1108_3Fields(fields, bytes);
         verifySingleLoggerMessage("Unknown Interpretability and Quality Metadata tag: 127");
     }
 
@@ -111,20 +111,14 @@ public class InterpretabilityQualityLocalSetTest extends LoggerChecks {
                 };
         List<LdsField> fields = getFields(bytes);
         verifyNoLoggerMessages();
-        InterpretabilityQualityLocalSet.fromST1108_3Fields(fields, bytes);
+        IQLocalSet.fromST1108_3Fields(fields, bytes);
         verifySingleLoggerMessage("Bad checksum");
     }
 
-    public static void checkAssessmentPoint(InterpretabilityQualityLocalSet localSet) {
-        assertTrue(
-                localSet.getIdentifiers()
-                        .contains(InterpretabilityQualityMetadataKey.AssessmentPoint));
-        assertTrue(
-                localSet.getField(InterpretabilityQualityMetadataKey.AssessmentPoint)
-                        instanceof AssessmentPoint);
-        AssessmentPoint value =
-                (AssessmentPoint)
-                        localSet.getField(InterpretabilityQualityMetadataKey.AssessmentPoint);
+    public static void checkAssessmentPoint(IQLocalSet localSet) {
+        assertTrue(localSet.getIdentifiers().contains(IQMetadataKey.AssessmentPoint));
+        assertTrue(localSet.getField(IQMetadataKey.AssessmentPoint) instanceof AssessmentPoint);
+        AssessmentPoint value = (AssessmentPoint) localSet.getField(IQMetadataKey.AssessmentPoint);
         assertNotNull(value);
         assertEquals(value, AssessmentPoint.GCSTransmit);
     }
@@ -403,8 +397,7 @@ public class InterpretabilityQualityLocalSetTest extends LoggerChecks {
     public void parseTagsMany() throws KlvParseException {
 
         List<LdsField> fields = getFields(manyTagsBytes);
-        InterpretabilityQualityLocalSet localSet =
-                InterpretabilityQualityLocalSet.fromST1108_3Fields(fields, manyTagsBytes);
+        IQLocalSet localSet = IQLocalSet.fromST1108_3Fields(fields, manyTagsBytes);
         assertNotNull(localSet);
         assertEquals(localSet.displayHeader(), "ST 1108 Interpretability and Quality");
         assertEquals(localSet.getUniversalLabel(), KlvConstants.InterpretabilityQualityLocalSetUl);
@@ -413,31 +406,21 @@ public class InterpretabilityQualityLocalSetTest extends LoggerChecks {
         assertEquals(localSet.frameMessage(false), manyTagsBytes);
     }
 
-    private void checkMetricPeriodPack(InterpretabilityQualityLocalSet localSet) {
-        assertTrue(
-                localSet.getIdentifiers()
-                        .contains(InterpretabilityQualityMetadataKey.MetricPeriodPack));
-        assertTrue(
-                localSet.getField(InterpretabilityQualityMetadataKey.MetricPeriodPack)
-                        instanceof MetricPeriodPack);
+    private void checkMetricPeriodPack(IQLocalSet localSet) {
+        assertTrue(localSet.getIdentifiers().contains(IQMetadataKey.MetricPeriodPack));
+        assertTrue(localSet.getField(IQMetadataKey.MetricPeriodPack) instanceof MetricPeriodPack);
         MetricPeriodPack value =
-                (MetricPeriodPack)
-                        localSet.getField(InterpretabilityQualityMetadataKey.MetricPeriodPack);
+                (MetricPeriodPack) localSet.getField(IQMetadataKey.MetricPeriodPack);
         assertNotNull(value);
         assertEquals(value.getStartTime().getMicroseconds(), 987654321000000L);
         assertEquals(value.getTimeOffset(), 909322);
     }
 
-    private void checkWindowCornersPack(InterpretabilityQualityLocalSet localSet) {
-        assertTrue(
-                localSet.getIdentifiers()
-                        .contains(InterpretabilityQualityMetadataKey.WindowCornersPack));
-        assertTrue(
-                localSet.getField(InterpretabilityQualityMetadataKey.WindowCornersPack)
-                        instanceof WindowCornersPack);
+    private void checkWindowCornersPack(IQLocalSet localSet) {
+        assertTrue(localSet.getIdentifiers().contains(IQMetadataKey.WindowCornersPack));
+        assertTrue(localSet.getField(IQMetadataKey.WindowCornersPack) instanceof WindowCornersPack);
         WindowCornersPack value =
-                (WindowCornersPack)
-                        localSet.getField(InterpretabilityQualityMetadataKey.WindowCornersPack);
+                (WindowCornersPack) localSet.getField(IQMetadataKey.WindowCornersPack);
         assertNotNull(value);
         assertEquals(value.getStartingRow(), 1);
         assertEquals(value.getStartingColumn(), 2);
@@ -445,16 +428,10 @@ public class InterpretabilityQualityLocalSetTest extends LoggerChecks {
         assertEquals(value.getEndingColumn(), 775);
     }
 
-    private void checkSingleMetricLocalSet(InterpretabilityQualityLocalSet localSet) {
-        assertTrue(
-                localSet.getIdentifiers()
-                        .contains(InterpretabilityQualityMetadataKey.MetricLocalSets));
-        assertTrue(
-                localSet.getField(InterpretabilityQualityMetadataKey.MetricLocalSets)
-                        instanceof MetricLocalSets);
-        MetricLocalSets value =
-                (MetricLocalSets)
-                        localSet.getField(InterpretabilityQualityMetadataKey.MetricLocalSets);
+    private void checkSingleMetricLocalSet(IQLocalSet localSet) {
+        assertTrue(localSet.getIdentifiers().contains(IQMetadataKey.MetricLocalSets));
+        assertTrue(localSet.getField(IQMetadataKey.MetricLocalSets) instanceof MetricLocalSets);
+        MetricLocalSets value = (MetricLocalSets) localSet.getField(IQMetadataKey.MetricLocalSets);
         assertNotNull(value);
         assertEquals(value.getDisplayName(), "Metrics");
         assertEquals(value.getDisplayableValue(), "[Metrics]");
@@ -471,16 +448,10 @@ public class InterpretabilityQualityLocalSetTest extends LoggerChecks {
                 metricLocalSet.getField(MetricLocalSetKey.MetricName).getDisplayableValue(), "RER");
     }
 
-    private void checkTwoMetricLocalSet(InterpretabilityQualityLocalSet localSet) {
-        assertTrue(
-                localSet.getIdentifiers()
-                        .contains(InterpretabilityQualityMetadataKey.MetricLocalSets));
-        assertTrue(
-                localSet.getField(InterpretabilityQualityMetadataKey.MetricLocalSets)
-                        instanceof MetricLocalSets);
-        MetricLocalSets value =
-                (MetricLocalSets)
-                        localSet.getField(InterpretabilityQualityMetadataKey.MetricLocalSets);
+    private void checkTwoMetricLocalSet(IQLocalSet localSet) {
+        assertTrue(localSet.getIdentifiers().contains(IQMetadataKey.MetricLocalSets));
+        assertTrue(localSet.getField(IQMetadataKey.MetricLocalSets) instanceof MetricLocalSets);
+        MetricLocalSets value = (MetricLocalSets) localSet.getField(IQMetadataKey.MetricLocalSets);
         assertNotNull(value);
         assertEquals(value.getDisplayName(), "Metrics");
         assertEquals(value.getDisplayableValue(), "[Metrics]");
@@ -503,91 +474,60 @@ public class InterpretabilityQualityLocalSetTest extends LoggerChecks {
         }
     }
 
-    private void checkCompressionType(InterpretabilityQualityLocalSet localSet) {
-        assertTrue(
-                localSet.getIdentifiers()
-                        .contains(InterpretabilityQualityMetadataKey.CompressionType));
-        assertTrue(
-                localSet.getField(InterpretabilityQualityMetadataKey.CompressionType)
-                        instanceof CompressionType);
-        CompressionType value =
-                (CompressionType)
-                        localSet.getField(InterpretabilityQualityMetadataKey.CompressionType);
+    private void checkCompressionType(IQLocalSet localSet) {
+        assertTrue(localSet.getIdentifiers().contains(IQMetadataKey.CompressionType));
+        assertTrue(localSet.getField(IQMetadataKey.CompressionType) instanceof CompressionType);
+        CompressionType value = (CompressionType) localSet.getField(IQMetadataKey.CompressionType);
         assertNotNull(value);
         assertEquals(value, CompressionType.H264);
     }
 
-    private void checkCompressionProfile(InterpretabilityQualityLocalSet localSet) {
+    private void checkCompressionProfile(IQLocalSet localSet) {
+        assertTrue(localSet.getIdentifiers().contains(IQMetadataKey.CompressionProfile));
         assertTrue(
-                localSet.getIdentifiers()
-                        .contains(InterpretabilityQualityMetadataKey.CompressionProfile));
-        assertTrue(
-                localSet.getField(InterpretabilityQualityMetadataKey.CompressionProfile)
-                        instanceof CompressionProfile);
+                localSet.getField(IQMetadataKey.CompressionProfile) instanceof CompressionProfile);
         CompressionProfile value =
-                (CompressionProfile)
-                        localSet.getField(InterpretabilityQualityMetadataKey.CompressionProfile);
+                (CompressionProfile) localSet.getField(IQMetadataKey.CompressionProfile);
         assertNotNull(value);
         assertEquals(value, CompressionProfile.High_4_2_2);
     }
 
-    private void checkCompressionLevel(InterpretabilityQualityLocalSet localSet) {
-        assertTrue(
-                localSet.getIdentifiers()
-                        .contains(InterpretabilityQualityMetadataKey.CompressionLevel));
-        assertTrue(
-                localSet.getField(InterpretabilityQualityMetadataKey.CompressionLevel)
-                        instanceof CompressionLevel);
+    private void checkCompressionLevel(IQLocalSet localSet) {
+        assertTrue(localSet.getIdentifiers().contains(IQMetadataKey.CompressionLevel));
+        assertTrue(localSet.getField(IQMetadataKey.CompressionLevel) instanceof CompressionLevel);
         CompressionLevel value =
-                (CompressionLevel)
-                        localSet.getField(InterpretabilityQualityMetadataKey.CompressionLevel);
+                (CompressionLevel) localSet.getField(IQMetadataKey.CompressionLevel);
         assertNotNull(value);
         assertEquals(value.getDisplayName(), "Compression Level");
         assertEquals(value.getDisplayableValue(), "4.1");
         assertEquals(value.getCompressionLevel(), "4.1");
     }
 
-    private void checkCompressionRatio(InterpretabilityQualityLocalSet localSet) {
-        assertTrue(
-                localSet.getIdentifiers()
-                        .contains(InterpretabilityQualityMetadataKey.CompressionRatio));
-        assertTrue(
-                localSet.getField(InterpretabilityQualityMetadataKey.CompressionRatio)
-                        instanceof CompressionRatio);
+    private void checkCompressionRatio(IQLocalSet localSet) {
+        assertTrue(localSet.getIdentifiers().contains(IQMetadataKey.CompressionRatio));
+        assertTrue(localSet.getField(IQMetadataKey.CompressionRatio) instanceof CompressionRatio);
         CompressionRatio value =
-                (CompressionRatio)
-                        localSet.getField(InterpretabilityQualityMetadataKey.CompressionRatio);
+                (CompressionRatio) localSet.getField(IQMetadataKey.CompressionRatio);
         assertNotNull(value);
         assertEquals(value.getDisplayName(), "Compression Ratio");
         assertEquals(value.getDisplayableValue(), "25.20");
         assertEquals(value.getCompressionRatio(), 25.2, 0.001);
     }
 
-    private void checkStreamBitrate(InterpretabilityQualityLocalSet localSet) {
-        assertTrue(
-                localSet.getIdentifiers()
-                        .contains(InterpretabilityQualityMetadataKey.StreamBitrate));
-        assertTrue(
-                localSet.getField(InterpretabilityQualityMetadataKey.StreamBitrate)
-                        instanceof StreamBitrate);
-        StreamBitrate value =
-                (StreamBitrate) localSet.getField(InterpretabilityQualityMetadataKey.StreamBitrate);
+    private void checkStreamBitrate(IQLocalSet localSet) {
+        assertTrue(localSet.getIdentifiers().contains(IQMetadataKey.StreamBitrate));
+        assertTrue(localSet.getField(IQMetadataKey.StreamBitrate) instanceof StreamBitrate);
+        StreamBitrate value = (StreamBitrate) localSet.getField(IQMetadataKey.StreamBitrate);
         assertNotNull(value);
         assertEquals(value.getDisplayName(), "Stream Bitrate");
         assertEquals(value.getDisplayableValue(), "1.025 Mbits/sec");
         assertEquals(value.getBitrate(), 1025);
     }
 
-    private void checkDocumentVersion(InterpretabilityQualityLocalSet localSet) {
-        assertTrue(
-                localSet.getIdentifiers()
-                        .contains(InterpretabilityQualityMetadataKey.DocumentVersion));
-        assertTrue(
-                localSet.getField(InterpretabilityQualityMetadataKey.DocumentVersion)
-                        instanceof DocumentVersion);
-        DocumentVersion value =
-                (DocumentVersion)
-                        localSet.getField(InterpretabilityQualityMetadataKey.DocumentVersion);
+    private void checkDocumentVersion(IQLocalSet localSet) {
+        assertTrue(localSet.getIdentifiers().contains(IQMetadataKey.DocumentVersion));
+        assertTrue(localSet.getField(IQMetadataKey.DocumentVersion) instanceof DocumentVersion);
+        DocumentVersion value = (DocumentVersion) localSet.getField(IQMetadataKey.DocumentVersion);
         assertNotNull(value);
         assertEquals(value.getDisplayName(), "Document Version");
         assertEquals(value.getDisplayableValue(), "ST 1108.3");
@@ -596,29 +536,22 @@ public class InterpretabilityQualityLocalSetTest extends LoggerChecks {
 
     @Test
     public void fromValuesMany() throws KlvParseException {
-        Map<InterpretabilityQualityMetadataKey, IInterpretabilityQualityMetadataValue> values =
-                new TreeMap<>();
-        values.put(InterpretabilityQualityMetadataKey.AssessmentPoint, AssessmentPoint.GCSTransmit);
+        Map<IQMetadataKey, IInterpretabilityQualityMetadataValue> values = new TreeMap<>();
+        values.put(IQMetadataKey.AssessmentPoint, AssessmentPoint.GCSTransmit);
         values.put(
-                InterpretabilityQualityMetadataKey.MetricPeriodPack,
+                IQMetadataKey.MetricPeriodPack,
                 new MetricPeriodPack(new ST0603TimeStamp(987654321000000L), 909322));
-        values.put(
-                InterpretabilityQualityMetadataKey.WindowCornersPack,
-                new WindowCornersPack(1, 2, 516, 775));
+        values.put(IQMetadataKey.WindowCornersPack, new WindowCornersPack(1, 2, 516, 775));
         MetricLocalSet metric = buildMetric();
         MetricLocalSets metricLocalSets = new MetricLocalSets(metric);
-        values.put(InterpretabilityQualityMetadataKey.MetricLocalSets, metricLocalSets);
-        values.put(InterpretabilityQualityMetadataKey.CompressionType, CompressionType.H264);
-        values.put(
-                InterpretabilityQualityMetadataKey.CompressionProfile,
-                CompressionProfile.High_4_2_2);
-        values.put(
-                InterpretabilityQualityMetadataKey.CompressionLevel, new CompressionLevel("4.1"));
-        values.put(
-                InterpretabilityQualityMetadataKey.CompressionRatio, new CompressionRatio(25.20));
-        values.put(InterpretabilityQualityMetadataKey.StreamBitrate, new StreamBitrate(1025));
-        values.put(InterpretabilityQualityMetadataKey.DocumentVersion, new DocumentVersion(3));
-        InterpretabilityQualityLocalSet localSet = new InterpretabilityQualityLocalSet(values);
+        values.put(IQMetadataKey.MetricLocalSets, metricLocalSets);
+        values.put(IQMetadataKey.CompressionType, CompressionType.H264);
+        values.put(IQMetadataKey.CompressionProfile, CompressionProfile.High_4_2_2);
+        values.put(IQMetadataKey.CompressionLevel, new CompressionLevel("4.1"));
+        values.put(IQMetadataKey.CompressionRatio, new CompressionRatio(25.20));
+        values.put(IQMetadataKey.StreamBitrate, new StreamBitrate(1025));
+        values.put(IQMetadataKey.DocumentVersion, new DocumentVersion(3));
+        IQLocalSet localSet = new IQLocalSet(values);
         assertNotNull(localSet);
         assertEquals(localSet.displayHeader(), "ST 1108 Interpretability and Quality");
         assertEquals(localSet.getUniversalLabel(), KlvConstants.InterpretabilityQualityLocalSetUl);
@@ -629,30 +562,23 @@ public class InterpretabilityQualityLocalSetTest extends LoggerChecks {
 
     @Test
     public void fromValuesManyWithCRC16Ignored() throws KlvParseException {
-        Map<InterpretabilityQualityMetadataKey, IInterpretabilityQualityMetadataValue> values =
-                new TreeMap<>();
-        values.put(InterpretabilityQualityMetadataKey.AssessmentPoint, AssessmentPoint.GCSTransmit);
+        Map<IQMetadataKey, IInterpretabilityQualityMetadataValue> values = new TreeMap<>();
+        values.put(IQMetadataKey.AssessmentPoint, AssessmentPoint.GCSTransmit);
         values.put(
-                InterpretabilityQualityMetadataKey.MetricPeriodPack,
+                IQMetadataKey.MetricPeriodPack,
                 new MetricPeriodPack(new ST0603TimeStamp(987654321000000L), 909322));
-        values.put(
-                InterpretabilityQualityMetadataKey.WindowCornersPack,
-                new WindowCornersPack(1, 2, 516, 775));
+        values.put(IQMetadataKey.WindowCornersPack, new WindowCornersPack(1, 2, 516, 775));
         MetricLocalSet metric = buildMetric();
         MetricLocalSets metricLocalSets = new MetricLocalSets(metric);
-        values.put(InterpretabilityQualityMetadataKey.MetricLocalSets, metricLocalSets);
-        values.put(InterpretabilityQualityMetadataKey.CompressionType, CompressionType.H264);
+        values.put(IQMetadataKey.MetricLocalSets, metricLocalSets);
+        values.put(IQMetadataKey.CompressionType, CompressionType.H264);
+        values.put(IQMetadataKey.CompressionProfile, CompressionProfile.High_4_2_2);
+        values.put(IQMetadataKey.CompressionLevel, new CompressionLevel("4.1"));
+        values.put(IQMetadataKey.CompressionRatio, new CompressionRatio(25.20));
+        values.put(IQMetadataKey.StreamBitrate, new StreamBitrate(1025));
+        values.put(IQMetadataKey.DocumentVersion, new DocumentVersion(3));
         values.put(
-                InterpretabilityQualityMetadataKey.CompressionProfile,
-                CompressionProfile.High_4_2_2);
-        values.put(
-                InterpretabilityQualityMetadataKey.CompressionLevel, new CompressionLevel("4.1"));
-        values.put(
-                InterpretabilityQualityMetadataKey.CompressionRatio, new CompressionRatio(25.20));
-        values.put(InterpretabilityQualityMetadataKey.StreamBitrate, new StreamBitrate(1025));
-        values.put(InterpretabilityQualityMetadataKey.DocumentVersion, new DocumentVersion(3));
-        values.put(
-                InterpretabilityQualityMetadataKey.CRC16CCITT,
+                IQMetadataKey.CRC16CCITT,
                 new IInterpretabilityQualityMetadataValue() {
                     @Override
                     public void appendBytesToBuilder(ArrayBuilder arrayBuilder) {
@@ -669,7 +595,7 @@ public class InterpretabilityQualityLocalSetTest extends LoggerChecks {
                         return "Dummy Value";
                     }
                 });
-        InterpretabilityQualityLocalSet localSet = new InterpretabilityQualityLocalSet(values);
+        IQLocalSet localSet = new IQLocalSet(values);
         assertNotNull(localSet);
         assertEquals(localSet.displayHeader(), "ST 1108 Interpretability and Quality");
         assertEquals(localSet.getUniversalLabel(), KlvConstants.InterpretabilityQualityLocalSetUl);
@@ -678,7 +604,7 @@ public class InterpretabilityQualityLocalSetTest extends LoggerChecks {
         assertEquals(localSet.frameMessage(false), manyTagsBytes);
     }
 
-    private void checkManyValues(InterpretabilityQualityLocalSet localSet) {
+    private void checkManyValues(IQLocalSet localSet) {
         checkAssessmentPoint(localSet);
         checkMetricPeriodPack(localSet);
         checkWindowCornersPack(localSet);
@@ -712,31 +638,24 @@ public class InterpretabilityQualityLocalSetTest extends LoggerChecks {
 
     @Test
     public void fromValuesTwoMetrics() throws KlvParseException {
-        Map<InterpretabilityQualityMetadataKey, IInterpretabilityQualityMetadataValue> values =
-                new TreeMap<>();
-        values.put(InterpretabilityQualityMetadataKey.AssessmentPoint, AssessmentPoint.GCSTransmit);
+        Map<IQMetadataKey, IInterpretabilityQualityMetadataValue> values = new TreeMap<>();
+        values.put(IQMetadataKey.AssessmentPoint, AssessmentPoint.GCSTransmit);
         values.put(
-                InterpretabilityQualityMetadataKey.MetricPeriodPack,
+                IQMetadataKey.MetricPeriodPack,
                 new MetricPeriodPack(new ST0603TimeStamp(987654321000000L), 909322));
-        values.put(
-                InterpretabilityQualityMetadataKey.WindowCornersPack,
-                new WindowCornersPack(1, 2, 516, 775));
+        values.put(IQMetadataKey.WindowCornersPack, new WindowCornersPack(1, 2, 516, 775));
         List<MetricLocalSet> metrics = new ArrayList<>();
         metrics.add(buildMetric());
         metrics.add(buildSecondMetric());
         MetricLocalSets metricLocalSets = new MetricLocalSets(metrics);
-        values.put(InterpretabilityQualityMetadataKey.MetricLocalSets, metricLocalSets);
-        values.put(InterpretabilityQualityMetadataKey.CompressionType, CompressionType.H264);
-        values.put(
-                InterpretabilityQualityMetadataKey.CompressionProfile,
-                CompressionProfile.High_4_2_2);
-        values.put(
-                InterpretabilityQualityMetadataKey.CompressionLevel, new CompressionLevel("4.1"));
-        values.put(
-                InterpretabilityQualityMetadataKey.CompressionRatio, new CompressionRatio(25.20));
-        values.put(InterpretabilityQualityMetadataKey.StreamBitrate, new StreamBitrate(1025));
-        values.put(InterpretabilityQualityMetadataKey.DocumentVersion, new DocumentVersion(3));
-        InterpretabilityQualityLocalSet localSet = new InterpretabilityQualityLocalSet(values);
+        values.put(IQMetadataKey.MetricLocalSets, metricLocalSets);
+        values.put(IQMetadataKey.CompressionType, CompressionType.H264);
+        values.put(IQMetadataKey.CompressionProfile, CompressionProfile.High_4_2_2);
+        values.put(IQMetadataKey.CompressionLevel, new CompressionLevel("4.1"));
+        values.put(IQMetadataKey.CompressionRatio, new CompressionRatio(25.20));
+        values.put(IQMetadataKey.StreamBitrate, new StreamBitrate(1025));
+        values.put(IQMetadataKey.DocumentVersion, new DocumentVersion(3));
+        IQLocalSet localSet = new IQLocalSet(values);
         assertNotNull(localSet);
         assertEquals(localSet.displayHeader(), "ST 1108 Interpretability and Quality");
         assertEquals(localSet.getUniversalLabel(), KlvConstants.InterpretabilityQualityLocalSetUl);
@@ -757,8 +676,7 @@ public class InterpretabilityQualityLocalSetTest extends LoggerChecks {
     @Test
     public void parseWithTwoMetrics() throws KlvParseException {
         List<LdsField> fields = getFields(twoMetricBytes);
-        InterpretabilityQualityLocalSet localSet =
-                InterpretabilityQualityLocalSet.fromST1108_3Fields(fields, twoMetricBytes);
+        IQLocalSet localSet = IQLocalSet.fromST1108_3Fields(fields, twoMetricBytes);
         assertNotNull(localSet);
         assertEquals(localSet.displayHeader(), "ST 1108 Interpretability and Quality");
         assertEquals(localSet.getUniversalLabel(), KlvConstants.InterpretabilityQualityLocalSetUl);
@@ -779,8 +697,7 @@ public class InterpretabilityQualityLocalSetTest extends LoggerChecks {
     @Test(expectedExceptions = IllegalArgumentException.class)
     public void badNesting() throws KlvParseException {
         List<LdsField> fields = getFields(twoMetricBytes);
-        InterpretabilityQualityLocalSet localSet =
-                InterpretabilityQualityLocalSet.fromST1108_3Fields(fields, twoMetricBytes);
+        IQLocalSet localSet = IQLocalSet.fromST1108_3Fields(fields, twoMetricBytes);
         assertEquals(localSet.getIdentifiers().size(), 10);
         localSet.frameMessage(true);
     }

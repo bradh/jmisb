@@ -71,7 +71,7 @@ public class QualityCoefficientIdentifier implements IInterpretabilityQualityMet
 
     @Override
     public void appendBytesToBuilder(ArrayBuilder arrayBuilder) {
-        arrayBuilder.appendAsOID(LegacyMetadataKey.QualityCoefficientIdentifier.getIdentifier());
+        arrayBuilder.appendAsOID(LegacyIQMetadataKey.QualityCoefficientIdentifier.getIdentifier());
         byte[] valueBytes = PrimitiveConverter.uint8ToBytes((short) identifier);
         arrayBuilder.appendAsBerLength(valueBytes.length);
         arrayBuilder.append(valueBytes);
