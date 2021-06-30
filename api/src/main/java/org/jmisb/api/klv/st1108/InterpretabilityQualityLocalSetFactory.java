@@ -21,6 +21,7 @@ import org.slf4j.LoggerFactory;
  * the wider jMISB implementation, and is not usually required directly.
  */
 public class InterpretabilityQualityLocalSetFactory implements IMisbMessageFactory {
+    private static final int ST1108_UNKNOWN_VERSION = 0;
     private static final int ST1108_2_VERSION = 2;
     private static final int ST1108_3_VERSION = 3;
     private static final Logger LOGGER =
@@ -42,8 +43,17 @@ public class InterpretabilityQualityLocalSetFactory implements IMisbMessageFacto
     }
 
     private int getVersion(List<LdsField> fields) {
-        // TODO: work out heuristics for this, open question into MISB.
-        return ST1108_3_VERSION;
+        for (LdsField field : fields) {
+            if (field.getTag() == 1) {
+                if (field.getData().length == 8) {
+                    return ST1108_2_VERSION;
+                }
+                if (field.getData().length == 1) {
+                    return ST1108_3_VERSION;
+                }
+            }
+        }
+        return ST1108_UNKNOWN_VERSION;
     }
 
     private static List<LdsField> getFields(final byte[] bytes)

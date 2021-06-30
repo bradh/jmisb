@@ -1550,7 +1550,7 @@ public class LegacyIQLocalSetTest extends LoggerChecks {
         checkChipPSNR(localSet);
     }
 
-    private void checkMostRecentFrameTime(LegacyIQLocalSet localSet) {
+    public static void checkMostRecentFrameTime(LegacyIQLocalSet localSet) {
         assertTrue(localSet.getIdentifiers().contains(LegacyIQMetadataKey.MostRecentFrameTime));
         IKlvValue value = localSet.getField(LegacyIQMetadataKey.MostRecentFrameTime);
         assertTrue(value instanceof MostRecentFrameTime);
