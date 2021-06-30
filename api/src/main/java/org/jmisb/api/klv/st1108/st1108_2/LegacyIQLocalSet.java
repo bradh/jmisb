@@ -106,8 +106,12 @@ public class LegacyIQLocalSet implements IMisbMessage {
                         new ChipLocationSizeBitDepth(field.getData()));
                 break;
             case ChipYvaluesUncompressed:
+                map.put(
+                        LegacyIQMetadataKey.ChipYvaluesUncompressed,
+                        new ChipValuesUncompressed(field.getData()));
                 break;
             case ChipYvaluesPNG:
+                map.put(LegacyIQMetadataKey.ChipYvaluesPNG, new ChipValuesPNG(field.getData()));
                 break;
             case ChipEdgeIntensity:
                 map.put(
