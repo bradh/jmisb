@@ -85,8 +85,13 @@ public class KlvToCot {
                 (UasDatalinkString) uasMessage.getField(UasDatalinkTag.MissionId);
         UasDatalinkString imageSourceSensor =
                 (UasDatalinkString) uasMessage.getField(UasDatalinkTag.ImageSourceSensor);
-        if (platformDesignation != null || missionId != null || imageSourceSensor != null) {
-            spiMessage.setUid(platformDesignation + "_" + missionId + "_" + imageSourceSensor);
+        if (platformDesignation != null && missionId != null && imageSourceSensor != null) {
+            spiMessage.setUid(
+                    platformDesignation.getValue()
+                            + "_"
+                            + missionId.getValue()
+                            + "_"
+                            + imageSourceSensor.getValue());
         }
 
         setTimes(uasMessage, spiMessage);
