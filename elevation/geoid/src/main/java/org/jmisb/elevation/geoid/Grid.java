@@ -74,7 +74,7 @@ public class Grid {
         this.xResolution = xResolution;
     }
 
-    void writeHeaderTo(DataOutputStream dos) throws IOException {
+    public void writeHeaderTo(DataOutputStream dos) throws IOException {
         dos.writeFloat(bottom);
         dos.writeFloat(top);
         dos.writeFloat(left);
@@ -92,7 +92,7 @@ public class Grid {
         xResolution = dis.readFloat();
     }
 
-    void writeValuesTo(DataOutputStream dos) throws IOException {
+    public void writeValuesTo(DataOutputStream dos) throws IOException {
         for (float[] value : values) {
             for (int c = 0; c < value.length; c++) {
                 dos.writeFloat(value[c]);
@@ -112,11 +112,11 @@ public class Grid {
         return 1 + (int) Math.ceil((top - bottom) / yResolution);
     }
 
-    int getNumColumns() {
+    public int getNumColumns() {
         return 1 + (int) Math.ceil((right - left) / xResolution);
     }
 
-    void setValue(int row, int column, float value) {
+    public void setValue(int row, int column, float value) {
         values[row][column] = value;
     }
 

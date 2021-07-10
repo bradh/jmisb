@@ -1,4 +1,4 @@
-package org.jmisb.elevation.geoid;
+package egm96.egm96datatool;
 
 import java.io.BufferedReader;
 import java.io.DataOutputStream;
@@ -7,6 +7,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.Reader;
 import java.nio.charset.StandardCharsets;
+import org.jmisb.elevation.geoid.Grid;
 
 /**
  * Geoid File Converter.
@@ -21,10 +22,10 @@ class GeoidFileConverter {
     /** @param args the command line arguments */
     public static void main(String[] args) throws IOException {
         GeoidFileConverter converter = new GeoidFileConverter();
-        converter.writeValuesToFile("src/main/resources/egm96.dat");
+        converter.writeValuesToFile("egm96.dat");
     }
 
-    private void writeValuesToFile(String filename) throws IOException {
+    void writeValuesToFile(String filename) throws IOException {
         try (Reader reader =
                         new InputStreamReader(
                                 getClass()
