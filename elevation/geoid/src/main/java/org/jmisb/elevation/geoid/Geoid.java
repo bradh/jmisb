@@ -13,10 +13,10 @@ public class Geoid {
 
     public float getValue(double lat, double lon) {
 
-        return getNearest(lat, lon);
+        return getValueBicubic(lat, lon);
     }
 
-    public float getNearest(double lat, double lon) {
+    public float getValueNearest(double lat, double lon) {
         int baseRow = getBaseRow(lat);
         int baseColumn = getBaseColumn(lon);
         float topLeft = grid.findValue(baseRow, baseColumn);

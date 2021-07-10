@@ -92,7 +92,7 @@ public class Grid {
         }
     }
 
-    private int getNumRows() {
+    public int getNumRows() {
         return 1 + (int) Math.ceil((top - bottom) / yResolution);
     }
 
@@ -106,16 +106,16 @@ public class Grid {
 
     float findValue(int baseRow, int baseColumn) {
         if (baseRow < 0) {
-            baseRow += values.length;
+            baseRow = 0;
         }
         if (baseRow >= values.length) {
-            baseRow = baseRow - values.length;
+            baseRow = values.length - 1;
         }
         if (baseColumn < 0) {
-            baseColumn += values[0].length;
+            baseColumn += values[baseRow].length - 1;
         }
-        if (baseColumn >= values[0].length) {
-            baseColumn = baseColumn - values[0].length;
+        if (baseColumn >= values[baseRow].length) {
+            baseColumn = baseColumn - (values[0].length - 1);
         }
         return values[baseRow][baseColumn];
     }

@@ -150,52 +150,69 @@ public class GeoidTest {
     public void checkLookup1() throws IOException {
         Geoid geoid = new Geoid();
         assertEquals(
-                geoid.getNearest(38.6281550, 269.7791550), -31.628, NEAREST_NEIGHBOUR_TOLERANCE);
+                geoid.getValueNearest(38.6281550, 269.7791550),
+                -31.628,
+                NEAREST_NEIGHBOUR_TOLERANCE);
         assertEquals(geoid.getValueBilinear(38.6281550, 269.7791550), -31.628, BILINEAR_TOLERANCE);
         assertEquals(geoid.getValueBicubic(38.6281550, 269.7791550), -31.628, BICUBIC_TOLERANCE);
+        assertEquals(geoid.getValue(38.6281550, 269.7791550), -31.628, BICUBIC_TOLERANCE);
     }
 
     @Test
     public void checkLookup2() throws IOException {
         Geoid geoid = new Geoid();
         assertEquals(
-                geoid.getNearest(-14.6212170, 305.0211140), -2.9698, NEAREST_NEIGHBOUR_TOLERANCE);
+                geoid.getValueNearest(-14.6212170, 305.0211140),
+                -2.9698,
+                NEAREST_NEIGHBOUR_TOLERANCE);
         assertEquals(geoid.getValueBilinear(-14.6212170, 305.0211140), -2.9698, BILINEAR_TOLERANCE);
         assertEquals(geoid.getValueBicubic(-14.6212170, 305.0211140), -2.969, BICUBIC_TOLERANCE);
+        assertEquals(geoid.getValue(-14.6212170, 305.0211140), -2.969, BICUBIC_TOLERANCE);
     }
 
     @Test
     public void checkLookup3() throws IOException {
         Geoid geoid = new Geoid();
         assertEquals(
-                geoid.getNearest(46.8743190, 102.4487290), -43.575, NEAREST_NEIGHBOUR_TOLERANCE);
+                geoid.getValueNearest(46.8743190, 102.4487290),
+                -43.575,
+                NEAREST_NEIGHBOUR_TOLERANCE);
         assertEquals(geoid.getValueBilinear(46.8743190, 102.4487290), -43.575, BILINEAR_TOLERANCE);
         assertEquals(geoid.getValueBicubic(46.8743190, 102.4487290), -43.575, BICUBIC_TOLERANCE);
+        assertEquals(geoid.getValue(46.8743190, 102.4487290), -43.575, BICUBIC_TOLERANCE);
     }
 
     @Test
     public void checkLookup4() throws IOException {
         Geoid geoid = new Geoid();
         assertEquals(
-                geoid.getNearest(-23.6174460, 133.8747120), 15.871, NEAREST_NEIGHBOUR_TOLERANCE);
+                geoid.getValueNearest(-23.6174460, 133.8747120),
+                15.871,
+                NEAREST_NEIGHBOUR_TOLERANCE);
         assertEquals(geoid.getValueBilinear(-23.6174460, 133.8747120), 15.871, BILINEAR_TOLERANCE);
         assertEquals(geoid.getValueBicubic(-23.6174460, 133.8747120), 15.871, BICUBIC_TOLERANCE);
+        assertEquals(geoid.getValue(-23.6174460, 133.8747120), 15.871, BICUBIC_TOLERANCE);
     }
 
     @Test
     public void checkLookup5() throws IOException {
         Geoid geoid = new Geoid();
         assertEquals(
-                geoid.getNearest(38.6254730, 359.9995000), 50.066, NEAREST_NEIGHBOUR_TOLERANCE);
+                geoid.getValueNearest(38.6254730, 359.9995000),
+                50.066,
+                NEAREST_NEIGHBOUR_TOLERANCE);
         assertEquals(geoid.getValueBilinear(38.6254730, 359.9995000), 50.066, BILINEAR_TOLERANCE);
         assertEquals(geoid.getValueBicubic(38.6254730, 359.9995000), 50.066, BICUBIC_TOLERANCE);
+        assertEquals(geoid.getValue(38.6254730, 359.9995000), 50.066, BICUBIC_TOLERANCE);
     }
 
     @Test
     public void checkLookup6() throws IOException {
         Geoid geoid = new Geoid();
-        assertEquals(geoid.getNearest(-0.4667440, 0.0023000), 17.329, NEAREST_NEIGHBOUR_TOLERANCE);
+        assertEquals(
+                geoid.getValueNearest(-0.4667440, 0.0023000), 17.329, NEAREST_NEIGHBOUR_TOLERANCE);
         assertEquals(geoid.getValueBilinear(-0.4667440, 0.0023000), 17.329, BILINEAR_TOLERANCE);
         assertEquals(geoid.getValueBicubic(-0.4667440, 0.0023000), 17.329, BICUBIC_TOLERANCE);
+        assertEquals(geoid.getValue(-0.4667440, 0.0023000), 17.329, BICUBIC_TOLERANCE);
     }
 }
