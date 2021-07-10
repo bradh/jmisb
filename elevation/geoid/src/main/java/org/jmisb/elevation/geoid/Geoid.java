@@ -1,25 +1,52 @@
 package org.jmisb.elevation.geoid;
 
+import java.io.IOException;
+
 /** Geoid (EGM 96) conversion routines. */
 public class Geoid {
 
-    private final float[][] values;
+    private final Grid grid;
 
-    Geoid(float[][] values) {
-        this.values = values;
+    Geoid() throws IOException {
+        this.grid = Grid.fromEGM96Grid();
     }
 
-    public String getValue(double lat, double lon) {
-        return getValueBilinear(lat, lon);
+    public float getValue(double lat, double lon) {
+
+        return getNearest(lat, lon);
     }
 
-    public String getValueBilinear(double lat, double lon) {
+    public float getNearest(double lat, double lon) {
         int baseRow = getBaseRow(lat);
         int baseColumn = getBaseColumn(lon);
-        float topLeft = findValue(baseRow, baseColumn);
-        float topRight = findValue(baseRow, baseColumn + 1);
-        float bottomLeft = findValue(baseRow + 1, baseColumn);
-        float bottomRight = findValue(baseRow + 1, baseColumn + 1);
+        float topLeft = grid.findValue(baseRow, baseColumn);
+        float topRight = grid.findValue(baseRow, baseColumn + 1);
+        float bottomLeft = grid.findValue(baseRow + 1, baseColumn);
+        float bottomRight = grid.findValue(baseRow + 1, baseColumn + 1);
+        double yOffset = getOffsetFromBaseRow(lat, baseRow);
+        double xOffset = getOffsetFromBaseColumn(lon, baseColumn);
+        if (yOffset < 0.5) {
+            if (xOffset < 0.5) {
+                return topLeft;
+            } else {
+                return topRight;
+            }
+        } else {
+            if (xOffset < 0.5) {
+                return bottomLeft;
+            } else {
+                return bottomRight;
+            }
+        }
+    }
+
+    public float getValueBilinear(double lat, double lon) {
+        int baseRow = getBaseRow(lat);
+        int baseColumn = getBaseColumn(lon);
+        float topLeft = grid.findValue(baseRow, baseColumn);
+        float topRight = grid.findValue(baseRow, baseColumn + 1);
+        float bottomLeft = grid.findValue(baseRow + 1, baseColumn);
+        float bottomRight = grid.findValue(baseRow + 1, baseColumn + 1);
         double yOffset = getOffsetFromBaseRow(lat, baseRow);
         double xOffset = getOffsetFromBaseColumn(lon, baseColumn);
         float value =
@@ -30,18 +57,18 @@ public class Geoid {
                         bottomRight,
                         (float) yOffset,
                         (float) xOffset);
-        return String.format("%f", value);
+        return value;
     }
 
-    public String getValueBicubic(double lat, double lon) {
+    public float getValueBicubic(double lat, double lon) {
         int baseRow = getBaseRow(lat);
         int baseColumn = getBaseColumn(lon);
         float[] interpolatedRows = new float[4];
         for (int i = 0; i < 4; ++i) {
-            float v00 = findValue(baseRow - 1 + i, baseColumn - 1);
-            float v01 = findValue(baseRow - 1 + i, baseColumn);
-            float v02 = findValue(baseRow - 1 + i, baseColumn + 1);
-            float v03 = findValue(baseRow - 1 + i, baseColumn + 2);
+            float v00 = grid.findValue(baseRow - 1 + i, baseColumn - 1);
+            float v01 = grid.findValue(baseRow - 1 + i, baseColumn);
+            float v02 = grid.findValue(baseRow - 1 + i, baseColumn + 1);
+            float v03 = grid.findValue(baseRow - 1 + i, baseColumn + 2);
             float xOffset = (float) getOffsetFromBaseColumn(lon, baseColumn);
             interpolatedRows[i] = interpolateCubic(v00, v01, v02, v03, xOffset);
         }
@@ -53,7 +80,7 @@ public class Geoid {
                         interpolatedRows[2],
                         interpolatedRows[3],
                         (float) yOffset);
-        return String.format("%f", value);
+        return value;
     }
 
     private static float interpolateCubic(
@@ -64,20 +91,20 @@ public class Geoid {
                 + v01;
     }
 
-    static double getOffsetFromBaseColumn(double lon, int baseColumn) {
-        return lon - (baseColumn / 4.0);
+    double getOffsetFromBaseColumn(double lon, int baseColumn) {
+        return (lon - (baseColumn / 4.0)) * 4;
     }
 
-    static double getOffsetFromBaseRow(double lat, int baseRow) {
-        return (90.0 - (baseRow / 4.0)) - lat;
+    double getOffsetFromBaseRow(double lat, int baseRow) {
+        return ((90.0 - (baseRow * grid.getxResolution())) - lat) / grid.getxResolution();
     }
 
-    static int getBaseColumn(double lon) {
-        return (int) Math.floor(lon * 4.0);
+    int getBaseColumn(double lon) {
+        return (int) Math.floor(lon / grid.getxResolution());
     }
 
-    static int getBaseRow(double lat) {
-        return (int) Math.floor((90 - lat) * 4.0);
+    int getBaseRow(double lat) {
+        return (int) Math.floor((90 - lat) / grid.getyResolution());
     }
 
     private float interpolateBilinear(
@@ -87,23 +114,8 @@ public class Geoid {
             float bottomRight,
             float xOffset,
             float yOffset) {
-        return (1 - yOffset) * ((1 - xOffset) * topLeft + xOffset * topRight)
-                + yOffset * ((1 - xOffset) * bottomLeft + xOffset * bottomRight);
-    }
-
-    private float findValue(int baseRow, int baseColumn) {
-        if (baseRow < 0) {
-            baseRow += values.length;
-        }
-        if (baseRow >= values.length) {
-            baseRow = baseRow - values.length;
-        }
-        if (baseColumn < 0) {
-            baseColumn += values[0].length;
-        }
-        if (baseColumn >= values[0].length) {
-            baseColumn = baseColumn - values[0].length;
-        }
-        return values[baseRow][baseColumn];
+        float a = (1 - xOffset) * topLeft + xOffset * topRight;
+        float b = (1 - xOffset) * bottomLeft + xOffset * bottomRight;
+        return (1 - yOffset) * a + yOffset * b;
     }
 }

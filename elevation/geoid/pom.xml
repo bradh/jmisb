@@ -9,6 +9,8 @@
     <groupId>org.jmisb.elevation</groupId>
     <artifactId>geoid</artifactId>
     <packaging>jar</packaging>
+    <name>Geoid Conversion</name>
+    <description>Support code for geoidal conversion (e.g. MSL to HAE).</description>
     <dependencies>
         <dependency>
             <groupId>org.testng</groupId>

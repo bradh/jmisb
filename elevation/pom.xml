@@ -8,6 +8,8 @@
     </parent>
     <artifactId>elevation</artifactId>
     <packaging>pom</packaging>
+    <name>Elevation Parent</name>
+    <description>Parent POM for elevation data (DTED, etc) support code.</description>
     <modules>
         <module>geoid</module>
     </modules>
