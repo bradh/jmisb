@@ -21,37 +21,21 @@ public class Grid {
         InputStream is = grid.getClass().getResourceAsStream("/egm96.dat");
         DataInputStream dis = new DataInputStream(is);
         grid.readHeaderFrom(dis);
-        grid.initialiseValuesArray();
+        grid.values = new float[grid.getNumRows()][grid.getNumColumns()];
         grid.readValuesFrom(dis);
         return grid;
-    }
-
-    public float getLeft() {
-        return left;
     }
 
     public void setLeft(float left) {
         this.left = left;
     }
 
-    public float getTop() {
-        return top;
-    }
-
     public void setTop(float top) {
         this.top = top;
     }
 
-    public float getRight() {
-        return right;
-    }
-
     public void setRight(float right) {
         this.right = right;
-    }
-
-    public float getBottom() {
-        return bottom;
     }
 
     public void setBottom(float bottom) {
@@ -118,12 +102,6 @@ public class Grid {
 
     public void setValue(int row, int column, float value) {
         values[row][column] = value;
-    }
-
-    private void initialiseValuesArray() {
-        if (values == null) {
-            values = new float[getNumRows()][getNumColumns()];
-        }
     }
 
     float findValue(int baseRow, int baseColumn) {
