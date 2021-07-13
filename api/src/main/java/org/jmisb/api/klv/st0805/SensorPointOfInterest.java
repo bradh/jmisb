@@ -1,5 +1,7 @@
 package org.jmisb.api.klv.st0805;
 
+import java.time.Clock;
+
 /**
  * Represents a Sensor Point of Interest (SPI) CoT message.
  *
@@ -9,7 +11,11 @@ package org.jmisb.api.klv.st0805;
 public class SensorPointOfInterest extends CotMessage {
     public String linkType;
     public String linkUid;
+    public String linkRelation;
 
+    SensorPointOfInterest(Clock clock) {
+        super(clock);
+    }
     /**
      * Get the link type (CoT type of the producing {@link PlatformPosition}).
      *
@@ -44,5 +50,36 @@ public class SensorPointOfInterest extends CotMessage {
      */
     public void setLinkUid(String linkUid) {
         this.linkUid = linkUid;
+    }
+
+    /**
+     * Get the link relation.
+     *
+     * <p>This is the relationship from this message to the link target, typically {@code "p-p"} for
+     * parent producer.
+     *
+     * @return the link relation
+     */
+    public String getLinkRelation() {
+        return linkRelation;
+    }
+
+    /**
+     * Set the link relation.
+     *
+     * <p>This is the relationship from this message to the link target, typically {@code "p-p"} for
+     * parent producer.
+     *
+     * @param relation the link relation
+     */
+    public void setLinkRelation(String relation) {
+        this.linkRelation = relation;
+    }
+
+    @Override
+    public String toXml() {
+        throw new UnsupportedOperationException(
+                "Not supported yet."); // To change body of generated methods, choose Tools |
+        // Templates.
     }
 }

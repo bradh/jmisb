@@ -1,7 +1,11 @@
 package org.jmisb.api.klv.st0805;
 
+import java.time.Clock;
+import java.time.ZoneOffset;
+
 /** A Cursor-on-Target (CoT) message. */
-public class CotMessage {
+public abstract class CotMessage {
+    private static final String COT_VERSION = "2.0";
     private double pointLat;
     private double pointLon;
     private double pointHae;
@@ -13,11 +17,15 @@ public class CotMessage {
     private long start;
     private long stale;
     private String how;
-    private final long flowTags;
+    private final FlowTags flowTags = new FlowTags();
 
-    /** Constructor. */
-    public CotMessage() {
-        this.flowTags = System.currentTimeMillis();
+    /**
+     * Constructor.
+     *
+     * @param clock reference clock for the message
+     */
+    public CotMessage(Clock clock) {
+        flowTags.addFlowTag("ST0601CoT", clock.instant().atZone(ZoneOffset.UTC));
     }
 
     /**
@@ -223,7 +231,68 @@ public class CotMessage {
      *
      * @return flow tags
      */
-    public long getFlowTags() {
+    public FlowTags getFlowTags() {
         return flowTags;
+    }
+
+    /**
+     * Write this message out as CoT XML.
+     *
+     * @return the message as an XML String.
+     */
+    public abstract String toXml();
+
+    protected void closeEventStartInXML(StringBuilder sb) {
+        sb.append(">");
+    }
+
+    protected void addEventLevelAttributesToXML(StringBuilder sb) {
+        writeAttribute(sb, "version", COT_VERSION);
+        writeAttribute(sb, "type", getType());
+        writeAttribute(sb, "uid", getUid());
+        // writeAttribute(sb, "time", DateTime8601.formatDate(this.time));
+        // writeAttribute(sb, "start", DateTime8601.formatDate(this.startTime));
+        // writeAttribute(sb, "stale", DateTime8601.formatDate(this.staleTime));
+        writeAttribute(sb, "how", getHow());
+    }
+
+    protected void addEventEndToXML(StringBuilder sb) {
+        sb.append("</event>");
+    }
+
+    protected void addEventStartToXML(StringBuilder sb) {
+        sb.append("<event ");
+    }
+
+    protected void addPoint(StringBuilder sb) {
+        sb.append("<point ");
+        writeAttribute(sb, "lat", getPointLat());
+        writeAttribute(sb, "lon", getPointLon());
+        writeAttribute(sb, "hae", getPointHae());
+        writeAttribute(sb, "ce", getPointCe());
+        writeAttribute(sb, "le", getPointLe());
+        sb.append("/>");
+    }
+
+    protected void addXmlHeader(StringBuilder sb) {
+        sb.append("<?xml version='1.0' standalone='yes'?>");
+    }
+
+    protected void writeFlowTags(StringBuilder sb) {
+        this.flowTags.writeAsXML(sb);
+    }
+
+    protected void writeAttribute(StringBuilder sb, String key, String value) {
+        sb.append(key);
+        sb.append("='");
+        sb.append(value);
+        sb.append("' ");
+    }
+
+    private void writeAttribute(StringBuilder sb, String key, double value) {
+        sb.append(key);
+        sb.append("='");
+        sb.append(value);
+        sb.append("' ");
     }
 }

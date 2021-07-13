@@ -1,5 +1,7 @@
 package org.jmisb.api.klv.st0805;
 
+import java.time.Clock;
+
 /** Represents a Platform Position CoT message. */
 public class PlatformPosition extends CotMessage {
     public double sensorAzimuth;
@@ -7,6 +9,10 @@ public class PlatformPosition extends CotMessage {
     public double sensorVfov;
     public String sensorModel;
     public double sensorRange;
+
+    PlatformPosition(Clock clock) {
+        super(clock);
+    }
 
     /**
      * Get sensor azimuth.
@@ -96,5 +102,18 @@ public class PlatformPosition extends CotMessage {
      */
     public void setSensorRange(double sensorRange) {
         this.sensorRange = sensorRange;
+    }
+
+    @Override
+    public String toXml() {
+        StringBuilder sb = new StringBuilder();
+        addXmlHeader(sb);
+        addEventStartToXML(sb);
+        addEventLevelAttributesToXML(sb);
+        closeEventStartInXML(sb);
+        writeFlowTags(sb);
+        addPoint(sb);
+        addEventEndToXML(sb);
+        return sb.toString();
     }
 }
