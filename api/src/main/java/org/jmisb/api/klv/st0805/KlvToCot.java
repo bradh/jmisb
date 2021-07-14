@@ -5,24 +5,37 @@ import org.jmisb.api.klv.st0601.*;
 
 /** Perform KLV to CoT conversion as defined by ST 0805. */
 public class KlvToCot {
-    private static String platformType = "a-f-A";
-    private static final long SECONDS_TO_MICROSECONDS = 1_000_000;
-    private static final long STALE_PERIOD = 5 * SECONDS_TO_MICROSECONDS;
     private static final String PARENT_PRODUCER_RELATIONSHIP = "p-p";
+    private final ConversionConfiguration configuration;
 
-    private KlvToCot() {}
+    /**
+     * Constructor.
+     *
+     * @param conversionConfiguration custom configuration options
+     */
+    public KlvToCot(ConversionConfiguration conversionConfiguration) {
+        configuration = conversionConfiguration;
+    }
 
+    /**
+     * Constructor.
+     *
+     * <p>This version uses a reasonable default configuration, but customization is usually worth
+     * it if data is available.
+     */
+    public KlvToCot() {
+        this(new ConversionConfiguration());
+    }
     /**
      * Convert a MISB UAS Datalink message to a CoT Sensor Point of Interest (SPI) message.
      *
      * @param uasMessage The UAS Datalink message to convert
      * @return The CoT message
      */
-    public static SensorPointOfInterest getSensorPointOfInterest(UasDatalinkMessage uasMessage) {
+    public SensorPointOfInterest getSensorPointOfInterest(UasDatalinkMessage uasMessage) {
         SensorPointOfInterest spiMessage = new SensorPointOfInterest(Clock.systemUTC());
 
-        // The standard is unclear, but seems to indicate target position is preferred over frame
-        // center
+        // The standard suggests target position is preferred over frame center
         TargetLocationLatitude targetLat =
                 (TargetLocationLatitude) uasMessage.getField(UasDatalinkTag.TargetLocationLatitude);
         TargetLocationLongitude targetLon =
@@ -92,8 +105,7 @@ public class KlvToCot {
 
         spiMessage.setHow("m-p");
 
-        // TODO: allow client to specify platform type
-        spiMessage.setLinkType(platformType);
+        spiMessage.setLinkType(configuration.getPlatformType());
 
         // TODO: allow client to specify platform UID
         spiMessage.setLinkUid(getPlatformUid(uasMessage));
@@ -109,7 +121,7 @@ public class KlvToCot {
      * @param uasMessage The UAS Datalink message to convert
      * @return The CoT message
      */
-    public static PlatformPosition getPlatformPosition(UasDatalinkMessage uasMessage) {
+    public PlatformPosition getPlatformPosition(UasDatalinkMessage uasMessage) {
         return getPlatformPosition(uasMessage, Clock.systemUTC());
     }
 
@@ -120,7 +132,7 @@ public class KlvToCot {
      * @param clock the clock to use when creating the CoT message
      * @return The CoT message
      */
-    public static PlatformPosition getPlatformPosition(UasDatalinkMessage uasMessage, Clock clock) {
+    public PlatformPosition getPlatformPosition(UasDatalinkMessage uasMessage, Clock clock) {
         PlatformPosition platformMessage = new PlatformPosition(clock);
 
         SensorLatitude pointLat =
@@ -155,8 +167,7 @@ public class KlvToCot {
             }
         }
 
-        // TODO: allow client to specify platform type
-        platformMessage.setType(platformType);
+        platformMessage.setType(configuration.getPlatformType());
 
         // TODO: allow client to specify UID & handle missing tags from KLV
         platformMessage.setUid(getPlatformUid(uasMessage));
@@ -213,7 +224,7 @@ public class KlvToCot {
         }
     }
 
-    private static void setTimes(UasDatalinkMessage uasMessage, CotMessage cotMessage) {
+    private void setTimes(UasDatalinkMessage uasMessage, CotMessage cotMessage) {
         PrecisionTimeStamp unixTimeStamp =
                 (PrecisionTimeStamp) uasMessage.getField(UasDatalinkTag.PrecisionTimeStamp);
         if (unixTimeStamp != null) {
@@ -221,7 +232,7 @@ public class KlvToCot {
             cotMessage.setStart(unixTimeStamp.getMicroseconds());
 
             // TODO: allow client to specify stale time
-            cotMessage.setStale(unixTimeStamp.getMicroseconds() + STALE_PERIOD);
+            cotMessage.setStale(unixTimeStamp.getMicroseconds() + configuration.getStalePeriod());
         }
     }
 }

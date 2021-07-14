@@ -4,11 +4,11 @@ import java.time.Clock;
 
 /** Represents a Platform Position CoT message. */
 public class PlatformPosition extends CotMessage {
-    public double sensorAzimuth;
-    public double sensorFov;
-    public double sensorVfov;
+    public Double sensorAzimuth;
+    public Double sensorFov;
+    public Double sensorVfov;
     public String sensorModel;
-    public double sensorRange;
+    public Double sensorRange;
 
     PlatformPosition(Clock clock) {
         super(clock);
@@ -17,9 +17,9 @@ public class PlatformPosition extends CotMessage {
     /**
      * Get sensor azimuth.
      *
-     * @return sensor azimuth in degrees
+     * @return sensor azimuth in degrees, or null if not set
      */
-    public double getSensorAzimuth() {
+    public Double getSensorAzimuth() {
         return sensorAzimuth;
     }
 
@@ -35,9 +35,11 @@ public class PlatformPosition extends CotMessage {
     /**
      * Get sensor field of view.
      *
-     * @return field of view in degrees
+     * <p>This is the horizontal direction.
+     *
+     * @return field of view in degrees, or null if not set
      */
-    public double getSensorFov() {
+    public Double getSensorFov() {
         return sensorFov;
     }
 
@@ -53,9 +55,9 @@ public class PlatformPosition extends CotMessage {
     /**
      * Get sensor vertical field of view.
      *
-     * @return vertical field of view in degrees
+     * @return vertical field of view in degrees, or null if not set
      */
-    public double getSensorVfov() {
+    public Double getSensorVfov() {
         return sensorVfov;
     }
 
@@ -89,9 +91,9 @@ public class PlatformPosition extends CotMessage {
     /**
      * Get sensor range.
      *
-     * @return slant range in meters
+     * @return slant range in meters, or null if not set
      */
-    public double getSensorRange() {
+    public Double getSensorRange() {
         return sensorRange;
     }
 
@@ -112,8 +114,29 @@ public class PlatformPosition extends CotMessage {
         addEventLevelAttributesToXML(sb);
         closeEventStartInXML(sb);
         writeFlowTags(sb);
+        writeSensor(sb);
         addPoint(sb);
         addEventEndToXML(sb);
         return sb.toString();
+    }
+
+    private void writeSensor(StringBuilder sb) {
+        sb.append("<sensor ");
+        if (getSensorAzimuth() != null) {
+            writeAttribute(sb, "azimuth", getSensorAzimuth());
+        }
+        if (getSensorFov() != null) {
+            writeAttribute(sb, "fov", getSensorFov());
+        }
+        if (getSensorVfov() != null) {
+            writeAttribute(sb, "vfov", getSensorVfov());
+        }
+        if (getSensorModel() != null) {
+            writeAttribute(sb, "model", getSensorModel());
+        }
+        if (getSensorRange() != null) {
+            writeAttribute(sb, "range", getSensorRange());
+        }
+        sb.append("/>");
     }
 }

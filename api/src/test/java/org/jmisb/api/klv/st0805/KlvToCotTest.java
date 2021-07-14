@@ -38,15 +38,17 @@ import org.testng.annotations.Test;
 public class KlvToCotTest {
 
     private static final String PLATFORM_POSITION_XML =
-            "<?xml version='1.0' standalone='yes'?><event version='2.0' type='a-f-A' uid='TESTPLAT1_Mission2' how='m-p' ><detail><_flow-tags_ ST0601CoT='2021-07-13T10:22:26.935488Z' /></detail><point lat='-32.42' lon='143.24' hae='1201.0' ce='9999999.0' le='9999999.0' /></event>";
+            "<?xml version='1.0' standalone='yes'?><event version='2.0' type='a-f-A' uid='TESTPLAT1_Mission2' time='2021-07-04T09:00:03.000Z' how='m-p' ><detail><_flow-tags_ ST0601CoT='2021-07-13T10:22:26.935488Z' /></detail><sensor azimuth='135.8' fov='13.3' vfov='23.2' model='SenSOR3' range='1400.3' /><point lat='-32.42' lon='143.24' hae='1201.0' ce='9999999.0' le='9999999.0' /></event>";
 
     public KlvToCotTest() {}
 
     @Test
     public void checkSPI() {
         UasDatalinkMessage sourceMessage = buildSourceMessage();
+        ConversionConfiguration configuration = new ConversionConfiguration();
+        KlvToCot converter = new KlvToCot(configuration);
         SensorPointOfInterest sensorPointOfInterest =
-                KlvToCot.getSensorPointOfInterest(sourceMessage);
+                converter.getSensorPointOfInterest(sourceMessage);
         assertEquals(sensorPointOfInterest.getType(), "b-m-p-s-p-i");
         assertEquals(sensorPointOfInterest.getHow(), "m-p");
         assertEquals(sensorPointOfInterest.getUid(), "TESTPLAT1_Mission2_SenSOR3");
@@ -67,7 +69,9 @@ public class KlvToCotTest {
     public void checkPlatformPosition() {
         UasDatalinkMessage sourceMessage = buildSourceMessage();
         Clock clock = Clock.fixed(Instant.parse("2021-07-13T10:22:26.935488Z"), ZoneOffset.UTC);
-        PlatformPosition platformPosition = KlvToCot.getPlatformPosition(sourceMessage, clock);
+        ConversionConfiguration configuration = new ConversionConfiguration();
+        KlvToCot converter = new KlvToCot(configuration);
+        PlatformPosition platformPosition = converter.getPlatformPosition(sourceMessage, clock);
         assertEquals(platformPosition.getType(), "a-f-A");
         assertEquals(platformPosition.getHow(), "m-p");
         assertEquals(platformPosition.getUid(), "TESTPLAT1_Mission2");
@@ -122,12 +126,82 @@ public class KlvToCotTest {
     @Test
     public void checkPlatformPositionAlternate() {
         UasDatalinkMessage sourceMessage = buildSourceMessageAlternate();
-        PlatformPosition platformPosition = KlvToCot.getPlatformPosition(sourceMessage);
+        ConversionConfiguration configuration = new ConversionConfiguration();
+        KlvToCot converter = new KlvToCot(configuration);
+        PlatformPosition platformPosition = converter.getPlatformPosition(sourceMessage);
         assertEquals(platformPosition.getPointLat(), -32.42, 0.0001);
         assertEquals(platformPosition.getPointLon(), 143.24, 0.0001);
         assertEquals(platformPosition.getPointHae(), 12011, 0.0001);
         assertEquals(platformPosition.getSensorAzimuth(), 35.8, 0.1);
         assertEquals(platformPosition.getUid(), "jmisb");
+    }
+
+    @Test
+    public void checkPlatformPositionNoLatitude() {
+        SortedMap<UasDatalinkTag, IUasDatalinkValue> map = new TreeMap<>();
+        UasDatalinkMessage sourceMessage = new UasDatalinkMessage(map);
+        map.put(
+                UasDatalinkTag.PrecisionTimeStamp,
+                new PrecisionTimeStamp(
+                        LocalDateTime.of(LocalDate.of(2021, 7, 11), LocalTime.of(2, 40, 8, 0))));
+        map.put(UasDatalinkTag.FrameCenterLongitude, new FrameCenterLongitude(143.23));
+        map.put(UasDatalinkTag.FrameCenterElevation, new FrameCenterElevation(143));
+        ConversionConfiguration configuration = new ConversionConfiguration();
+        KlvToCot converter = new KlvToCot(configuration);
+        PlatformPosition platformPosition = converter.getPlatformPosition(sourceMessage);
+        assertNull(platformPosition.getPointLat());
+        assertNull(platformPosition.getPointLon());
+        assertNull(platformPosition.getPointHae());
+    }
+
+    @Test
+    public void checkPlatformPositionNoLongitude() {
+        SortedMap<UasDatalinkTag, IUasDatalinkValue> map = new TreeMap<>();
+        UasDatalinkMessage sourceMessage = new UasDatalinkMessage(map);
+        map.put(
+                UasDatalinkTag.PrecisionTimeStamp,
+                new PrecisionTimeStamp(
+                        LocalDateTime.of(LocalDate.of(2021, 7, 11), LocalTime.of(2, 40, 8, 0))));
+        map.put(UasDatalinkTag.FrameCenterLongitude, new FrameCenterLatitude(13.23));
+        map.put(UasDatalinkTag.FrameCenterElevation, new FrameCenterElevation(143));
+        ConversionConfiguration configuration = new ConversionConfiguration();
+        KlvToCot converter = new KlvToCot(configuration);
+        PlatformPosition platformPosition = converter.getPlatformPosition(sourceMessage);
+        assertNull(platformPosition.getPointLat());
+        assertNull(platformPosition.getPointLon());
+        assertNull(platformPosition.getPointHae());
+    }
+
+    @Test
+    public void checkPlatformPositionNoLatitudeOrLongitude() {
+        SortedMap<UasDatalinkTag, IUasDatalinkValue> map = new TreeMap<>();
+        UasDatalinkMessage sourceMessage = new UasDatalinkMessage(map);
+        map.put(
+                UasDatalinkTag.PrecisionTimeStamp,
+                new PrecisionTimeStamp(
+                        LocalDateTime.of(LocalDate.of(2021, 7, 11), LocalTime.of(2, 40, 8, 0))));
+        map.put(UasDatalinkTag.FrameCenterElevation, new FrameCenterElevation(143));
+        ConversionConfiguration configuration = new ConversionConfiguration();
+        KlvToCot converter = new KlvToCot(configuration);
+        PlatformPosition platformPosition = converter.getPlatformPosition(sourceMessage);
+        assertNull(platformPosition.getPointLat());
+        assertNull(platformPosition.getPointLon());
+        assertNull(platformPosition.getPointHae());
+    }
+
+    @Test
+    public void checkPlatformPositionSensorAzimuthNoHeading() {
+        SortedMap<UasDatalinkTag, IUasDatalinkValue> map = new TreeMap<>();
+        UasDatalinkMessage sourceMessage = new UasDatalinkMessage(map);
+        map.put(
+                UasDatalinkTag.PrecisionTimeStamp,
+                new PrecisionTimeStamp(
+                        LocalDateTime.of(LocalDate.of(2021, 7, 11), LocalTime.of(2, 40, 8, 0))));
+        map.put(UasDatalinkTag.SensorRelativeAzimuthAngle, new SensorRelativeAzimuth(20.0));
+        ConversionConfiguration configuration = new ConversionConfiguration();
+        KlvToCot converter = new KlvToCot(configuration);
+        PlatformPosition platformPosition = converter.getPlatformPosition(sourceMessage);
+        assertNull(platformPosition.getSensorAzimuth());
     }
 
     private UasDatalinkMessage buildSourceMessageAlternate() {
@@ -151,8 +225,10 @@ public class KlvToCotTest {
     @Test
     public void checkSPISimple() {
         UasDatalinkMessage sourceMessage = buildSourceMessageSimple();
+        ConversionConfiguration configuration = new ConversionConfiguration();
+        KlvToCot converter = new KlvToCot(configuration);
         SensorPointOfInterest sensorPointOfInterest =
-                KlvToCot.getSensorPointOfInterest(sourceMessage);
+                converter.getSensorPointOfInterest(sourceMessage);
         assertEquals(sensorPointOfInterest.getType(), "b-m-p-s-p-i");
         assertEquals(sensorPointOfInterest.getHow(), "m-p");
         assertEquals(sensorPointOfInterest.getUid(), "TESTPLAT1_Mission2_SenSOR3");

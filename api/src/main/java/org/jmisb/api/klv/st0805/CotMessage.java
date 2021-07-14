@@ -2,15 +2,19 @@ package org.jmisb.api.klv.st0805;
 
 import java.time.Clock;
 import java.time.ZoneOffset;
+import java.time.format.DateTimeFormatter;
+import org.jmisb.api.klv.st0603.ST0603TimeStamp;
 
 /** A Cursor-on-Target (CoT) message. */
 public abstract class CotMessage {
     private static final String COT_VERSION = "2.0";
-    private double pointLat;
-    private double pointLon;
-    private double pointHae;
-    private double pointCe;
-    private double pointLe;
+    private static final DateTimeFormatter DT_FORMATTER =
+            DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
+    private Double pointLat;
+    private Double pointLon;
+    private Double pointHae;
+    private double pointCe = 9_999_999.0;
+    private double pointLe = 9_999_999.0;
     private String type;
     private String uid;
     private long time;
@@ -31,9 +35,9 @@ public abstract class CotMessage {
     /**
      * Get the latitude.
      *
-     * @return latitude
+     * @return latitude, or null if not set
      */
-    public double getPointLat() {
+    public Double getPointLat() {
         return pointLat;
     }
 
@@ -49,9 +53,9 @@ public abstract class CotMessage {
     /**
      * Get the longitude.
      *
-     * @return longitude
+     * @return longitude, or null if not set
      */
-    public double getPointLon() {
+    public Double getPointLon() {
         return pointLon;
     }
 
@@ -67,9 +71,9 @@ public abstract class CotMessage {
     /**
      * Get the altitude (height above ellipsoid).
      *
-     * @return altitude in meters HAE
+     * @return altitude in meters HAE, or null if not set
      */
-    public double getPointHae() {
+    public Double getPointHae() {
         return pointHae;
     }
 
@@ -250,7 +254,8 @@ public abstract class CotMessage {
         writeAttribute(sb, "version", COT_VERSION);
         writeAttribute(sb, "type", getType());
         writeAttribute(sb, "uid", getUid());
-        // writeAttribute(sb, "time", DateTime8601.formatDate(this.time));
+        writeAttribute(
+                sb, "time", new ST0603TimeStamp(getTime()).getDateTime().format(DT_FORMATTER));
         // writeAttribute(sb, "start", DateTime8601.formatDate(this.startTime));
         // writeAttribute(sb, "stale", DateTime8601.formatDate(this.staleTime));
         writeAttribute(sb, "how", getHow());
@@ -289,7 +294,7 @@ public abstract class CotMessage {
         sb.append("' ");
     }
 
-    private void writeAttribute(StringBuilder sb, String key, double value) {
+    protected void writeAttribute(StringBuilder sb, String key, double value) {
         sb.append(key);
         sb.append("='");
         sb.append(value);
