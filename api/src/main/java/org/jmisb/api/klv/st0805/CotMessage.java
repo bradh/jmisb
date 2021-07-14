@@ -256,8 +256,10 @@ public abstract class CotMessage {
         writeAttribute(sb, "uid", getUid());
         writeAttribute(
                 sb, "time", new ST0603TimeStamp(getTime()).getDateTime().format(DT_FORMATTER));
-        // writeAttribute(sb, "start", DateTime8601.formatDate(this.startTime));
-        // writeAttribute(sb, "stale", DateTime8601.formatDate(this.staleTime));
+        writeAttribute(
+                sb, "start", new ST0603TimeStamp(getStart()).getDateTime().format(DT_FORMATTER));
+        writeAttribute(
+                sb, "stale", new ST0603TimeStamp(getStale()).getDateTime().format(DT_FORMATTER));
         writeAttribute(sb, "how", getHow());
     }
 

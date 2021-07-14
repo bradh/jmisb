@@ -38,7 +38,7 @@ import org.testng.annotations.Test;
 public class KlvToCotTest {
 
     private static final String PLATFORM_POSITION_XML =
-            "<?xml version='1.0' standalone='yes'?><event version='2.0' type='a-f-A' uid='TESTPLAT1_Mission2' time='2021-07-04T09:00:03.000Z' how='m-p' ><detail><_flow-tags_ ST0601CoT='2021-07-13T10:22:26.935488Z' /></detail><sensor azimuth='135.8' fov='13.3' vfov='23.2' model='SenSOR3' range='1400.3' /><point lat='-32.42' lon='143.24' hae='1201.0' ce='9999999.0' le='9999999.0' /></event>";
+            "<?xml version='1.0' standalone='yes'?><event version='2.0' type='a-f-A' uid='TESTPLAT1_Mission2' time='2021-07-04T09:00:03.000Z' start='2021-07-04T09:00:03.000Z' stale='2021-07-04T09:00:08.000Z' how='m-p' ><detail><_flow-tags_ ST0601CoT='2021-07-13T10:22:26.935488Z' /></detail><sensor azimuth='135.8' fov='13.3' vfov='23.2' model='SenSOR3' range='1400.3' /><point lat='-32.42' lon='143.24' hae='1201.0' ce='9999999.0' le='9999999.0' /></event>";
 
     public KlvToCotTest() {}
 
