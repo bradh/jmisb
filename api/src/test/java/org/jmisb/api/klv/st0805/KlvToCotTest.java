@@ -55,11 +55,11 @@ public class KlvToCotTest {
         assertEquals(sensorPointOfInterest.getLinkType(), "a-f-A");
         assertEquals(sensorPointOfInterest.getLinkUid(), "TESTPLAT1_Mission2");
         assertEquals(sensorPointOfInterest.getLinkRelation(), "p-p");
-        assertEquals(sensorPointOfInterest.getPointLat(), -32.4, 0.0001);
-        assertEquals(sensorPointOfInterest.getPointLon(), 143.23, 0.0001);
-        assertEquals(sensorPointOfInterest.getPointHae(), 143, 0.0001);
-        assertEquals(sensorPointOfInterest.getPointCe(), 46.6, 0.1);
-        assertEquals(sensorPointOfInterest.getPointLe(), 24.3, 0.1);
+        assertEquals(sensorPointOfInterest.getPoint().getLat(), -32.4, 0.0001);
+        assertEquals(sensorPointOfInterest.getPoint().getLon(), 143.23, 0.0001);
+        assertEquals(sensorPointOfInterest.getPoint().getHae(), 143, 0.0001);
+        assertEquals(sensorPointOfInterest.getPoint().getCe(), 46.6, 0.1);
+        assertEquals(sensorPointOfInterest.getPoint().getLe(), 24.3, 0.1);
         assertEquals(sensorPointOfInterest.getTime(), 1625389203000000L);
         assertEquals(sensorPointOfInterest.getStart(), 1625389203000000L);
         assertEquals(sensorPointOfInterest.getStale(), 1625389208000000L);
@@ -75,11 +75,11 @@ public class KlvToCotTest {
         assertEquals(platformPosition.getType(), "a-f-A");
         assertEquals(platformPosition.getHow(), "m-p");
         assertEquals(platformPosition.getUid(), "TESTPLAT1_Mission2");
-        assertEquals(platformPosition.getPointLat(), -32.42, 0.0001);
-        assertEquals(platformPosition.getPointLon(), 143.24, 0.0001);
-        assertEquals(platformPosition.getPointHae(), 1201, 0.0001);
-        assertEquals(platformPosition.getPointCe(), 9_999_999, 0.1);
-        assertEquals(platformPosition.getPointLe(), 9_999_999, 0.1);
+        assertEquals(platformPosition.getPoint().getLat(), -32.42, 0.0001);
+        assertEquals(platformPosition.getPoint().getLon(), 143.24, 0.0001);
+        assertEquals(platformPosition.getPoint().getHae(), 1201, 0.0001);
+        assertEquals(platformPosition.getPoint().getCe(), 9_999_999, 0.1);
+        assertEquals(platformPosition.getPoint().getLe(), 9_999_999, 0.1);
         assertEquals(platformPosition.getTime(), 1625389203000000L);
         assertEquals(platformPosition.getStart(), 1625389203000000L);
         assertEquals(platformPosition.getStale(), 1625389208000000L);
@@ -129,9 +129,11 @@ public class KlvToCotTest {
         ConversionConfiguration configuration = new ConversionConfiguration();
         KlvToCot converter = new KlvToCot(configuration);
         PlatformPosition platformPosition = converter.getPlatformPosition(sourceMessage);
-        assertEquals(platformPosition.getPointLat(), -32.42, 0.0001);
-        assertEquals(platformPosition.getPointLon(), 143.24, 0.0001);
-        assertEquals(platformPosition.getPointHae(), 12011, 0.0001);
+        assertEquals(platformPosition.getPoint().getLat(), -32.42, 0.0001);
+        assertEquals(platformPosition.getPoint().getLon(), 143.24, 0.0001);
+        assertEquals(platformPosition.getPoint().getHae(), 12011, 0.0001);
+        assertEquals(platformPosition.getPoint().getCe(), 9_999_999.0);
+        assertEquals(platformPosition.getPoint().getLe(), 9_999_999.0);
         assertEquals(platformPosition.getSensorAzimuth(), 35.8, 0.1);
         assertEquals(platformPosition.getUid(), "jmisb");
     }
@@ -144,14 +146,11 @@ public class KlvToCotTest {
                 UasDatalinkTag.PrecisionTimeStamp,
                 new PrecisionTimeStamp(
                         LocalDateTime.of(LocalDate.of(2021, 7, 11), LocalTime.of(2, 40, 8, 0))));
-        map.put(UasDatalinkTag.FrameCenterLongitude, new FrameCenterLongitude(143.23));
-        map.put(UasDatalinkTag.FrameCenterElevation, new FrameCenterElevation(143));
+        map.put(UasDatalinkTag.SensorLongitude, new SensorLongitude(143.24));
         ConversionConfiguration configuration = new ConversionConfiguration();
         KlvToCot converter = new KlvToCot(configuration);
         PlatformPosition platformPosition = converter.getPlatformPosition(sourceMessage);
-        assertNull(platformPosition.getPointLat());
-        assertNull(platformPosition.getPointLon());
-        assertNull(platformPosition.getPointHae());
+        assertNull(platformPosition.getPoint());
     }
 
     @Test
@@ -162,14 +161,11 @@ public class KlvToCotTest {
                 UasDatalinkTag.PrecisionTimeStamp,
                 new PrecisionTimeStamp(
                         LocalDateTime.of(LocalDate.of(2021, 7, 11), LocalTime.of(2, 40, 8, 0))));
-        map.put(UasDatalinkTag.FrameCenterLongitude, new FrameCenterLatitude(13.23));
-        map.put(UasDatalinkTag.FrameCenterElevation, new FrameCenterElevation(143));
+        map.put(UasDatalinkTag.SensorLatitude, new SensorLatitude(-32.42));
         ConversionConfiguration configuration = new ConversionConfiguration();
         KlvToCot converter = new KlvToCot(configuration);
         PlatformPosition platformPosition = converter.getPlatformPosition(sourceMessage);
-        assertNull(platformPosition.getPointLat());
-        assertNull(platformPosition.getPointLon());
-        assertNull(platformPosition.getPointHae());
+        assertNull(platformPosition.getPoint());
     }
 
     @Test
@@ -180,13 +176,28 @@ public class KlvToCotTest {
                 UasDatalinkTag.PrecisionTimeStamp,
                 new PrecisionTimeStamp(
                         LocalDateTime.of(LocalDate.of(2021, 7, 11), LocalTime.of(2, 40, 8, 0))));
-        map.put(UasDatalinkTag.FrameCenterElevation, new FrameCenterElevation(143));
+        map.put(UasDatalinkTag.SensorEllipsoidHeight, new SensorEllipsoidHeight(145));
         ConversionConfiguration configuration = new ConversionConfiguration();
         KlvToCot converter = new KlvToCot(configuration);
         PlatformPosition platformPosition = converter.getPlatformPosition(sourceMessage);
-        assertNull(platformPosition.getPointLat());
-        assertNull(platformPosition.getPointLon());
-        assertNull(platformPosition.getPointHae());
+        assertNull(platformPosition.getPoint());
+    }
+
+    @Test
+    public void checkPlatformPositionNoAlt() {
+        SortedMap<UasDatalinkTag, IUasDatalinkValue> map = new TreeMap<>();
+        UasDatalinkMessage sourceMessage = new UasDatalinkMessage(map);
+        map.put(
+                UasDatalinkTag.PrecisionTimeStamp,
+                new PrecisionTimeStamp(
+                        LocalDateTime.of(LocalDate.of(2021, 7, 4), LocalTime.of(9, 0, 3, 0))));
+        map.put(UasDatalinkTag.SensorLatitude, new SensorLatitude(-32.42));
+        map.put(UasDatalinkTag.SensorLongitude, new SensorLongitude(143.24));
+        ConversionConfiguration configuration = new ConversionConfiguration();
+        KlvToCot converter = new KlvToCot(configuration);
+        PlatformPosition platformPosition = converter.getPlatformPosition(sourceMessage);
+        assertNull(platformPosition.getPoint());
+        assertEquals(platformPosition.getUid(), "jmisb");
     }
 
     @Test
@@ -235,11 +246,11 @@ public class KlvToCotTest {
         assertEquals(sensorPointOfInterest.getLinkType(), "a-f-A");
         assertEquals(sensorPointOfInterest.getLinkUid(), "TESTPLAT1_Mission2");
         assertEquals(sensorPointOfInterest.getLinkRelation(), "p-p");
-        assertEquals(sensorPointOfInterest.getPointLat(), -32.4, 0.0001);
-        assertEquals(sensorPointOfInterest.getPointLon(), 143.23, 0.0001);
-        assertEquals(sensorPointOfInterest.getPointHae(), 143, 0.0001);
-        assertEquals(sensorPointOfInterest.getPointCe(), 9999999, 0.1);
-        assertEquals(sensorPointOfInterest.getPointLe(), 9999999, 0.1);
+        assertEquals(sensorPointOfInterest.getPoint().getLat(), -32.4, 0.0001);
+        assertEquals(sensorPointOfInterest.getPoint().getLon(), 143.23, 0.0001);
+        assertEquals(sensorPointOfInterest.getPoint().getHae(), 143, 0.0001);
+        assertEquals(sensorPointOfInterest.getPoint().getCe(), 9999999, 0.1);
+        assertEquals(sensorPointOfInterest.getPoint().getLe(), 9999999, 0.1);
         assertEquals(sensorPointOfInterest.getTime(), 1625971208000000L);
         assertEquals(sensorPointOfInterest.getStart(), 1625971208000000L);
         assertEquals(sensorPointOfInterest.getStale(), 1625971213000000L);

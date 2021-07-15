@@ -115,7 +115,9 @@ public class PlatformPosition extends CotMessage {
         closeEventStartInXML(sb);
         writeFlowTags(sb);
         writeSensor(sb);
-        addPoint(sb);
+        if (getPoint() != null) {
+            getPoint().writeAsXML(sb);
+        }
         addEventEndToXML(sb);
         return sb.toString();
     }

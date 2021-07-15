@@ -10,11 +10,7 @@ public abstract class CotMessage {
     private static final String COT_VERSION = "2.0";
     private static final DateTimeFormatter DT_FORMATTER =
             DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
-    private Double pointLat;
-    private Double pointLon;
-    private Double pointHae;
-    private double pointCe = 9_999_999.0;
-    private double pointLe = 9_999_999.0;
+    private CotPoint point;
     private String type;
     private String uid;
     private long time;
@@ -33,93 +29,21 @@ public abstract class CotMessage {
     }
 
     /**
-     * Get the latitude.
+     * Get the point location associated with this message.
      *
-     * @return latitude, or null if not set
+     * @return the point location, or null if not set
      */
-    public Double getPointLat() {
-        return pointLat;
+    public CotPoint getPoint() {
+        return point;
     }
 
     /**
-     * Set the latitude.
+     * Set the point location associated with this message.
      *
-     * @param pointLat The latitude
+     * @param point the point location
      */
-    public void setPointLat(double pointLat) {
-        this.pointLat = pointLat;
-    }
-
-    /**
-     * Get the longitude.
-     *
-     * @return longitude, or null if not set
-     */
-    public Double getPointLon() {
-        return pointLon;
-    }
-
-    /**
-     * Set the longitude.
-     *
-     * @param pointLon longitude
-     */
-    public void setPointLon(double pointLon) {
-        this.pointLon = pointLon;
-    }
-
-    /**
-     * Get the altitude (height above ellipsoid).
-     *
-     * @return altitude in meters HAE, or null if not set
-     */
-    public Double getPointHae() {
-        return pointHae;
-    }
-
-    /**
-     * Set the altitude (height above ellipsoid).
-     *
-     * @param pointHae altitude in meters HAE
-     */
-    public void setPointHae(double pointHae) {
-        this.pointHae = pointHae;
-    }
-
-    /**
-     * Get the circular error.
-     *
-     * @return circular error
-     */
-    public double getPointCe() {
-        return pointCe;
-    }
-
-    /**
-     * Set the circular error.
-     *
-     * @param pointCe circular error
-     */
-    public void setPointCe(double pointCe) {
-        this.pointCe = pointCe;
-    }
-
-    /**
-     * Get the lateral error.
-     *
-     * @return lateral error
-     */
-    public double getPointLe() {
-        return pointLe;
-    }
-
-    /**
-     * Set the lateral error.
-     *
-     * @param pointLe lateral error
-     */
-    public void setPointLe(double pointLe) {
-        this.pointLe = pointLe;
+    public void setPoint(CotPoint point) {
+        this.point = point;
     }
 
     /**
@@ -271,16 +195,6 @@ public abstract class CotMessage {
         sb.append("<event ");
     }
 
-    protected void addPoint(StringBuilder sb) {
-        sb.append("<point ");
-        writeAttribute(sb, "lat", getPointLat());
-        writeAttribute(sb, "lon", getPointLon());
-        writeAttribute(sb, "hae", getPointHae());
-        writeAttribute(sb, "ce", getPointCe());
-        writeAttribute(sb, "le", getPointLe());
-        sb.append("/>");
-    }
-
     protected void addXmlHeader(StringBuilder sb) {
         sb.append("<?xml version='1.0' standalone='yes'?>");
     }
@@ -289,14 +203,15 @@ public abstract class CotMessage {
         this.flowTags.writeAsXML(sb);
     }
 
-    protected void writeAttribute(StringBuilder sb, String key, String value) {
+    /* TODO: maybe these would be a good "CotElement" abstract class thing */
+    static void writeAttribute(StringBuilder sb, String key, String value) {
         sb.append(key);
         sb.append("='");
         sb.append(value);
         sb.append("' ");
     }
 
-    protected void writeAttribute(StringBuilder sb, String key, double value) {
+    static void writeAttribute(StringBuilder sb, String key, double value) {
         sb.append(key);
         sb.append("='");
         sb.append(value);

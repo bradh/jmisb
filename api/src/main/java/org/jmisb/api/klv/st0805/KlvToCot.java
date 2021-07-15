@@ -46,10 +46,12 @@ public class KlvToCot {
                         uasMessage.getField(UasDatalinkTag.TargetLocationElevation);
 
         if (targetLat != null && targetLon != null && targetAlt != null) {
-            spiMessage.setPointLat(targetLat.getDegrees());
-            spiMessage.setPointLon(targetLon.getDegrees());
+            CotPoint point = new CotPoint();
+            point.setLat(targetLat.getDegrees());
+            point.setLon(targetLon.getDegrees());
             // TODO: convert MSL -> HAE
-            spiMessage.setPointHae(targetAlt.getMeters());
+            point.setHae(targetAlt.getMeters());
+            spiMessage.setPoint(point);
         } else {
             // Try frame center
             FrameCenterLatitude frameCenterLat =
@@ -60,27 +62,31 @@ public class KlvToCot {
                     (FrameCenterElevation) uasMessage.getField(UasDatalinkTag.FrameCenterElevation);
 
             if (frameCenterLat != null && frameCenterLon != null && frameCenterAlt != null) {
-                spiMessage.setPointLat(frameCenterLat.getDegrees());
-                spiMessage.setPointLon(frameCenterLon.getDegrees());
+                CotPoint point = new CotPoint();
+                point.setLat(frameCenterLat.getDegrees());
+                point.setLon(frameCenterLon.getDegrees());
                 // TODO: convert MSL -> HAE
-                spiMessage.setPointHae(frameCenterAlt.getMeters());
+                point.setHae(frameCenterAlt.getMeters());
+                spiMessage.setPoint(point);
             }
         }
 
-        TargetErrorEstimateCe90 targetErrorCe =
-                (TargetErrorEstimateCe90) uasMessage.getField(UasDatalinkTag.TargetErrorCe90);
-        if (targetErrorCe != null) { // Conversion from 2.146-sigma to 1-sigma necessary
-            spiMessage.setPointCe(targetErrorCe.getMetres() / 2.146);
-        } else {
-            spiMessage.setPointCe(9_999_999);
-        }
+        if (spiMessage.getPoint() != null) {
+            TargetErrorEstimateCe90 targetErrorCe =
+                    (TargetErrorEstimateCe90) uasMessage.getField(UasDatalinkTag.TargetErrorCe90);
+            if (targetErrorCe != null) { // Conversion from 2.146-sigma to 1-sigma necessary
+                spiMessage.getPoint().setCe(targetErrorCe.getMetres() / 2.146);
+            } else {
+                spiMessage.getPoint().setCe(9_999_999);
+            }
 
-        TargetErrorEstimateLe90 targetErrorLe =
-                (TargetErrorEstimateLe90) uasMessage.getField(UasDatalinkTag.TargetErrorLe90);
-        if (targetErrorLe != null) { // Conversion from 1.645-sigma to 1-sigma necessary
-            spiMessage.setPointLe(targetErrorLe.getMetres() / 1.645);
-        } else {
-            spiMessage.setPointLe(9_999_999);
+            TargetErrorEstimateLe90 targetErrorLe =
+                    (TargetErrorEstimateLe90) uasMessage.getField(UasDatalinkTag.TargetErrorLe90);
+            if (targetErrorLe != null) { // Conversion from 1.645-sigma to 1-sigma necessary
+                spiMessage.getPoint().setLe(targetErrorLe.getMetres() / 1.645);
+            } else {
+                spiMessage.getPoint().setLe(9_999_999);
+            }
         }
 
         spiMessage.setType("b-m-p-s-p-i");
@@ -151,19 +157,21 @@ public class KlvToCot {
             if ((sensorEllipsoidHeight != null)
                     || (sensorEllipsoidHeightExtended != null)
                     || (sensorTrueAltitude != null)) {
-                platformMessage.setPointLat(pointLat.getDegrees());
-                platformMessage.setPointLon(pointLon.getDegrees());
+                CotPoint point = new CotPoint();
+                point.setLat(pointLat.getDegrees());
+                point.setLon(pointLon.getDegrees());
                 if (sensorEllipsoidHeightExtended != null) {
-                    platformMessage.setPointHae(sensorEllipsoidHeightExtended.getMeters());
+                    point.setHae(sensorEllipsoidHeightExtended.getMeters());
                 } else if (sensorEllipsoidHeight != null) {
-                    platformMessage.setPointHae(sensorEllipsoidHeight.getMeters());
+                    point.setHae(sensorEllipsoidHeight.getMeters());
                 } else {
                     // TODO: convert MSL -> HAE
-                    platformMessage.setPointHae(sensorTrueAltitude.getMeters());
+                    point.setHae(sensorTrueAltitude.getMeters());
                 }
                 // Represents "no value given" - ST 0601 does not contain platform uncertainty
-                platformMessage.setPointCe(9_999_999);
-                platformMessage.setPointLe(9_999_999);
+                point.setCe(9_999_999);
+                point.setLe(9_999_999);
+                platformMessage.setPoint(point);
             }
         }
 
