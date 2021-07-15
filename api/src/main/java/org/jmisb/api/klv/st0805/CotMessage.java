@@ -2,6 +2,7 @@ package org.jmisb.api.klv.st0805;
 
 import java.time.Clock;
 import java.time.ZoneOffset;
+import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import org.jmisb.api.klv.st0603.ST0603TimeStamp;
 
@@ -11,12 +12,12 @@ public abstract class CotMessage {
     private static final DateTimeFormatter DT_FORMATTER =
             DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
     private CotPoint point;
-    private String type;
-    private String uid;
-    private long time;
-    private long start;
-    private long stale;
-    private String how;
+    private String type = "a-f";
+    private String uid = "jmisb";
+    private Long time;
+    private Long start;
+    private Long stale;
+    private String how = "m";
     private final FlowTags flowTags = new FlowTags();
 
     /**
@@ -25,7 +26,8 @@ public abstract class CotMessage {
      * @param clock reference clock for the message
      */
     public CotMessage(Clock clock) {
-        flowTags.addFlowTag("ST0601CoT", clock.instant().atZone(ZoneOffset.UTC));
+        ZonedDateTime now = clock.instant().atZone(ZoneOffset.UTC);
+        flowTags.addFlowTag("ST0601CoT", now);
     }
 
     /**
@@ -85,9 +87,9 @@ public abstract class CotMessage {
     /**
      * Get the time.
      *
-     * @return time the message was generated
+     * @return time the message was generated, or null if not set
      */
-    public long getTime() {
+    public Long getTime() {
         return time;
     }
 
@@ -103,9 +105,9 @@ public abstract class CotMessage {
     /**
      * Get the start time.
      *
-     * @return time the message becomes valid
+     * @return time the message becomes valid, or null if not set
      */
-    public long getStart() {
+    public Long getStart() {
         return start;
     }
 
@@ -121,9 +123,9 @@ public abstract class CotMessage {
     /**
      * Get the stale time.
      *
-     * @return time the message becomes invalid
+     * @return time the message becomes invalid, or null if not set
      */
-    public long getStale() {
+    public Long getStale() {
         return stale;
     }
 
@@ -178,12 +180,22 @@ public abstract class CotMessage {
         writeAttribute(sb, "version", COT_VERSION);
         writeAttribute(sb, "type", getType());
         writeAttribute(sb, "uid", getUid());
-        writeAttribute(
-                sb, "time", new ST0603TimeStamp(getTime()).getDateTime().format(DT_FORMATTER));
-        writeAttribute(
-                sb, "start", new ST0603TimeStamp(getStart()).getDateTime().format(DT_FORMATTER));
-        writeAttribute(
-                sb, "stale", new ST0603TimeStamp(getStale()).getDateTime().format(DT_FORMATTER));
+        if (getTime() != null) {
+            writeAttribute(
+                    sb, "time", new ST0603TimeStamp(getTime()).getDateTime().format(DT_FORMATTER));
+        }
+        if (getStart() != null) {
+            writeAttribute(
+                    sb,
+                    "start",
+                    new ST0603TimeStamp(getStart()).getDateTime().format(DT_FORMATTER));
+        }
+        if (getStale() != null) {
+            writeAttribute(
+                    sb,
+                    "stale",
+                    new ST0603TimeStamp(getStale()).getDateTime().format(DT_FORMATTER));
+        }
         writeAttribute(sb, "how", getHow());
     }
 

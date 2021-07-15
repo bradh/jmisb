@@ -60,9 +60,9 @@ public class KlvToCotTest {
         assertEquals(sensorPointOfInterest.getPoint().getHae(), 143, 0.0001);
         assertEquals(sensorPointOfInterest.getPoint().getCe(), 46.6, 0.1);
         assertEquals(sensorPointOfInterest.getPoint().getLe(), 24.3, 0.1);
-        assertEquals(sensorPointOfInterest.getTime(), 1625389203000000L);
-        assertEquals(sensorPointOfInterest.getStart(), 1625389203000000L);
-        assertEquals(sensorPointOfInterest.getStale(), 1625389208000000L);
+        assertEquals(sensorPointOfInterest.getTime().doubleValue(), 1625389203000000L);
+        assertEquals(sensorPointOfInterest.getStart().doubleValue(), 1625389203000000L);
+        assertEquals(sensorPointOfInterest.getStale().doubleValue(), 1625389208000000L);
     }
 
     @Test
@@ -80,9 +80,9 @@ public class KlvToCotTest {
         assertEquals(platformPosition.getPoint().getHae(), 1201, 0.0001);
         assertEquals(platformPosition.getPoint().getCe(), 9_999_999, 0.1);
         assertEquals(platformPosition.getPoint().getLe(), 9_999_999, 0.1);
-        assertEquals(platformPosition.getTime(), 1625389203000000L);
-        assertEquals(platformPosition.getStart(), 1625389203000000L);
-        assertEquals(platformPosition.getStale(), 1625389208000000L);
+        assertEquals(platformPosition.getTime().doubleValue(), 1625389203000000L);
+        assertEquals(platformPosition.getStart().doubleValue(), 1625389203000000L);
+        assertEquals(platformPosition.getStale().doubleValue(), 1625389208000000L);
         assertEquals(platformPosition.getSensorModel(), "SenSOR3");
         assertEquals(platformPosition.getSensorAzimuth(), 135.8, 0.1);
         assertEquals(platformPosition.getSensorFov(), 13.3, 0.01);
@@ -251,9 +251,9 @@ public class KlvToCotTest {
         assertEquals(sensorPointOfInterest.getPoint().getHae(), 143, 0.0001);
         assertEquals(sensorPointOfInterest.getPoint().getCe(), 9999999, 0.1);
         assertEquals(sensorPointOfInterest.getPoint().getLe(), 9999999, 0.1);
-        assertEquals(sensorPointOfInterest.getTime(), 1625971208000000L);
-        assertEquals(sensorPointOfInterest.getStart(), 1625971208000000L);
-        assertEquals(sensorPointOfInterest.getStale(), 1625971213000000L);
+        assertEquals(sensorPointOfInterest.getTime().doubleValue(), 1625971208000000L);
+        assertEquals(sensorPointOfInterest.getStart().doubleValue(), 1625971208000000L);
+        assertEquals(sensorPointOfInterest.getStale().doubleValue(), 1625971213000000L);
     }
 
     private UasDatalinkMessage buildSourceMessageSimple() {
