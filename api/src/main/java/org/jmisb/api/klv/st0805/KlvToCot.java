@@ -97,17 +97,23 @@ public class KlvToCot {
             }
         }
         spiMessage.setType("b-m-p-s-p-i");
-        spiMessage.setUid(getSensorUid(uasMessage));
+        spiMessage.setUid(buildSensorUid(uasMessage));
         setTimes(uasMessage, spiMessage);
         spiMessage.setHow("m-p");
-        spiMessage.setLinkType(configuration.getPlatformType());
-        // TODO: allow client to specify platform UID
-        spiMessage.setLinkUid(getPlatformUid(uasMessage));
-        spiMessage.setLinkRelation(PARENT_PRODUCER_RELATIONSHIP);
+        spiMessage.setLink(buildLink(uasMessage));
         return spiMessage;
     }
 
-    private String getSensorUid(UasDatalinkMessage uasMessage) {
+    private Link buildLink(UasDatalinkMessage uasMessage) {
+        Link link = new Link();
+        link.setLinkType(configuration.getPlatformType());
+        // TODO: allow client to specify platform UID
+        link.setLinkUid(getPlatformUid(uasMessage));
+        link.setLinkRelation(PARENT_PRODUCER_RELATIONSHIP);
+        return link;
+    }
+
+    private String buildSensorUid(UasDatalinkMessage uasMessage) {
         // TODO: allow client to specify UID & handle missing tags from KLV
         String platformUid = getPlatformUid(uasMessage);
         String imageSourceSensorLabel = "UNKNOWN";

@@ -116,14 +116,16 @@ public class PlatformPosition extends CotMessage {
         if (getPoint() != null) {
             getPoint().writeAsXML(sb);
         }
+        writeStartElement(sb, "detail");
         writeFlowTags(sb);
         writeSensor(sb);
+        writeEndElement(sb, "detail");
         addEventEndToXML(sb);
         return sb.toString();
     }
 
     private void writeSensor(StringBuilder sb) {
-        sb.append("<sensor ");
+        sb.append("<sensor");
         if (getSensorAzimuth() != null) {
             writeAttribute(sb, "azimuth", getSensorAzimuth());
         }

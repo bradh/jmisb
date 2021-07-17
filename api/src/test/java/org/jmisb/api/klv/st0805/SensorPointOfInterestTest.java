@@ -34,7 +34,7 @@ public class SensorPointOfInterestTest {
         SensorPointOfInterest uut = new SensorPointOfInterest(clock);
         assertEquals(
                 uut.toXml(),
-                "<?xml version='1.0' standalone='yes'?><event version='2.0' type='b-m-p-s-p-i' uid='jmisb' how='m' ><detail><_flow-tags_ ST0601CoT='2021-07-13T10:22:26.935488Z' /></detail></event>");
+                "<?xml version='1.0' standalone='yes'?><event version='2.0' type='b-m-p-s-p-i' uid='jmisb' how='m'><detail><_flow-tags_ ST0601CoT='2021-07-13T10:22:26.935488Z'/></detail></event>");
     }
 
     @Test
@@ -147,7 +147,7 @@ public class SensorPointOfInterestTest {
         KlvToCot converter = new KlvToCot();
         SensorPointOfInterest spi = converter.getSensorPointOfInterest(sourceMessage);
         assertEquals(spi.getUid(), "SomePlat_MissionFoo_SensorTest");
-        assertEquals(spi.getLinkUid(), "SomePlat_MissionFoo");
+        assertEquals(spi.getLink().getLinkUid(), "SomePlat_MissionFoo");
     }
 
     @Test
@@ -167,7 +167,7 @@ public class SensorPointOfInterestTest {
         KlvToCot converter = new KlvToCot();
         SensorPointOfInterest spi = converter.getSensorPointOfInterest(sourceMessage);
         assertEquals(spi.getUid(), "jmisb_SensorTest");
-        assertEquals(spi.getLinkUid(), "jmisb");
+        assertEquals(spi.getLink().getLinkUid(), "jmisb");
     }
 
     @Test
@@ -187,7 +187,7 @@ public class SensorPointOfInterestTest {
         KlvToCot converter = new KlvToCot();
         SensorPointOfInterest spi = converter.getSensorPointOfInterest(sourceMessage);
         assertEquals(spi.getUid(), "jmisb_SensorTest");
-        assertEquals(spi.getLinkUid(), "jmisb");
+        assertEquals(spi.getLink().getLinkUid(), "jmisb");
     }
 
     @Test
@@ -207,6 +207,6 @@ public class SensorPointOfInterestTest {
         KlvToCot converter = new KlvToCot();
         SensorPointOfInterest spi = converter.getSensorPointOfInterest(sourceMessage);
         assertEquals(spi.getUid(), "SomePlat_MissionFoo_UNKNOWN");
-        assertEquals(spi.getLinkUid(), "SomePlat_MissionFoo");
+        assertEquals(spi.getLink().getLinkUid(), "SomePlat_MissionFoo");
     }
 }

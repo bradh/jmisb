@@ -116,7 +116,7 @@ public class CotPoint {
      */
     protected void writeAsXML(StringBuilder sb) {
         if ((getLat() != null) && (getLon() != null) && (getHae() != null)) {
-            sb.append("<point ");
+            sb.append("<point");
             CotMessage.writeAttribute(sb, "lat", getLat());
             CotMessage.writeAttribute(sb, "lon", getLon());
             CotMessage.writeAttribute(sb, "hae", getHae());

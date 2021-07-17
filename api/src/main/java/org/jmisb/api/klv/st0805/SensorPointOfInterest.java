@@ -9,9 +9,8 @@ import java.time.Clock;
  * the platform producing the sensor feed.
  */
 public class SensorPointOfInterest extends CotMessage {
-    public String linkType;
-    public String linkUid;
-    public String linkRelation;
+
+    private Link link;
 
     SensorPointOfInterest(Clock clock) {
         super(clock);
@@ -19,63 +18,21 @@ public class SensorPointOfInterest extends CotMessage {
     }
 
     /**
-     * Get the link type (CoT type of the producing {@link PlatformPosition}).
+     * Get the link detail for this CoT message.
      *
-     * @return link type
+     * @return the link, or null if not set.
      */
-    public String getLinkType() {
-        return linkType;
+    public Link getLink() {
+        return link;
     }
 
     /**
-     * Set the link type (CoT type of the producing {@link PlatformPosition}).
+     * Set the link detail for this CoT message.
      *
-     * @param linkType link type
+     * @param link the link to set.
      */
-    public void setLinkType(String linkType) {
-        this.linkType = linkType;
-    }
-
-    /**
-     * Get the link UID (unique ID of the producing {@link PlatformPosition}).
-     *
-     * @return link UID
-     */
-    public String getLinkUid() {
-        return linkUid;
-    }
-
-    /**
-     * Set the link UID (unique ID of the producing {@link PlatformPosition}).
-     *
-     * @param linkUid link UID
-     */
-    public void setLinkUid(String linkUid) {
-        this.linkUid = linkUid;
-    }
-
-    /**
-     * Get the link relation.
-     *
-     * <p>This is the relationship from this message to the link target, typically {@code "p-p"} for
-     * parent producer.
-     *
-     * @return the link relation
-     */
-    public String getLinkRelation() {
-        return linkRelation;
-    }
-
-    /**
-     * Set the link relation.
-     *
-     * <p>This is the relationship from this message to the link target, typically {@code "p-p"} for
-     * parent producer.
-     *
-     * @param relation the link relation
-     */
-    public void setLinkRelation(String relation) {
-        this.linkRelation = relation;
+    public void setLink(Link link) {
+        this.link = link;
     }
 
     @Override
@@ -87,9 +44,17 @@ public class SensorPointOfInterest extends CotMessage {
         if (getPoint() != null) {
             getPoint().writeAsXML(sb);
         }
+        writeStartElement(sb, "detail");
         writeFlowTags(sb);
-        // TODO: add detail link
+        writeLink(sb);
+        writeEndElement(sb, "detail");
         addEventEndToXML(sb);
         return sb.toString();
+    }
+
+    protected void writeLink(StringBuilder sb) {
+        if (getLink() != null) {
+            getLink().writeAsXML(sb);
+        }
     }
 }

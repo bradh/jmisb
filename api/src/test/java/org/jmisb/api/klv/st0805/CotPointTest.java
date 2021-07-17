@@ -20,7 +20,7 @@ public class CotPointTest {
         StringBuilder sb = new StringBuilder();
         uut.writeAsXML(sb);
         assertEquals(
-                sb.toString(), "<point lat='10.0' lon='20.0' hae='30.0' ce='100.0' le='50.0' />");
+                sb.toString(), "<point lat='10.0' lon='20.0' hae='30.0' ce='100.0' le='50.0'/>");
     }
 
     @Test
@@ -77,6 +77,6 @@ public class CotPointTest {
         uut.writeAsXML(sb);
         assertEquals(
                 sb.toString(),
-                "<point lat='10.0' lon='20.0' hae='30.0' ce='9999999.0' le='9999999.0' />");
+                "<point lat='10.0' lon='20.0' hae='30.0' ce='9999999.0' le='9999999.0'/>");
     }
 }

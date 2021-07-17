@@ -177,7 +177,7 @@ public abstract class CotMessage {
     }
 
     protected void addEventLevelAttributesToXML(StringBuilder sb) {
-        sb.append("<event ");
+        sb.append("<event");
         writeAttribute(sb, "version", COT_VERSION);
         writeAttribute(sb, "type", getType());
         writeAttribute(sb, "uid", getUid());
@@ -200,8 +200,20 @@ public abstract class CotMessage {
         writeAttribute(sb, "how", getHow());
     }
 
+    protected void writeStartElement(StringBuilder sb, String elementName) {
+        sb.append("<");
+        sb.append(elementName);
+        sb.append(">");
+    }
+
+    protected void writeEndElement(StringBuilder sb, String elementName) {
+        sb.append("</");
+        sb.append(elementName);
+        sb.append(">");
+    }
+
     protected void addEventEndToXML(StringBuilder sb) {
-        sb.append("</event>");
+        writeEndElement(sb, "event");
     }
 
     protected void addXmlHeader(StringBuilder sb) {
@@ -214,16 +226,18 @@ public abstract class CotMessage {
 
     /* TODO: maybe these would be a good "CotElement" abstract class thing */
     static void writeAttribute(StringBuilder sb, String key, String value) {
+        sb.append(" ");
         sb.append(key);
         sb.append("='");
         sb.append(value);
-        sb.append("' ");
+        sb.append("'");
     }
 
     static void writeAttribute(StringBuilder sb, String key, double value) {
+        sb.append(" ");
         sb.append(key);
         sb.append("='");
         sb.append(value);
-        sb.append("' ");
+        sb.append("'");
     }
 }

@@ -33,7 +33,7 @@ public class PlatformPositionTest {
         PlatformPosition uut = new PlatformPosition(clock);
         assertEquals(
                 uut.toXml(),
-                "<?xml version='1.0' standalone='yes'?><event version='2.0' type='a-f' uid='jmisb' how='m' ><detail><_flow-tags_ ST0601CoT='2021-07-13T10:22:26.935488Z' /></detail><sensor /></event>");
+                "<?xml version='1.0' standalone='yes'?><event version='2.0' type='a-f' uid='jmisb' how='m'><detail><_flow-tags_ ST0601CoT='2021-07-13T10:22:26.935488Z'/><sensor/></detail></event>");
     }
 
     @Test
@@ -48,7 +48,7 @@ public class PlatformPositionTest {
         uut.setHow("m-p");
         assertEquals(
                 uut.toXml(),
-                "<?xml version='1.0' standalone='yes'?><event version='2.0' type='a-f' uid='PaperAeroplane.3' time='2021-07-04T09:00:03.000Z' start='2021-07-04T09:00:03.000Z' stale='2021-07-04T09:00:13.000Z' how='m-p' ><detail><_flow-tags_ ST0601CoT='2021-07-13T10:22:26.935488Z' /></detail><sensor model='EOW' /></event>");
+                "<?xml version='1.0' standalone='yes'?><event version='2.0' type='a-f' uid='PaperAeroplane.3' time='2021-07-04T09:00:03.000Z' start='2021-07-04T09:00:03.000Z' stale='2021-07-04T09:00:13.000Z' how='m-p'><detail><_flow-tags_ ST0601CoT='2021-07-13T10:22:26.935488Z'/><sensor model='EOW'/></detail></event>");
     }
 
     @Test

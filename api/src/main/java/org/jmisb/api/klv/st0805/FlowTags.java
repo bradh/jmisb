@@ -34,13 +34,14 @@ public class FlowTags {
      * @param sb the string builder to append to.
      */
     public void writeAsXML(StringBuilder sb) {
-        sb.append("<detail><_flow-tags_ ");
+        sb.append("<_flow-tags_");
         for (Entry<String, ZonedDateTime> entry : tags.entrySet()) {
+            sb.append(" ");
             sb.append(entry.getKey());
             sb.append("='");
             sb.append(entry.getValue().format(DateTimeFormatter.ISO_DATE_TIME));
-            sb.append("' ");
+            sb.append("'");
         }
-        sb.append("/></detail>");
+        sb.append("/>");
     }
 }

@@ -38,11 +38,11 @@ import org.testng.annotations.Test;
 public class KlvToCotTest {
 
     private static final String PLATFORM_POSITION_XML =
-            "<?xml version='1.0' standalone='yes'?><event version='2.0' type='a-f-A' uid='TESTPLAT1_Mission2' time='2021-07-04T09:00:03.000Z' start='2021-07-04T09:00:03.000Z' stale='2021-07-04T09:00:08.000Z' how='m-p' ><point lat='-32.42' lon='143.24' hae='1201.0' ce='9999999.0' le='9999999.0' /><detail><_flow-tags_ ST0601CoT='2021-07-13T10:22:26.935488Z' /></detail><sensor azimuth='135.8' fov='13.3' vfov='23.2' model='SenSOR3' range='1400.3' /></event>";
+            "<?xml version='1.0' standalone='yes'?><event version='2.0' type='a-f-A' uid='TESTPLAT1_Mission2' time='2021-07-04T09:00:03.000Z' start='2021-07-04T09:00:03.000Z' stale='2021-07-04T09:00:08.000Z' how='m-p'><point lat='-32.42' lon='143.24' hae='1201.0' ce='9999999.0' le='9999999.0'/><detail><_flow-tags_ ST0601CoT='2021-07-13T10:22:26.935488Z'/><sensor azimuth='135.8' fov='13.3' vfov='23.2' model='SenSOR3' range='1400.3'/></detail></event>";
     private static final String PLATFORM_POSITION_XML_CONFIGURED =
-            "<?xml version='1.0' standalone='yes'?><event version='2.0' type='a-f-A' uid='TESTPLAT1_Mission2' time='2021-07-04T09:00:03.000Z' start='2021-07-04T09:00:03.000Z' stale='2021-07-04T09:00:24.000Z' how='m-p' ><point lat='-32.42' lon='143.24' hae='1201.0' ce='9999999.0' le='9999999.0' /><detail><_flow-tags_ ST0601CoT='2021-07-13T10:22:26.935488Z' /></detail><sensor azimuth='135.8' fov='13.3' vfov='23.2' model='SenSOR3' range='1400.3' /></event>";
+            "<?xml version='1.0' standalone='yes'?><event version='2.0' type='a-f-A-M-F-Q' uid='TESTPLAT1_Mission2' time='2021-07-04T09:00:03.000Z' start='2021-07-04T09:00:03.000Z' stale='2021-07-04T09:00:24.000Z' how='m-p'><point lat='-32.42' lon='143.24' hae='1201.0' ce='9999999.0' le='9999999.0'/><detail><_flow-tags_ ST0601CoT='2021-07-13T10:22:26.935488Z'/><sensor azimuth='135.8' fov='13.3' vfov='23.2' model='SenSOR3' range='1400.3'/></detail></event>";
     private static final String SPI_XML =
-            "<?xml version='1.0' standalone='yes'?><event version='2.0' type='b-m-p-s-p-i' uid='TESTPLAT1_Mission2_SenSOR3' time='2021-07-04T09:00:03.000Z' start='2021-07-04T09:00:03.000Z' stale='2021-07-04T09:00:08.000Z' how='m-p' ><point lat='-32.4' lon='143.23' hae='143.0' ce='46.6' le='24.3' /><detail><_flow-tags_ ST0601CoT='2021-07-13T10:22:26.935488Z' /></detail></event>";
+            "<?xml version='1.0' standalone='yes'?><event version='2.0' type='b-m-p-s-p-i' uid='TESTPLAT1_Mission2_SenSOR3' time='2021-07-04T09:00:03.000Z' start='2021-07-04T09:00:03.000Z' stale='2021-07-04T09:00:08.000Z' how='m-p'><point lat='-32.4' lon='143.23' hae='143.0' ce='46.6' le='24.3'/><detail><_flow-tags_ ST0601CoT='2021-07-13T10:22:26.935488Z'/><link relation='p-p' type='a-f-A' uid='TESTPLAT1_Mission2'/></detail></event>";
 
     public KlvToCotTest() {}
 
@@ -56,9 +56,9 @@ public class KlvToCotTest {
         assertEquals(sensorPointOfInterest.getType(), "b-m-p-s-p-i");
         assertEquals(sensorPointOfInterest.getHow(), "m-p");
         assertEquals(sensorPointOfInterest.getUid(), "TESTPLAT1_Mission2_SenSOR3");
-        assertEquals(sensorPointOfInterest.getLinkType(), "a-f-A");
-        assertEquals(sensorPointOfInterest.getLinkUid(), "TESTPLAT1_Mission2");
-        assertEquals(sensorPointOfInterest.getLinkRelation(), "p-p");
+        assertEquals(sensorPointOfInterest.getLink().getLinkType(), "a-f-A");
+        assertEquals(sensorPointOfInterest.getLink().getLinkUid(), "TESTPLAT1_Mission2");
+        assertEquals(sensorPointOfInterest.getLink().getLinkRelation(), "p-p");
         assertEquals(sensorPointOfInterest.getPoint().getLat(), -32.4, 0.0001);
         assertEquals(sensorPointOfInterest.getPoint().getLon(), 143.23, 0.0001);
         assertEquals(sensorPointOfInterest.getPoint().getHae(), 143, 0.0001);
@@ -102,9 +102,10 @@ public class KlvToCotTest {
         Clock clock = Clock.fixed(Instant.parse("2021-07-13T10:22:26.935488Z"), ZoneOffset.UTC);
         ConversionConfiguration configuration = new ConversionConfiguration();
         configuration.setStalePeriod(21 * 1000 * 1000);
+        configuration.setPlatformType("a-f-A-M-F-Q");
         KlvToCot converter = new KlvToCot(configuration);
         PlatformPosition platformPosition = converter.getPlatformPosition(sourceMessage, clock);
-        assertEquals(platformPosition.getType(), "a-f-A");
+        assertEquals(platformPosition.getType(), "a-f-A-M-F-Q");
         assertEquals(platformPosition.getHow(), "m-p");
         assertEquals(platformPosition.getUid(), "TESTPLAT1_Mission2");
         assertEquals(platformPosition.getPoint().getLat(), -32.42, 0.0001);
@@ -198,9 +199,9 @@ public class KlvToCotTest {
         assertEquals(sensorPointOfInterest.getType(), "b-m-p-s-p-i");
         assertEquals(sensorPointOfInterest.getHow(), "m-p");
         assertEquals(sensorPointOfInterest.getUid(), "TESTPLAT1_Mission2_SenSOR3");
-        assertEquals(sensorPointOfInterest.getLinkType(), "a-f-A");
-        assertEquals(sensorPointOfInterest.getLinkUid(), "TESTPLAT1_Mission2");
-        assertEquals(sensorPointOfInterest.getLinkRelation(), "p-p");
+        assertEquals(sensorPointOfInterest.getLink().getLinkType(), "a-f-A");
+        assertEquals(sensorPointOfInterest.getLink().getLinkUid(), "TESTPLAT1_Mission2");
+        assertEquals(sensorPointOfInterest.getLink().getLinkRelation(), "p-p");
         assertEquals(sensorPointOfInterest.getPoint().getLat(), -32.4, 0.0001);
         assertEquals(sensorPointOfInterest.getPoint().getLon(), 143.23, 0.0001);
         assertEquals(sensorPointOfInterest.getPoint().getHae(), 143, 0.0001);
