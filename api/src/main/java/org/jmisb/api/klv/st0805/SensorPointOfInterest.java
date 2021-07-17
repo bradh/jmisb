@@ -15,7 +15,9 @@ public class SensorPointOfInterest extends CotMessage {
 
     SensorPointOfInterest(Clock clock) {
         super(clock);
+        setType("b-m-p-s-p-i");
     }
+
     /**
      * Get the link type (CoT type of the producing {@link PlatformPosition}).
      *
@@ -78,8 +80,16 @@ public class SensorPointOfInterest extends CotMessage {
 
     @Override
     public String toXml() {
-        throw new UnsupportedOperationException(
-                "Not supported yet."); // To change body of generated methods, choose Tools |
-        // Templates.
+        StringBuilder sb = new StringBuilder();
+        addXmlHeader(sb);
+        addEventLevelAttributesToXML(sb);
+        closeEventStartInXML(sb);
+        if (getPoint() != null) {
+            getPoint().writeAsXML(sb);
+        }
+        writeFlowTags(sb);
+        // TODO: add detail link
+        addEventEndToXML(sb);
+        return sb.toString();
     }
 }

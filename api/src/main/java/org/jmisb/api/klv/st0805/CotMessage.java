@@ -12,7 +12,7 @@ public abstract class CotMessage {
     private static final DateTimeFormatter DT_FORMATTER =
             DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
     private CotPoint point;
-    private String type = "a-f";
+    private String type;
     private String uid = "jmisb";
     private Long time;
     private Long start;
@@ -53,7 +53,7 @@ public abstract class CotMessage {
      *
      * @return CoT message type
      */
-    public String getType() {
+    public final String getType() {
         return type;
     }
 
@@ -62,7 +62,7 @@ public abstract class CotMessage {
      *
      * @param type CoT message type
      */
-    public void setType(String type) {
+    public final void setType(String type) {
         this.type = type;
     }
 
@@ -177,6 +177,7 @@ public abstract class CotMessage {
     }
 
     protected void addEventLevelAttributesToXML(StringBuilder sb) {
+        sb.append("<event ");
         writeAttribute(sb, "version", COT_VERSION);
         writeAttribute(sb, "type", getType());
         writeAttribute(sb, "uid", getUid());
@@ -203,16 +204,12 @@ public abstract class CotMessage {
         sb.append("</event>");
     }
 
-    protected void addEventStartToXML(StringBuilder sb) {
-        sb.append("<event ");
-    }
-
     protected void addXmlHeader(StringBuilder sb) {
         sb.append("<?xml version='1.0' standalone='yes'?>");
     }
 
     protected void writeFlowTags(StringBuilder sb) {
-        this.flowTags.writeAsXML(sb);
+        getFlowTags().writeAsXML(sb);
     }
 
     /* TODO: maybe these would be a good "CotElement" abstract class thing */

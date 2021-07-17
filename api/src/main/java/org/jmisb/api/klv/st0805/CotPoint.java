@@ -120,8 +120,8 @@ public class CotPoint {
             CotMessage.writeAttribute(sb, "lat", getLat());
             CotMessage.writeAttribute(sb, "lon", getLon());
             CotMessage.writeAttribute(sb, "hae", getHae());
-            CotMessage.writeAttribute(sb, "ce", getCe());
-            CotMessage.writeAttribute(sb, "le", getLe());
+            CotMessage.writeAttribute(sb, "ce", String.format("%.1f", getCe()));
+            CotMessage.writeAttribute(sb, "le", String.format("%.1f", getLe()));
             sb.append("/>");
         }
     }

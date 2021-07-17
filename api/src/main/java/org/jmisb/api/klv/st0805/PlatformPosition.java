@@ -12,6 +12,7 @@ public class PlatformPosition extends CotMessage {
 
     PlatformPosition(Clock clock) {
         super(clock);
+        setType("a-f");
     }
 
     /**
@@ -110,14 +111,13 @@ public class PlatformPosition extends CotMessage {
     public String toXml() {
         StringBuilder sb = new StringBuilder();
         addXmlHeader(sb);
-        addEventStartToXML(sb);
         addEventLevelAttributesToXML(sb);
         closeEventStartInXML(sb);
-        writeFlowTags(sb);
-        writeSensor(sb);
         if (getPoint() != null) {
             getPoint().writeAsXML(sb);
         }
+        writeFlowTags(sb);
+        writeSensor(sb);
         addEventEndToXML(sb);
         return sb.toString();
     }
