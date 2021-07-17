@@ -40,6 +40,23 @@ public class ConversionConfiguration {
     private String platformUidFallback = "jmisb";
 
     /**
+     * Override value for sensor UID.
+     *
+     * <p>This takes precedence over the uid that would be derived from the Platform Designation,
+     * Mission ID and Image Sensor Source values in the message.
+     */
+    private String sensorUidOverride;
+
+    /**
+     * Fallback value for sensor UID suffix.
+     *
+     * <p>This provides a fallback suffix for the sensor UID construction. It does not provide the
+     * whole UID, but instead will be added to the platform UID fallback if the image source sensor
+     * value is not available.
+     */
+    private String sensorSuffixFallback = "UNKNOWN";
+
+    /**
      * Get the CoT platform type.
      *
      * @return the platform type as a valid CoT platform type.
@@ -84,7 +101,7 @@ public class ConversionConfiguration {
     }
 
     /**
-     * Get an override value for the Platform uid string.
+     * Get an override value for the Platform {@code uid} string.
      *
      * @return the uid string, or null if the uid should not be overridden.
      */
@@ -99,6 +116,24 @@ public class ConversionConfiguration {
      */
     public void setPlatformUidOverride(String uid) {
         this.platformUidOverride = uid;
+    }
+
+    /**
+     * Get an override value for the Sensor {@code uid} string.
+     *
+     * @return the uid string, or null if the uid should not be overridden.
+     */
+    public String getSensorUidOverride() {
+        return sensorUidOverride;
+    }
+
+    /**
+     * Set the override value for the Sensor {@code uid}.
+     *
+     * @param uid the platform uid.
+     */
+    public void setSensorUidOverride(String uid) {
+        this.sensorUidOverride = uid;
     }
 
     /**
@@ -119,5 +154,31 @@ public class ConversionConfiguration {
         if (uid != null) {
             this.platformUidFallback = uid;
         }
+    }
+
+    /**
+     * Get the fallback value for sensor UID suffix.
+     *
+     * <p>This provides a fallback suffix for the sensor UID construction. It does not provide the
+     * whole UID, but instead will be added to the platform UID fallback if the image source sensor
+     * value is not available.
+     *
+     * @return the fallback suffix as a string
+     */
+    public String getSensorSuffixFallback() {
+        return sensorSuffixFallback;
+    }
+
+    /**
+     * Set the fallback value for sensor UID suffix.
+     *
+     * <p>This provides a fallback suffix for the sensor UID construction. It does not provide the
+     * whole UID, but instead will be added to the platform UID fallback if the image source sensor
+     * value is not available.
+     *
+     * @param suffix the fallback sensor identifier
+     */
+    public void setSensorSuffixFallback(String suffix) {
+        this.sensorSuffixFallback = suffix;
     }
 }

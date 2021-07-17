@@ -43,6 +43,8 @@ public class KlvToCotTest {
             "<?xml version='1.0' standalone='yes'?><event version='2.0' type='a-f-A-M-F-Q' uid='Plat.UID.Override' time='2021-07-04T09:00:03.000Z' start='2021-07-04T09:00:03.000Z' stale='2021-07-04T09:00:24.000Z' how='m-p'><point lat='-32.42' lon='143.24' hae='1201.0' ce='9999999.0' le='9999999.0'/><detail><_flow-tags_ ST0601CoT='2021-07-13T10:22:26.935488Z'/><sensor azimuth='135.8' fov='13.3' vfov='23.2' model='SenSOR3' range='1400.3'/></detail></event>";
     private static final String SPI_XML =
             "<?xml version='1.0' standalone='yes'?><event version='2.0' type='b-m-p-s-p-i' uid='TESTPLAT1_Mission2_SenSOR3' time='2021-07-04T09:00:03.000Z' start='2021-07-04T09:00:03.000Z' stale='2021-07-04T09:00:08.000Z' how='m-p'><point lat='-32.4' lon='143.23' hae='143.0' ce='46.6' le='24.3'/><detail><_flow-tags_ ST0601CoT='2021-07-13T10:22:26.935488Z'/><link relation='p-p' type='a-f-A' uid='TESTPLAT1_Mission2'/></detail></event>";
+    private static final String SPI_XML_CONFIGURED =
+            "<?xml version='1.0' standalone='yes'?><event version='2.0' type='b-m-p-s-p-i' uid='MySensorOverride.875' time='2021-07-04T09:00:03.000Z' start='2021-07-04T09:00:03.000Z' stale='2021-07-04T09:00:08.000Z' how='m-p'><point lat='-32.4' lon='143.23' hae='143.0' ce='46.6' le='24.3'/><detail><_flow-tags_ ST0601CoT='2021-07-13T10:22:26.935488Z'/><link relation='p-p' type='a-f-A-M-F' uid='SomePlatform.87gf3'/></detail></event>";
 
     public KlvToCotTest() {}
 
@@ -68,6 +70,34 @@ public class KlvToCotTest {
         assertEquals(sensorPointOfInterest.getStart().doubleValue(), 1625389203000000L);
         assertEquals(sensorPointOfInterest.getStale().doubleValue(), 1625389208000000L);
         assertEquals(sensorPointOfInterest.toXml(), SPI_XML);
+    }
+
+    @Test
+    public void checkSPIConfigured() {
+        UasDatalinkMessage sourceMessage = buildSourceMessage();
+        Clock clock = Clock.fixed(Instant.parse("2021-07-13T10:22:26.935488Z"), ZoneOffset.UTC);
+        ConversionConfiguration configuration = new ConversionConfiguration();
+        configuration.setSensorUidOverride("MySensorOverride.875");
+        configuration.setPlatformUidOverride("SomePlatform.87gf3");
+        configuration.setPlatformType("a-f-A-M-F");
+        KlvToCot converter = new KlvToCot(configuration);
+        SensorPointOfInterest sensorPointOfInterest =
+                converter.getSensorPointOfInterest(sourceMessage, clock);
+        assertEquals(sensorPointOfInterest.getType(), "b-m-p-s-p-i");
+        assertEquals(sensorPointOfInterest.getHow(), "m-p");
+        assertEquals(sensorPointOfInterest.getUid(), "MySensorOverride.875");
+        assertEquals(sensorPointOfInterest.getLink().getLinkType(), "a-f-A-M-F");
+        assertEquals(sensorPointOfInterest.getLink().getLinkUid(), "SomePlatform.87gf3");
+        assertEquals(sensorPointOfInterest.getLink().getLinkRelation(), "p-p");
+        assertEquals(sensorPointOfInterest.getPoint().getLat(), -32.4, 0.0001);
+        assertEquals(sensorPointOfInterest.getPoint().getLon(), 143.23, 0.0001);
+        assertEquals(sensorPointOfInterest.getPoint().getHae(), 143, 0.0001);
+        assertEquals(sensorPointOfInterest.getPoint().getCe(), 46.6, 0.1);
+        assertEquals(sensorPointOfInterest.getPoint().getLe(), 24.3, 0.1);
+        assertEquals(sensorPointOfInterest.getTime().doubleValue(), 1625389203000000L);
+        assertEquals(sensorPointOfInterest.getStart().doubleValue(), 1625389203000000L);
+        assertEquals(sensorPointOfInterest.getStale().doubleValue(), 1625389208000000L);
+        assertEquals(sensorPointOfInterest.toXml(), SPI_XML_CONFIGURED);
     }
 
     @Test
@@ -194,8 +224,7 @@ public class KlvToCotTest {
     @Test
     public void checkSPISimple() {
         UasDatalinkMessage sourceMessage = buildSourceMessageSimple();
-        ConversionConfiguration configuration = new ConversionConfiguration();
-        KlvToCot converter = new KlvToCot(configuration);
+        KlvToCot converter = new KlvToCot();
         SensorPointOfInterest sensorPointOfInterest =
                 converter.getSensorPointOfInterest(sourceMessage);
         assertEquals(sensorPointOfInterest.getType(), "b-m-p-s-p-i");
@@ -234,5 +263,32 @@ public class KlvToCotTest {
                 UasDatalinkTag.ImageSourceSensor,
                 new UasDatalinkString(UasDatalinkString.IMAGE_SOURCE_SENSOR, "SenSOR3"));
         return sourceMessage;
+    }
+
+    @Test
+    public void checkSPIUidFallback() {
+        SortedMap<UasDatalinkTag, IUasDatalinkValue> map = new TreeMap<>();
+        UasDatalinkMessage sourceMessage = new UasDatalinkMessage(map);
+        map.put(
+                UasDatalinkTag.PrecisionTimeStamp,
+                new PrecisionTimeStamp(
+                        LocalDateTime.of(LocalDate.of(2021, 7, 11), LocalTime.of(2, 40, 8, 0))));
+        ConversionConfiguration configuration = new ConversionConfiguration();
+        configuration.setPlatformUidFallback("uid.8762");
+        configuration.setSensorSuffixFallback("mysuff.8");
+        // should be ignored
+        configuration.setPlatformUidFallback(null);
+        KlvToCot converter = new KlvToCot(configuration);
+        SensorPointOfInterest sensorPointOfInterest =
+                converter.getSensorPointOfInterest(sourceMessage);
+        assertEquals(sensorPointOfInterest.getType(), "b-m-p-s-p-i");
+        assertEquals(sensorPointOfInterest.getHow(), "m-p");
+        assertEquals(sensorPointOfInterest.getUid(), "uid.8762_mysuff.8");
+        assertEquals(sensorPointOfInterest.getLink().getLinkType(), "a-f-A");
+        assertEquals(sensorPointOfInterest.getLink().getLinkUid(), "uid.8762");
+        assertEquals(sensorPointOfInterest.getLink().getLinkRelation(), "p-p");
+        assertEquals(sensorPointOfInterest.getTime().doubleValue(), 1625971208000000L);
+        assertEquals(sensorPointOfInterest.getStart().doubleValue(), 1625971208000000L);
+        assertEquals(sensorPointOfInterest.getStale().doubleValue(), 1625971213000000L);
     }
 }

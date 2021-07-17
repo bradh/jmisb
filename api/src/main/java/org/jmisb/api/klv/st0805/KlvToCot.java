@@ -113,15 +113,17 @@ public class KlvToCot {
     }
 
     private String buildSensorUid(UasDatalinkMessage uasMessage) {
-        // TODO: allow client to specify UID & handle missing tags from KLV
+        if (configuration.getSensorUidOverride() != null) {
+            return configuration.getSensorUidOverride();
+        }
         String platformUid = getPlatformUid(uasMessage);
-        String imageSourceSensorLabel = "UNKNOWN";
+        String sensorSuffix = configuration.getSensorSuffixFallback();
         UasDatalinkString imageSourceSensor =
                 (UasDatalinkString) uasMessage.getField(UasDatalinkTag.ImageSourceSensor);
         if (imageSourceSensor != null) {
-            imageSourceSensorLabel = imageSourceSensor.getValue();
+            sensorSuffix = imageSourceSensor.getValue();
         }
-        return platformUid + "_" + imageSourceSensorLabel;
+        return platformUid + "_" + sensorSuffix;
     }
 
     /**
