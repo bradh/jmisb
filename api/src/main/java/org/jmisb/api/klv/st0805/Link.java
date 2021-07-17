@@ -5,7 +5,7 @@ package org.jmisb.api.klv.st0805;
  *
  * <p>This is one of the things that can be included in the {@code detail} part of an Event.
  */
-public class Link {
+public class Link extends CotElement {
     public String linkType;
     public String linkUid;
     public String linkRelation;
@@ -76,12 +76,13 @@ public class Link {
         this.linkRelation = relation;
     }
 
-    public void writeAsXML(StringBuilder sb) {
+    @Override
+    void writeAsXML(StringBuilder sb) {
         if ((getLinkRelation() != null) && (getLinkType() != null) && (getLinkUid() != null)) {
             sb.append("<link");
-            CotMessage.writeAttribute(sb, "relation", getLinkRelation());
-            CotMessage.writeAttribute(sb, "type", getLinkType());
-            CotMessage.writeAttribute(sb, "uid", getLinkUid());
+            writeAttribute(sb, "relation", getLinkRelation());
+            writeAttribute(sb, "type", getLinkType());
+            writeAttribute(sb, "uid", getLinkUid());
             sb.append("/>");
         }
     }

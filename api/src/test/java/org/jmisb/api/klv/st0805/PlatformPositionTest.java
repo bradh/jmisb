@@ -33,14 +33,16 @@ public class PlatformPositionTest {
         PlatformPosition uut = new PlatformPosition(clock);
         assertEquals(
                 uut.toXml(),
-                "<?xml version='1.0' standalone='yes'?><event version='2.0' type='a-f' uid='jmisb' how='m'><detail><_flow-tags_ ST0601CoT='2021-07-13T10:22:26.935488Z'/><sensor/></detail></event>");
+                "<?xml version='1.0' standalone='yes'?><event version='2.0' type='a-f' uid='jmisb' how='m'><detail><_flow-tags_ ST0601CoT='2021-07-13T10:22:26.935488Z'/></detail></event>");
     }
 
     @Test
     public void serialise() {
         Clock clock = Clock.fixed(Instant.parse("2021-07-13T10:22:26.935488Z"), ZoneOffset.UTC);
         PlatformPosition uut = new PlatformPosition(clock);
-        uut.setSensorModel("EOW");
+        CotSensor sensor = new CotSensor();
+        sensor.setSensorModel("EOW");
+        uut.setSensor(sensor);
         uut.setStart(1625389203000000L);
         uut.setTime(1625389203000000L);
         uut.setStale(1625389213000000L);
@@ -125,7 +127,7 @@ public class PlatformPositionTest {
         KlvToCot converter = new KlvToCot();
         PlatformPosition platformPosition = converter.getPlatformPosition(sourceMessage);
         assertNull(platformPosition.getPoint());
-        assertNull(platformPosition.getSensorAzimuth());
+        assertNull(platformPosition.getSensor().getSensorAzimuth());
         assertEquals(platformPosition.getUid(), "jmisb");
     }
 
@@ -141,7 +143,7 @@ public class PlatformPositionTest {
         ConversionConfiguration configuration = new ConversionConfiguration();
         KlvToCot converter = new KlvToCot(configuration);
         PlatformPosition platformPosition = converter.getPlatformPosition(sourceMessage);
-        assertNull(platformPosition.getSensorAzimuth());
+        assertNull(platformPosition.getSensor().getSensorAzimuth());
     }
 
     @Test

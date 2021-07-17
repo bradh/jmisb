@@ -11,7 +11,7 @@ import java.util.Map.Entry;
  *
  * <p>It represents all of the Flow Tags for a single message.
  */
-public class FlowTags {
+public class FlowTags extends CotElement {
     private final Map<String, ZonedDateTime> tags = new LinkedHashMap<>();
 
     /**
@@ -33,6 +33,7 @@ public class FlowTags {
      *
      * @param sb the string builder to append to.
      */
+    @Override
     public void writeAsXML(StringBuilder sb) {
         sb.append("<_flow-tags_");
         for (Entry<String, ZonedDateTime> entry : tags.entrySet()) {

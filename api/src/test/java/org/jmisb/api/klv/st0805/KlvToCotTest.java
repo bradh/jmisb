@@ -40,7 +40,7 @@ public class KlvToCotTest {
     private static final String PLATFORM_POSITION_XML =
             "<?xml version='1.0' standalone='yes'?><event version='2.0' type='a-f-A' uid='TESTPLAT1_Mission2' time='2021-07-04T09:00:03.000Z' start='2021-07-04T09:00:03.000Z' stale='2021-07-04T09:00:08.000Z' how='m-p'><point lat='-32.42' lon='143.24' hae='1201.0' ce='9999999.0' le='9999999.0'/><detail><_flow-tags_ ST0601CoT='2021-07-13T10:22:26.935488Z'/><sensor azimuth='135.8' fov='13.3' vfov='23.2' model='SenSOR3' range='1400.3'/></detail></event>";
     private static final String PLATFORM_POSITION_XML_CONFIGURED =
-            "<?xml version='1.0' standalone='yes'?><event version='2.0' type='a-f-A-M-F-Q' uid='TESTPLAT1_Mission2' time='2021-07-04T09:00:03.000Z' start='2021-07-04T09:00:03.000Z' stale='2021-07-04T09:00:24.000Z' how='m-p'><point lat='-32.42' lon='143.24' hae='1201.0' ce='9999999.0' le='9999999.0'/><detail><_flow-tags_ ST0601CoT='2021-07-13T10:22:26.935488Z'/><sensor azimuth='135.8' fov='13.3' vfov='23.2' model='SenSOR3' range='1400.3'/></detail></event>";
+            "<?xml version='1.0' standalone='yes'?><event version='2.0' type='a-f-A-M-F-Q' uid='Plat.UID.Override' time='2021-07-04T09:00:03.000Z' start='2021-07-04T09:00:03.000Z' stale='2021-07-04T09:00:24.000Z' how='m-p'><point lat='-32.42' lon='143.24' hae='1201.0' ce='9999999.0' le='9999999.0'/><detail><_flow-tags_ ST0601CoT='2021-07-13T10:22:26.935488Z'/><sensor azimuth='135.8' fov='13.3' vfov='23.2' model='SenSOR3' range='1400.3'/></detail></event>";
     private static final String SPI_XML =
             "<?xml version='1.0' standalone='yes'?><event version='2.0' type='b-m-p-s-p-i' uid='TESTPLAT1_Mission2_SenSOR3' time='2021-07-04T09:00:03.000Z' start='2021-07-04T09:00:03.000Z' stale='2021-07-04T09:00:08.000Z' how='m-p'><point lat='-32.4' lon='143.23' hae='143.0' ce='46.6' le='24.3'/><detail><_flow-tags_ ST0601CoT='2021-07-13T10:22:26.935488Z'/><link relation='p-p' type='a-f-A' uid='TESTPLAT1_Mission2'/></detail></event>";
 
@@ -88,11 +88,11 @@ public class KlvToCotTest {
         assertEquals(platformPosition.getTime().doubleValue(), 1625389203000000L);
         assertEquals(platformPosition.getStart().doubleValue(), 1625389203000000L);
         assertEquals(platformPosition.getStale().doubleValue(), 1625389208000000L);
-        assertEquals(platformPosition.getSensorModel(), "SenSOR3");
-        assertEquals(platformPosition.getSensorAzimuth(), 135.8, 0.1);
-        assertEquals(platformPosition.getSensorFov(), 13.3, 0.01);
-        assertEquals(platformPosition.getSensorVfov(), 23.2, 0.01);
-        assertEquals(platformPosition.getSensorRange(), 1400.3, 0.01);
+        assertEquals(platformPosition.getSensor().getSensorModel(), "SenSOR3");
+        assertEquals(platformPosition.getSensor().getSensorAzimuth(), 135.8, 0.1);
+        assertEquals(platformPosition.getSensor().getSensorFov(), 13.3, 0.01);
+        assertEquals(platformPosition.getSensor().getSensorVfov(), 23.2, 0.01);
+        assertEquals(platformPosition.getSensor().getSensorRange(), 1400.3, 0.01);
         assertEquals(platformPosition.toXml(), PLATFORM_POSITION_XML);
     }
 
@@ -103,11 +103,12 @@ public class KlvToCotTest {
         ConversionConfiguration configuration = new ConversionConfiguration();
         configuration.setStalePeriod(21 * 1000 * 1000);
         configuration.setPlatformType("a-f-A-M-F-Q");
+        configuration.setPlatformUidOverride("Plat.UID.Override");
         KlvToCot converter = new KlvToCot(configuration);
         PlatformPosition platformPosition = converter.getPlatformPosition(sourceMessage, clock);
         assertEquals(platformPosition.getType(), "a-f-A-M-F-Q");
         assertEquals(platformPosition.getHow(), "m-p");
-        assertEquals(platformPosition.getUid(), "TESTPLAT1_Mission2");
+        assertEquals(platformPosition.getUid(), "Plat.UID.Override");
         assertEquals(platformPosition.getPoint().getLat(), -32.42, 0.0001);
         assertEquals(platformPosition.getPoint().getLon(), 143.24, 0.0001);
         assertEquals(platformPosition.getPoint().getHae(), 1201, 0.0001);
@@ -116,11 +117,11 @@ public class KlvToCotTest {
         assertEquals(platformPosition.getTime().doubleValue(), 1625389203000000L);
         assertEquals(platformPosition.getStart().doubleValue(), 1625389203000000L);
         assertEquals(platformPosition.getStale().doubleValue(), 1625389224000000L);
-        assertEquals(platformPosition.getSensorModel(), "SenSOR3");
-        assertEquals(platformPosition.getSensorAzimuth(), 135.8, 0.1);
-        assertEquals(platformPosition.getSensorFov(), 13.3, 0.01);
-        assertEquals(platformPosition.getSensorVfov(), 23.2, 0.01);
-        assertEquals(platformPosition.getSensorRange(), 1400.3, 0.01);
+        assertEquals(platformPosition.getSensor().getSensorModel(), "SenSOR3");
+        assertEquals(platformPosition.getSensor().getSensorAzimuth(), 135.8, 0.1);
+        assertEquals(platformPosition.getSensor().getSensorFov(), 13.3, 0.01);
+        assertEquals(platformPosition.getSensor().getSensorVfov(), 23.2, 0.01);
+        assertEquals(platformPosition.getSensor().getSensorRange(), 1400.3, 0.01);
         assertEquals(platformPosition.toXml(), PLATFORM_POSITION_XML_CONFIGURED);
     }
 
@@ -160,6 +161,7 @@ public class KlvToCotTest {
     public void checkPlatformPositionAlternate() {
         UasDatalinkMessage sourceMessage = buildSourceMessageAlternate();
         ConversionConfiguration configuration = new ConversionConfiguration();
+        configuration.setPlatformUidFallback("Uid.fallback.3");
         KlvToCot converter = new KlvToCot(configuration);
         PlatformPosition platformPosition = converter.getPlatformPosition(sourceMessage);
         assertEquals(platformPosition.getPoint().getLat(), -32.42, 0.0001);
@@ -167,8 +169,8 @@ public class KlvToCotTest {
         assertEquals(platformPosition.getPoint().getHae(), 12011, 0.0001);
         assertEquals(platformPosition.getPoint().getCe(), 9_999_999.0);
         assertEquals(platformPosition.getPoint().getLe(), 9_999_999.0);
-        assertEquals(platformPosition.getSensorAzimuth(), 35.8, 0.1);
-        assertEquals(platformPosition.getUid(), "jmisb");
+        assertEquals(platformPosition.getSensor().getSensorAzimuth(), 35.8, 0.1);
+        assertEquals(platformPosition.getUid(), "Uid.fallback.3");
     }
 
     private UasDatalinkMessage buildSourceMessageAlternate() {

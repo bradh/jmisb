@@ -107,7 +107,6 @@ public class KlvToCot {
     private Link buildLink(UasDatalinkMessage uasMessage) {
         Link link = new Link();
         link.setLinkType(configuration.getPlatformType());
-        // TODO: allow client to specify platform UID
         link.setLinkUid(getPlatformUid(uasMessage));
         link.setLinkRelation(PARENT_PRODUCER_RELATIONSHIP);
         return link;
@@ -181,50 +180,53 @@ public class KlvToCot {
 
         platformMessage.setType(configuration.getPlatformType());
 
-        // TODO: allow client to specify UID & handle missing tags from KLV
         platformMessage.setUid(getPlatformUid(uasMessage));
 
         setTimes(uasMessage, platformMessage);
 
         platformMessage.setHow("m-p");
 
+        platformMessage.setSensor(buildSensor(uasMessage));
+
+        return platformMessage;
+    }
+
+    private CotSensor buildSensor(UasDatalinkMessage uasMessage) {
         // Sensor absolute azimuth obtained by adding platform heading and sensor relative azimuth
         PlatformHeadingAngle platformHeading =
                 (PlatformHeadingAngle) uasMessage.getField(UasDatalinkTag.PlatformHeadingAngle);
         SensorRelativeAzimuth sensorRelativeAzimuth =
                 (SensorRelativeAzimuth)
                         uasMessage.getField(UasDatalinkTag.SensorRelativeAzimuthAngle);
+        CotSensor sensor = new CotSensor();
         if (platformHeading != null && sensorRelativeAzimuth != null) {
-            platformMessage.setSensorAzimuth(
+            sensor.setSensorAzimuth(
                     (platformHeading.getDegrees() + sensorRelativeAzimuth.getDegrees()) % 360);
         }
-
         HorizontalFov fov = (HorizontalFov) uasMessage.getField(UasDatalinkTag.SensorHorizontalFov);
         if (fov != null) {
-            platformMessage.setSensorFov(fov.getDegrees());
+            sensor.setSensorFov(fov.getDegrees());
         }
-
         VerticalFov vfov = (VerticalFov) uasMessage.getField(UasDatalinkTag.SensorVerticalFov);
         if (vfov != null) {
-            platformMessage.setSensorVfov(vfov.getDegrees());
+            sensor.setSensorVfov(vfov.getDegrees());
         }
-
-        UasDatalinkString sensor =
+        UasDatalinkString imageSourceSensor =
                 (UasDatalinkString) uasMessage.getField(UasDatalinkTag.ImageSourceSensor);
-        if (sensor != null) {
-            platformMessage.setSensorModel(sensor.getValue());
+        if (imageSourceSensor != null) {
+            sensor.setSensorModel(imageSourceSensor.getValue());
         }
-
         SlantRange slantRange = (SlantRange) uasMessage.getField(UasDatalinkTag.SlantRange);
         if (slantRange != null) {
-            platformMessage.setSensorRange(slantRange.getMeters());
+            sensor.setSensorRange(slantRange.getMeters());
         }
-
-        return platformMessage;
+        return sensor;
     }
 
-    private static String getPlatformUid(UasDatalinkMessage uasMessage) {
-        // TODO: allow client to specify UID & handle missing tags from KLV
+    private String getPlatformUid(UasDatalinkMessage uasMessage) {
+        if (configuration.getPlatformUidOverride() != null) {
+            return configuration.getPlatformUidOverride();
+        }
         UasDatalinkString platformDesignation =
                 (UasDatalinkString) uasMessage.getField(UasDatalinkTag.PlatformDesignation);
         UasDatalinkString missionId =
@@ -232,7 +234,7 @@ public class KlvToCot {
         if (platformDesignation != null && missionId != null) {
             return platformDesignation.getValue() + "_" + missionId.getValue();
         } else {
-            return "jmisb";
+            return configuration.getPlatformUidFallback();
         }
     }
 

@@ -9,7 +9,7 @@ package org.jmisb.api.klv.st0805;
  * <p>CoT uses the WGS-84 ellipsoid as a reference. Angles are in degrees (positive north / east).
  * Altitudes and size / distance measures are in meters.
  */
-public class CotPoint {
+public class CotPoint extends CotElement {
     private Double lat;
     private Double lon;
     private Double hae;
@@ -114,14 +114,15 @@ public class CotPoint {
      *
      * @param sb the string builder to write to.
      */
-    protected void writeAsXML(StringBuilder sb) {
+    @Override
+    void writeAsXML(StringBuilder sb) {
         if ((getLat() != null) && (getLon() != null) && (getHae() != null)) {
             sb.append("<point");
-            CotMessage.writeAttribute(sb, "lat", getLat());
-            CotMessage.writeAttribute(sb, "lon", getLon());
-            CotMessage.writeAttribute(sb, "hae", getHae());
-            CotMessage.writeAttribute(sb, "ce", String.format("%.1f", getCe()));
-            CotMessage.writeAttribute(sb, "le", String.format("%.1f", getLe()));
+            writeAttribute(sb, "lat", getLat());
+            writeAttribute(sb, "lon", getLon());
+            writeAttribute(sb, "hae", getHae());
+            writeAttribute(sb, "ce", String.format("%.1f", getCe()));
+            writeAttribute(sb, "le", String.format("%.1f", getLe()));
             sb.append("/>");
         }
     }

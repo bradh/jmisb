@@ -35,10 +35,20 @@ public class SensorPointOfInterest extends CotMessage {
         this.link = link;
     }
 
-    @Override
+    /**
+     * Write the SensorPointOfInterest out as XML.
+     *
+     * @return string serialization of the values.
+     */
     public String toXml() {
         StringBuilder sb = new StringBuilder();
         addXmlHeader(sb);
+        writeAsXML(sb);
+        return sb.toString();
+    }
+
+    @Override
+    void writeAsXML(StringBuilder sb) {
         addEventLevelAttributesToXML(sb);
         closeEventStartInXML(sb);
         if (getPoint() != null) {
@@ -49,7 +59,6 @@ public class SensorPointOfInterest extends CotMessage {
         writeLink(sb);
         writeEndElement(sb, "detail");
         addEventEndToXML(sb);
-        return sb.toString();
     }
 
     protected void writeLink(StringBuilder sb) {

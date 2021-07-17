@@ -7,7 +7,7 @@ import java.time.format.DateTimeFormatter;
 import org.jmisb.api.klv.st0603.ST0603TimeStamp;
 
 /** A Cursor-on-Target (CoT) message. */
-public abstract class CotMessage {
+public abstract class CotMessage extends CotElement {
     private static final String COT_VERSION = "2.0";
     private static final DateTimeFormatter DT_FORMATTER =
             DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
@@ -165,13 +165,6 @@ public abstract class CotMessage {
         return flowTags;
     }
 
-    /**
-     * Write this message out as CoT XML.
-     *
-     * @return the message as an XML String.
-     */
-    public abstract String toXml();
-
     protected void closeEventStartInXML(StringBuilder sb) {
         sb.append(">");
     }
@@ -200,18 +193,6 @@ public abstract class CotMessage {
         writeAttribute(sb, "how", getHow());
     }
 
-    protected void writeStartElement(StringBuilder sb, String elementName) {
-        sb.append("<");
-        sb.append(elementName);
-        sb.append(">");
-    }
-
-    protected void writeEndElement(StringBuilder sb, String elementName) {
-        sb.append("</");
-        sb.append(elementName);
-        sb.append(">");
-    }
-
     protected void addEventEndToXML(StringBuilder sb) {
         writeEndElement(sb, "event");
     }
@@ -222,22 +203,5 @@ public abstract class CotMessage {
 
     protected void writeFlowTags(StringBuilder sb) {
         getFlowTags().writeAsXML(sb);
-    }
-
-    /* TODO: maybe these would be a good "CotElement" abstract class thing */
-    static void writeAttribute(StringBuilder sb, String key, String value) {
-        sb.append(" ");
-        sb.append(key);
-        sb.append("='");
-        sb.append(value);
-        sb.append("'");
-    }
-
-    static void writeAttribute(StringBuilder sb, String key, double value) {
-        sb.append(" ");
-        sb.append(key);
-        sb.append("='");
-        sb.append(value);
-        sb.append("'");
     }
 }

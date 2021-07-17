@@ -24,6 +24,22 @@ public class ConversionConfiguration {
     private long stalePeriod = 5 * SECONDS_TO_MICROSECONDS;
 
     /**
+     * Override value for platform UID.
+     *
+     * <p>This takes precedence over the uid that would be derived from the Platform Designation and
+     * Mission ID values in the message.
+     */
+    private String platformUidOverride;
+
+    /**
+     * Fallback value for platform UID.
+     *
+     * <p>This is used if the Platform Designation and Mission ID values in the message are not
+     * valid.
+     */
+    private String platformUidFallback = "jmisb";
+
+    /**
      * Get the CoT platform type.
      *
      * @return the platform type as a valid CoT platform type.
@@ -65,5 +81,43 @@ public class ConversionConfiguration {
      */
     public void setStalePeriod(long stalePeriod) {
         this.stalePeriod = stalePeriod;
+    }
+
+    /**
+     * Get an override value for the Platform uid string.
+     *
+     * @return the uid string, or null if the uid should not be overridden.
+     */
+    public String getPlatformUidOverride() {
+        return platformUidOverride;
+    }
+
+    /**
+     * Set the override value for the Platform {@code uid}.
+     *
+     * @param uid the platform uid.
+     */
+    public void setPlatformUidOverride(String uid) {
+        this.platformUidOverride = uid;
+    }
+
+    /**
+     * Get a fallback value for the Platform uid string.
+     *
+     * @return the uid string.
+     */
+    public String getPlatformUidFallback() {
+        return platformUidFallback;
+    }
+
+    /**
+     * Set the fallback value for the Platform {@code uid}.
+     *
+     * @param uid the platform uid, not null.
+     */
+    public void setPlatformUidFallback(String uid) {
+        if (uid != null) {
+            this.platformUidFallback = uid;
+        }
     }
 }
